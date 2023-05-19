@@ -1,120 +1,120 @@
-
-# Copyright (C) Igor Sysoev
-# Copyright (C) Nginx, Inc.
-
-
-have=NGX_DARWIN . auto/have_headers
-
-CORE_INCS="$UNIX_INCS"
-CORE_DEPS="$UNIX_DEPS $DARWIN_DEPS"
-CORE_SRCS="$UNIX_SRCS $DARWIN_SRCS"
-
-
-
-ngx_spacer='
-'
-
-MAIN_LINK=
-MODULE_LINK="-shared -Wl,-undefined,dynamic_lookup"
-
-CC_AUX_FLAGS="$CC_AUX_FLAGS -D__APPLE_USE_RFC_3542"
-
-
-# kqueue
-
-echo " + kqueue found"
-have=NGX_HAVE_KQUEUE . auto/have
-have=NGX_HAVE_CLEAR_EVENT . auto/have
-EVENT_MODULES="$EVENT_MODULES $KQUEUE_MODULE"
-CORE_SRCS="$CORE_SRCS $KQUEUE_SRCS"
-EVENT_FOUND=YES
-NGX_KQUEUE_CHECKED=YES
-
-ngx_feature="kqueue's EVFILT_TIMER"
-ngx_feature_name="NGX_HAVE_TIMER_EVENT"
-ngx_feature_run=yes
-ngx_feature_incs="#include <sys/event.h>
-                  #include <sys/time.h>"
-ngx_feature_path=
-ngx_feature_libs=
-ngx_feature_test="int      kq;
-                  struct kevent    kev;
-                  struct timespec  ts;
-
-                  if ((kq = kqueue()) == -1) return 1;
-
-                  kev.ident = 0;
-                  kev.filter = EVFILT_TIMER;
-                  kev.flags = EV_ADD|EV_ENABLE;
-                  kev.fflags = 0;
-                  kev.data = 1000;
-                  kev.udata = 0;
-
-                  ts.tv_sec = 0;
-                  ts.tv_nsec = 0;
-
-                  if (kevent(kq, &kev, 1, &kev, 1, &ts) == -1) return 1;
-
-                  if (kev.flags & EV_ERROR) return 1;"
-
-. auto/feature
-
-
-ngx_feature="Darwin 64-bit kqueue millisecond timeout bug"
-ngx_feature_name=NGX_DARWIN_KEVENT_BUG
-ngx_feature_run=bug
-ngx_feature_incs="#include <sys/event.h>
-                  #include <sys/time.h>"
-ngx_feature_path=
-ngx_feature_libs=
-ngx_feature_test="int  kq;
-                  struct kevent    kev;
-                  struct timespec  ts;
-                  struct timeval   tv, tv0;
-
-                  kq = kqueue();
-
-                  ts.tv_sec = 0;
-                  ts.tv_nsec = 999000000;
-
-                  gettimeofday(&tv, 0);
-                  kevent(kq, NULL, 0, &kev, 1, &ts);
-                  gettimeofday(&tv0, 0);
-                  timersub(&tv0, &tv, &tv);
-
-                  if (tv.tv_sec * 1000000 + tv.tv_usec < 900000) return 1;"
-
-. auto/feature
-
-
-# sendfile()
-
-ngx_feature="sendfile()"
-ngx_feature_name="NGX_HAVE_SENDFILE"
-ngx_feature_run=yes
-ngx_feature_incs="#include <sys/types.h>
-                  #include <sys/socket.h>
-                  #include <sys/uio.h>
-                  #include <sys/errno.h>"
-ngx_feature_path=
-ngx_feature_libs=
-ngx_feature_test="int s = 0, fd = 1;
-                  off_t n; off_t off = 0;
-                  n = sendfile(s, fd, off, &n, NULL, 0);
-                  if (n == -1 && errno == ENOSYS) return 1"
-. auto/feature
-
-if [ $ngx_found = yes ]; then
-    CORE_SRCS="$CORE_SRCS $DARWIN_SENDFILE_SRCS"
-fi
-
-
-ngx_feature="atomic(3)"
-ngx_feature_name=NGX_DARWIN_ATOMIC
-ngx_feature_run=no
-ngx_feature_incs="#include <libkern/OSAtomic.h>"
-ngx_feature_path=
-ngx_feature_libs=
-ngx_feature_test="int32_t  lock = 0;
-                  if (!OSAtomicCompareAndSwap32Barrier(0, 1, &lock)) return 1"
-. auto/feature
+[1] 
+[2] # Copyright (C) Igor Sysoev
+[3] # Copyright (C) Nginx, Inc.
+[4] 
+[5] 
+[6] have=NGX_DARWIN . auto/have_headers
+[7] 
+[8] CORE_INCS="$UNIX_INCS"
+[9] CORE_DEPS="$UNIX_DEPS $DARWIN_DEPS"
+[10] CORE_SRCS="$UNIX_SRCS $DARWIN_SRCS"
+[11] 
+[12] 
+[13] 
+[14] ngx_spacer='
+[15] '
+[16] 
+[17] MAIN_LINK=
+[18] MODULE_LINK="-shared -Wl,-undefined,dynamic_lookup"
+[19] 
+[20] CC_AUX_FLAGS="$CC_AUX_FLAGS -D__APPLE_USE_RFC_3542"
+[21] 
+[22] 
+[23] # kqueue
+[24] 
+[25] echo " + kqueue found"
+[26] have=NGX_HAVE_KQUEUE . auto/have
+[27] have=NGX_HAVE_CLEAR_EVENT . auto/have
+[28] EVENT_MODULES="$EVENT_MODULES $KQUEUE_MODULE"
+[29] CORE_SRCS="$CORE_SRCS $KQUEUE_SRCS"
+[30] EVENT_FOUND=YES
+[31] NGX_KQUEUE_CHECKED=YES
+[32] 
+[33] ngx_feature="kqueue's EVFILT_TIMER"
+[34] ngx_feature_name="NGX_HAVE_TIMER_EVENT"
+[35] ngx_feature_run=yes
+[36] ngx_feature_incs="#include <sys/event.h>
+[37]                   #include <sys/time.h>"
+[38] ngx_feature_path=
+[39] ngx_feature_libs=
+[40] ngx_feature_test="int      kq;
+[41]                   struct kevent    kev;
+[42]                   struct timespec  ts;
+[43] 
+[44]                   if ((kq = kqueue()) == -1) return 1;
+[45] 
+[46]                   kev.ident = 0;
+[47]                   kev.filter = EVFILT_TIMER;
+[48]                   kev.flags = EV_ADD|EV_ENABLE;
+[49]                   kev.fflags = 0;
+[50]                   kev.data = 1000;
+[51]                   kev.udata = 0;
+[52] 
+[53]                   ts.tv_sec = 0;
+[54]                   ts.tv_nsec = 0;
+[55] 
+[56]                   if (kevent(kq, &kev, 1, &kev, 1, &ts) == -1) return 1;
+[57] 
+[58]                   if (kev.flags & EV_ERROR) return 1;"
+[59] 
+[60] . auto/feature
+[61] 
+[62] 
+[63] ngx_feature="Darwin 64-bit kqueue millisecond timeout bug"
+[64] ngx_feature_name=NGX_DARWIN_KEVENT_BUG
+[65] ngx_feature_run=bug
+[66] ngx_feature_incs="#include <sys/event.h>
+[67]                   #include <sys/time.h>"
+[68] ngx_feature_path=
+[69] ngx_feature_libs=
+[70] ngx_feature_test="int  kq;
+[71]                   struct kevent    kev;
+[72]                   struct timespec  ts;
+[73]                   struct timeval   tv, tv0;
+[74] 
+[75]                   kq = kqueue();
+[76] 
+[77]                   ts.tv_sec = 0;
+[78]                   ts.tv_nsec = 999000000;
+[79] 
+[80]                   gettimeofday(&tv, 0);
+[81]                   kevent(kq, NULL, 0, &kev, 1, &ts);
+[82]                   gettimeofday(&tv0, 0);
+[83]                   timersub(&tv0, &tv, &tv);
+[84] 
+[85]                   if (tv.tv_sec * 1000000 + tv.tv_usec < 900000) return 1;"
+[86] 
+[87] . auto/feature
+[88] 
+[89] 
+[90] # sendfile()
+[91] 
+[92] ngx_feature="sendfile()"
+[93] ngx_feature_name="NGX_HAVE_SENDFILE"
+[94] ngx_feature_run=yes
+[95] ngx_feature_incs="#include <sys/types.h>
+[96]                   #include <sys/socket.h>
+[97]                   #include <sys/uio.h>
+[98]                   #include <sys/errno.h>"
+[99] ngx_feature_path=
+[100] ngx_feature_libs=
+[101] ngx_feature_test="int s = 0, fd = 1;
+[102]                   off_t n; off_t off = 0;
+[103]                   n = sendfile(s, fd, off, &n, NULL, 0);
+[104]                   if (n == -1 && errno == ENOSYS) return 1"
+[105] . auto/feature
+[106] 
+[107] if [ $ngx_found = yes ]; then
+[108]     CORE_SRCS="$CORE_SRCS $DARWIN_SENDFILE_SRCS"
+[109] fi
+[110] 
+[111] 
+[112] ngx_feature="atomic(3)"
+[113] ngx_feature_name=NGX_DARWIN_ATOMIC
+[114] ngx_feature_run=no
+[115] ngx_feature_incs="#include <libkern/OSAtomic.h>"
+[116] ngx_feature_path=
+[117] ngx_feature_libs=
+[118] ngx_feature_test="int32_t  lock = 0;
+[119]                   if (!OSAtomicCompareAndSwap32Barrier(0, 1, &lock)) return 1"
+[120] . auto/feature

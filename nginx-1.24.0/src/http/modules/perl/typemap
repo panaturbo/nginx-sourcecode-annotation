@@ -1,3 +1,3 @@
-TYPEMAP
-
-nginx	T_PTROBJ
+[1] TYPEMAP
+[2] 
+[3] nginx	T_PTROBJ

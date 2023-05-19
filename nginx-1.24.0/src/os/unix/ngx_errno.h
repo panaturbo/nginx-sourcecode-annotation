@@ -1,79 +1,79 @@
-
-/*
- * Copyright (C) Igor Sysoev
- * Copyright (C) Nginx, Inc.
- */
-
-
-#ifndef _NGX_ERRNO_H_INCLUDED_
-#define _NGX_ERRNO_H_INCLUDED_
-
-
-#include <ngx_config.h>
-#include <ngx_core.h>
-
-
-typedef int               ngx_err_t;
-
-#define NGX_EPERM         EPERM
-#define NGX_ENOENT        ENOENT
-#define NGX_ENOPATH       ENOENT
-#define NGX_ESRCH         ESRCH
-#define NGX_EINTR         EINTR
-#define NGX_ECHILD        ECHILD
-#define NGX_ENOMEM        ENOMEM
-#define NGX_EACCES        EACCES
-#define NGX_EBUSY         EBUSY
-#define NGX_EEXIST        EEXIST
-#define NGX_EEXIST_FILE   EEXIST
-#define NGX_EXDEV         EXDEV
-#define NGX_ENOTDIR       ENOTDIR
-#define NGX_EISDIR        EISDIR
-#define NGX_EINVAL        EINVAL
-#define NGX_ENFILE        ENFILE
-#define NGX_EMFILE        EMFILE
-#define NGX_ENOSPC        ENOSPC
-#define NGX_EPIPE         EPIPE
-#define NGX_EINPROGRESS   EINPROGRESS
-#define NGX_ENOPROTOOPT   ENOPROTOOPT
-#define NGX_EOPNOTSUPP    EOPNOTSUPP
-#define NGX_EADDRINUSE    EADDRINUSE
-#define NGX_ECONNABORTED  ECONNABORTED
-#define NGX_ECONNRESET    ECONNRESET
-#define NGX_ENOTCONN      ENOTCONN
-#define NGX_ETIMEDOUT     ETIMEDOUT
-#define NGX_ECONNREFUSED  ECONNREFUSED
-#define NGX_ENAMETOOLONG  ENAMETOOLONG
-#define NGX_ENETDOWN      ENETDOWN
-#define NGX_ENETUNREACH   ENETUNREACH
-#define NGX_EHOSTDOWN     EHOSTDOWN
-#define NGX_EHOSTUNREACH  EHOSTUNREACH
-#define NGX_ENOSYS        ENOSYS
-#define NGX_ECANCELED     ECANCELED
-#define NGX_EILSEQ        EILSEQ
-#define NGX_ENOMOREFILES  0
-#define NGX_ELOOP         ELOOP
-#define NGX_EBADF         EBADF
-
-#if (NGX_HAVE_OPENAT)
-#define NGX_EMLINK        EMLINK
-#endif
-
-#if (__hpux__)
-#define NGX_EAGAIN        EWOULDBLOCK
-#else
-#define NGX_EAGAIN        EAGAIN
-#endif
-
-
-#define ngx_errno                  errno
-#define ngx_socket_errno           errno
-#define ngx_set_errno(err)         errno = err
-#define ngx_set_socket_errno(err)  errno = err
-
-
-u_char *ngx_strerror(ngx_err_t err, u_char *errstr, size_t size);
-ngx_int_t ngx_strerror_init(void);
-
-
-#endif /* _NGX_ERRNO_H_INCLUDED_ */
+[1] 
+[2] /*
+[3]  * Copyright (C) Igor Sysoev
+[4]  * Copyright (C) Nginx, Inc.
+[5]  */
+[6] 
+[7] 
+[8] #ifndef _NGX_ERRNO_H_INCLUDED_
+[9] #define _NGX_ERRNO_H_INCLUDED_
+[10] 
+[11] 
+[12] #include <ngx_config.h>
+[13] #include <ngx_core.h>
+[14] 
+[15] 
+[16] typedef int               ngx_err_t;
+[17] 
+[18] #define NGX_EPERM         EPERM
+[19] #define NGX_ENOENT        ENOENT
+[20] #define NGX_ENOPATH       ENOENT
+[21] #define NGX_ESRCH         ESRCH
+[22] #define NGX_EINTR         EINTR
+[23] #define NGX_ECHILD        ECHILD
+[24] #define NGX_ENOMEM        ENOMEM
+[25] #define NGX_EACCES        EACCES
+[26] #define NGX_EBUSY         EBUSY
+[27] #define NGX_EEXIST        EEXIST
+[28] #define NGX_EEXIST_FILE   EEXIST
+[29] #define NGX_EXDEV         EXDEV
+[30] #define NGX_ENOTDIR       ENOTDIR
+[31] #define NGX_EISDIR        EISDIR
+[32] #define NGX_EINVAL        EINVAL
+[33] #define NGX_ENFILE        ENFILE
+[34] #define NGX_EMFILE        EMFILE
+[35] #define NGX_ENOSPC        ENOSPC
+[36] #define NGX_EPIPE         EPIPE
+[37] #define NGX_EINPROGRESS   EINPROGRESS
+[38] #define NGX_ENOPROTOOPT   ENOPROTOOPT
+[39] #define NGX_EOPNOTSUPP    EOPNOTSUPP
+[40] #define NGX_EADDRINUSE    EADDRINUSE
+[41] #define NGX_ECONNABORTED  ECONNABORTED
+[42] #define NGX_ECONNRESET    ECONNRESET
+[43] #define NGX_ENOTCONN      ENOTCONN
+[44] #define NGX_ETIMEDOUT     ETIMEDOUT
+[45] #define NGX_ECONNREFUSED  ECONNREFUSED
+[46] #define NGX_ENAMETOOLONG  ENAMETOOLONG
+[47] #define NGX_ENETDOWN      ENETDOWN
+[48] #define NGX_ENETUNREACH   ENETUNREACH
+[49] #define NGX_EHOSTDOWN     EHOSTDOWN
+[50] #define NGX_EHOSTUNREACH  EHOSTUNREACH
+[51] #define NGX_ENOSYS        ENOSYS
+[52] #define NGX_ECANCELED     ECANCELED
+[53] #define NGX_EILSEQ        EILSEQ
+[54] #define NGX_ENOMOREFILES  0
+[55] #define NGX_ELOOP         ELOOP
+[56] #define NGX_EBADF         EBADF
+[57] 
+[58] #if (NGX_HAVE_OPENAT)
+[59] #define NGX_EMLINK        EMLINK
+[60] #endif
+[61] 
+[62] #if (__hpux__)
+[63] #define NGX_EAGAIN        EWOULDBLOCK
+[64] #else
+[65] #define NGX_EAGAIN        EAGAIN
+[66] #endif
+[67] 
+[68] 
+[69] #define ngx_errno                  errno
+[70] #define ngx_socket_errno           errno
+[71] #define ngx_set_errno(err)         errno = err
+[72] #define ngx_set_socket_errno(err)  errno = err
+[73] 
+[74] 
+[75] u_char *ngx_strerror(ngx_err_t err, u_char *errstr, size_t size);
+[76] ngx_int_t ngx_strerror_init(void);
+[77] 
+[78] 
+[79] #endif /* _NGX_ERRNO_H_INCLUDED_ */

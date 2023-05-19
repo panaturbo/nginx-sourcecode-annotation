@@ -1,50 +1,50 @@
-
-# Copyright (C) Igor Sysoev
-# Copyright (C) Nginx, Inc.
-
-
-echo $ngx_n "checking for uintptr_t ...$ngx_c"
-
-cat << END >> $NGX_AUTOCONF_ERR
-
-----------------------------------------
-checking for uintptr_t
-
-END
-
-found=no
-
-cat << END > $NGX_AUTOTEST.c
-
-#include <sys/types.h>
-$NGX_INCLUDE_INTTYPES_H
-
-int main(void) {
-    uintptr_t i = 0;
-    return (int) i;
-}
-
-END
-
-ngx_test="$CC $CC_TEST_FLAGS $CC_AUX_FLAGS \
-          -o $NGX_AUTOTEST $NGX_AUTOTEST.c $NGX_LD_OPT"
-
-eval "$ngx_test >> $NGX_AUTOCONF_ERR 2>&1"
-
-if [ -x $NGX_AUTOTEST ]; then
-    echo " uintptr_t found"
-    found=yes
-else
-    echo $ngx_n " uintptr_t not found" $ngx_c
-fi
-
-rm -rf $NGX_AUTOTEST*
-
-
-if [ $found = no ]; then
-    found="uint`expr 8 \* $ngx_ptr_size`_t"
-    echo ", $found used"
-
-    echo "typedef $found  uintptr_t;"                   >> $NGX_AUTO_CONFIG_H
-    echo "typedef $found  intptr_t;" | sed -e 's/u//g'  >> $NGX_AUTO_CONFIG_H
-fi
+[1] 
+[2] # Copyright (C) Igor Sysoev
+[3] # Copyright (C) Nginx, Inc.
+[4] 
+[5] 
+[6] echo $ngx_n "checking for uintptr_t ...$ngx_c"
+[7] 
+[8] cat << END >> $NGX_AUTOCONF_ERR
+[9] 
+[10] ----------------------------------------
+[11] checking for uintptr_t
+[12] 
+[13] END
+[14] 
+[15] found=no
+[16] 
+[17] cat << END > $NGX_AUTOTEST.c
+[18] 
+[19] #include <sys/types.h>
+[20] $NGX_INCLUDE_INTTYPES_H
+[21] 
+[22] int main(void) {
+[23]     uintptr_t i = 0;
+[24]     return (int) i;
+[25] }
+[26] 
+[27] END
+[28] 
+[29] ngx_test="$CC $CC_TEST_FLAGS $CC_AUX_FLAGS \
+[30]           -o $NGX_AUTOTEST $NGX_AUTOTEST.c $NGX_LD_OPT"
+[31] 
+[32] eval "$ngx_test >> $NGX_AUTOCONF_ERR 2>&1"
+[33] 
+[34] if [ -x $NGX_AUTOTEST ]; then
+[35]     echo " uintptr_t found"
+[36]     found=yes
+[37] else
+[38]     echo $ngx_n " uintptr_t not found" $ngx_c
+[39] fi
+[40] 
+[41] rm -rf $NGX_AUTOTEST*
+[42] 
+[43] 
+[44] if [ $found = no ]; then
+[45]     found="uint`expr 8 \* $ngx_ptr_size`_t"
+[46]     echo ", $found used"
+[47] 
+[48]     echo "typedef $found  uintptr_t;"                   >> $NGX_AUTO_CONFIG_H
+[49]     echo "typedef $found  intptr_t;" | sed -e 's/u//g'  >> $NGX_AUTO_CONFIG_H
+[50] fi

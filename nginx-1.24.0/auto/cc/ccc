@@ -1,46 +1,46 @@
-
-# Copyright (C) Igor Sysoev
-# Copyright (C) Nginx, Inc.
-
-
-# Compaq C V6.5-207
-
-ngx_include_opt="-I"
-
-# warnings
-
-CFLAGS="$CFLAGS -msg_enable level6 -msg_fatal level6"
-
-CFLAGS="$CFLAGS -msg_disable unknownmacro"
-CFLAGS="$CFLAGS -msg_disable unusedincl"
-CFLAGS="$CFLAGS -msg_disable unnecincl"
-CFLAGS="$CFLAGS -msg_disable nestincl"
-CFLAGS="$CFLAGS -msg_disable strctpadding"
-CFLAGS="$CFLAGS -msg_disable ansialiascast"
-CFLAGS="$CFLAGS -msg_disable inlinestoclsmod"
-CFLAGS="$CFLAGS -msg_disable cxxkeyword"
-CFLAGS="$CFLAGS -msg_disable longlongsufx"
-CFLAGS="$CFLAGS -msg_disable valuepres"
-
-# STUB
-CFLAGS="$CFLAGS -msg_disable truncintcast"
-CFLAGS="$CFLAGS -msg_disable trunclongcast"
-
-CFLAGS="$CFLAGS -msg_disable truncintasn"
-CFLAGS="$CFLAGS -msg_disable trunclongint"
-CFLAGS="$CFLAGS -msg_disable intconcastsgn"
-CFLAGS="$CFLAGS -msg_disable intconstsign"
-CFLAGS="$CFLAGS -msg_disable switchlong"
-CFLAGS="$CFLAGS -msg_disable subscrbounds2"
-
-CFLAGS="$CFLAGS -msg_disable hexoctunsign"
-
-CFLAGS="$CFLAGS -msg_disable ignorecallval"
-CFLAGS="$CFLAGS -msg_disable nonstandcast"
-CFLAGS="$CFLAGS -msg_disable embedcomment"
-CFLAGS="$CFLAGS -msg_disable unreachcode"
-CFLAGS="$CFLAGS -msg_disable questcompare2"
-CFLAGS="$CFLAGS -msg_disable unusedtop"
-CFLAGS="$CFLAGS -msg_disable unrefdecl"
-
-CFLAGS="$CFLAGS -msg_disable bitnotint"
+[1] 
+[2] # Copyright (C) Igor Sysoev
+[3] # Copyright (C) Nginx, Inc.
+[4] 
+[5] 
+[6] # Compaq C V6.5-207
+[7] 
+[8] ngx_include_opt="-I"
+[9] 
+[10] # warnings
+[11] 
+[12] CFLAGS="$CFLAGS -msg_enable level6 -msg_fatal level6"
+[13] 
+[14] CFLAGS="$CFLAGS -msg_disable unknownmacro"
+[15] CFLAGS="$CFLAGS -msg_disable unusedincl"
+[16] CFLAGS="$CFLAGS -msg_disable unnecincl"
+[17] CFLAGS="$CFLAGS -msg_disable nestincl"
+[18] CFLAGS="$CFLAGS -msg_disable strctpadding"
+[19] CFLAGS="$CFLAGS -msg_disable ansialiascast"
+[20] CFLAGS="$CFLAGS -msg_disable inlinestoclsmod"
+[21] CFLAGS="$CFLAGS -msg_disable cxxkeyword"
+[22] CFLAGS="$CFLAGS -msg_disable longlongsufx"
+[23] CFLAGS="$CFLAGS -msg_disable valuepres"
+[24] 
+[25] # STUB
+[26] CFLAGS="$CFLAGS -msg_disable truncintcast"
+[27] CFLAGS="$CFLAGS -msg_disable trunclongcast"
+[28] 
+[29] CFLAGS="$CFLAGS -msg_disable truncintasn"
+[30] CFLAGS="$CFLAGS -msg_disable trunclongint"
+[31] CFLAGS="$CFLAGS -msg_disable intconcastsgn"
+[32] CFLAGS="$CFLAGS -msg_disable intconstsign"
+[33] CFLAGS="$CFLAGS -msg_disable switchlong"
+[34] CFLAGS="$CFLAGS -msg_disable subscrbounds2"
+[35] 
+[36] CFLAGS="$CFLAGS -msg_disable hexoctunsign"
+[37] 
+[38] CFLAGS="$CFLAGS -msg_disable ignorecallval"
+[39] CFLAGS="$CFLAGS -msg_disable nonstandcast"
+[40] CFLAGS="$CFLAGS -msg_disable embedcomment"
+[41] CFLAGS="$CFLAGS -msg_disable unreachcode"
+[42] CFLAGS="$CFLAGS -msg_disable questcompare2"
+[43] CFLAGS="$CFLAGS -msg_disable unusedtop"
+[44] CFLAGS="$CFLAGS -msg_disable unrefdecl"
+[45] 
+[46] CFLAGS="$CFLAGS -msg_disable bitnotint"

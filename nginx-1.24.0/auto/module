@@ -1,178 +1,178 @@
-
-# Copyright (C) Ruslan Ermilov
-# Copyright (C) Nginx, Inc.
-
-
-case $ngx_module_type in
-    HTTP_*) ngx_var=HTTP ;;
-    *)      ngx_var=$ngx_module_type ;;
-esac
-
-
-if [ "$ngx_module_link" = DYNAMIC ]; then
-
-    for ngx_module in $ngx_module_name; do
-        # extract the first name
-        break
-    done
-
-    DYNAMIC_MODULES="$DYNAMIC_MODULES $ngx_module"
-
-    eval ${ngx_module}_MODULES=\"$ngx_module_name\"
-
-    if [ -z "$ngx_module_order" -a \
-         \( "$ngx_module_type" = "HTTP_FILTER" \
-         -o "$ngx_module_type" = "HTTP_AUX_FILTER" \) ]
-    then
-        eval ${ngx_module}_ORDER=\"$ngx_module_name \
-                                   ngx_http_copy_filter_module\"
-    else
-        eval ${ngx_module}_ORDER=\"$ngx_module_order\"
-    fi
-
-    srcs=
-    shrd=
-    for src in $ngx_module_srcs
-    do
-        found=no
-        for old in $DYNAMIC_MODULES_SRCS
-        do
-            if [ $src = $old ]; then
-                found=yes
-                break
-            fi
-        done
-
-        if [ $found = no ]; then
-            srcs="$srcs $src"
-        else
-            shrd="$shrd $src"
-        fi
-    done
-    eval ${ngx_module}_SRCS=\"$srcs\"
-    eval ${ngx_module}_SHRD=\"$shrd\"
-
-    DYNAMIC_MODULES_SRCS="$DYNAMIC_MODULES_SRCS $srcs"
-
-    if test -n "$ngx_module_incs"; then
-        CORE_INCS="$CORE_INCS $ngx_module_incs"
-    fi
-
-    if test -n "$ngx_module_deps"; then
-        NGX_ADDON_DEPS="$NGX_ADDON_DEPS $ngx_module_deps"
-    fi
-
-    libs=
-    for lib in $ngx_module_libs
-    do
-        case $lib in
-
-            LIBXSLT | LIBGD | GEOIP | PERL)
-                libs="$libs \$NGX_LIB_$lib"
-
-                if eval [ "\$USE_${lib}" = NO ] ; then
-                    eval USE_${lib}=DYNAMIC
-                fi
-            ;;
-
-            PCRE | OPENSSL | ZLIB)
-                eval USE_${lib}=YES
-            ;;
-
-            MD5 | SHA1)
-                # obsolete
-            ;;
-
-            *)
-                libs="$libs $lib"
-            ;;
-
-        esac
-    done
-    eval ${ngx_module}_LIBS=\'$libs\'
-
-elif [ "$ngx_module_link" = YES ]; then
-
-    eval ${ngx_module_type}_MODULES=\"\$${ngx_module_type}_MODULES \
-                                      $ngx_module_name\"
-
-    eval ${ngx_var}_SRCS=\"\$${ngx_var}_SRCS $ngx_module_srcs\"
-
-    if test -n "$ngx_module_incs"; then
-        eval ${ngx_var}_INCS=\"\$${ngx_var}_INCS $ngx_module_incs\"
-    fi
-
-    if test -n "$ngx_module_deps"; then
-        eval ${ngx_var}_DEPS=\"\$${ngx_var}_DEPS $ngx_module_deps\"
-    fi
-
-    for lib in $ngx_module_libs
-    do
-        case $lib in
-
-            PCRE | OPENSSL | ZLIB | LIBXSLT | LIBGD | PERL | GEOIP)
-                eval USE_${lib}=YES
-            ;;
-
-            MD5 | SHA1)
-                # obsolete
-            ;;
-
-            *)
-                CORE_LIBS="$CORE_LIBS $lib"
-            ;;
-
-        esac
-    done
-
-elif [ "$ngx_module_link" = ADDON ]; then
-
-    eval ${ngx_module_type}_MODULES=\"\$${ngx_module_type}_MODULES \
-                                      $ngx_module_name\"
-
-    srcs=
-    for src in $ngx_module_srcs
-    do
-        found=no
-        for old in $NGX_ADDON_SRCS
-        do
-            if [ $src = $old ]; then
-                found=yes
-                break
-            fi
-        done
-
-        if [ $found = no ]; then
-            srcs="$srcs $src"
-        fi
-    done
-
-    NGX_ADDON_SRCS="$NGX_ADDON_SRCS $srcs"
-
-    if test -n "$ngx_module_incs"; then
-        eval ${ngx_var}_INCS=\"\$${ngx_var}_INCS $ngx_module_incs\"
-    fi
-
-    if test -n "$ngx_module_deps"; then
-        NGX_ADDON_DEPS="$NGX_ADDON_DEPS $ngx_module_deps"
-    fi
-
-    for lib in $ngx_module_libs
-    do
-        case $lib in
-
-            PCRE | OPENSSL | ZLIB | LIBXSLT | LIBGD | PERL | GEOIP)
-                eval USE_${lib}=YES
-            ;;
-
-            MD5 | SHA1)
-                # obsolete
-            ;;
-
-            *)
-                CORE_LIBS="$CORE_LIBS $lib"
-            ;;
-
-        esac
-    done
-fi
+[1] 
+[2] # Copyright (C) Ruslan Ermilov
+[3] # Copyright (C) Nginx, Inc.
+[4] 
+[5] 
+[6] case $ngx_module_type in
+[7]     HTTP_*) ngx_var=HTTP ;;
+[8]     *)      ngx_var=$ngx_module_type ;;
+[9] esac
+[10] 
+[11] 
+[12] if [ "$ngx_module_link" = DYNAMIC ]; then
+[13] 
+[14]     for ngx_module in $ngx_module_name; do
+[15]         # extract the first name
+[16]         break
+[17]     done
+[18] 
+[19]     DYNAMIC_MODULES="$DYNAMIC_MODULES $ngx_module"
+[20] 
+[21]     eval ${ngx_module}_MODULES=\"$ngx_module_name\"
+[22] 
+[23]     if [ -z "$ngx_module_order" -a \
+[24]          \( "$ngx_module_type" = "HTTP_FILTER" \
+[25]          -o "$ngx_module_type" = "HTTP_AUX_FILTER" \) ]
+[26]     then
+[27]         eval ${ngx_module}_ORDER=\"$ngx_module_name \
+[28]                                    ngx_http_copy_filter_module\"
+[29]     else
+[30]         eval ${ngx_module}_ORDER=\"$ngx_module_order\"
+[31]     fi
+[32] 
+[33]     srcs=
+[34]     shrd=
+[35]     for src in $ngx_module_srcs
+[36]     do
+[37]         found=no
+[38]         for old in $DYNAMIC_MODULES_SRCS
+[39]         do
+[40]             if [ $src = $old ]; then
+[41]                 found=yes
+[42]                 break
+[43]             fi
+[44]         done
+[45] 
+[46]         if [ $found = no ]; then
+[47]             srcs="$srcs $src"
+[48]         else
+[49]             shrd="$shrd $src"
+[50]         fi
+[51]     done
+[52]     eval ${ngx_module}_SRCS=\"$srcs\"
+[53]     eval ${ngx_module}_SHRD=\"$shrd\"
+[54] 
+[55]     DYNAMIC_MODULES_SRCS="$DYNAMIC_MODULES_SRCS $srcs"
+[56] 
+[57]     if test -n "$ngx_module_incs"; then
+[58]         CORE_INCS="$CORE_INCS $ngx_module_incs"
+[59]     fi
+[60] 
+[61]     if test -n "$ngx_module_deps"; then
+[62]         NGX_ADDON_DEPS="$NGX_ADDON_DEPS $ngx_module_deps"
+[63]     fi
+[64] 
+[65]     libs=
+[66]     for lib in $ngx_module_libs
+[67]     do
+[68]         case $lib in
+[69] 
+[70]             LIBXSLT | LIBGD | GEOIP | PERL)
+[71]                 libs="$libs \$NGX_LIB_$lib"
+[72] 
+[73]                 if eval [ "\$USE_${lib}" = NO ] ; then
+[74]                     eval USE_${lib}=DYNAMIC
+[75]                 fi
+[76]             ;;
+[77] 
+[78]             PCRE | OPENSSL | ZLIB)
+[79]                 eval USE_${lib}=YES
+[80]             ;;
+[81] 
+[82]             MD5 | SHA1)
+[83]                 # obsolete
+[84]             ;;
+[85] 
+[86]             *)
+[87]                 libs="$libs $lib"
+[88]             ;;
+[89] 
+[90]         esac
+[91]     done
+[92]     eval ${ngx_module}_LIBS=\'$libs\'
+[93] 
+[94] elif [ "$ngx_module_link" = YES ]; then
+[95] 
+[96]     eval ${ngx_module_type}_MODULES=\"\$${ngx_module_type}_MODULES \
+[97]                                       $ngx_module_name\"
+[98] 
+[99]     eval ${ngx_var}_SRCS=\"\$${ngx_var}_SRCS $ngx_module_srcs\"
+[100] 
+[101]     if test -n "$ngx_module_incs"; then
+[102]         eval ${ngx_var}_INCS=\"\$${ngx_var}_INCS $ngx_module_incs\"
+[103]     fi
+[104] 
+[105]     if test -n "$ngx_module_deps"; then
+[106]         eval ${ngx_var}_DEPS=\"\$${ngx_var}_DEPS $ngx_module_deps\"
+[107]     fi
+[108] 
+[109]     for lib in $ngx_module_libs
+[110]     do
+[111]         case $lib in
+[112] 
+[113]             PCRE | OPENSSL | ZLIB | LIBXSLT | LIBGD | PERL | GEOIP)
+[114]                 eval USE_${lib}=YES
+[115]             ;;
+[116] 
+[117]             MD5 | SHA1)
+[118]                 # obsolete
+[119]             ;;
+[120] 
+[121]             *)
+[122]                 CORE_LIBS="$CORE_LIBS $lib"
+[123]             ;;
+[124] 
+[125]         esac
+[126]     done
+[127] 
+[128] elif [ "$ngx_module_link" = ADDON ]; then
+[129] 
+[130]     eval ${ngx_module_type}_MODULES=\"\$${ngx_module_type}_MODULES \
+[131]                                       $ngx_module_name\"
+[132] 
+[133]     srcs=
+[134]     for src in $ngx_module_srcs
+[135]     do
+[136]         found=no
+[137]         for old in $NGX_ADDON_SRCS
+[138]         do
+[139]             if [ $src = $old ]; then
+[140]                 found=yes
+[141]                 break
+[142]             fi
+[143]         done
+[144] 
+[145]         if [ $found = no ]; then
+[146]             srcs="$srcs $src"
+[147]         fi
+[148]     done
+[149] 
+[150]     NGX_ADDON_SRCS="$NGX_ADDON_SRCS $srcs"
+[151] 
+[152]     if test -n "$ngx_module_incs"; then
+[153]         eval ${ngx_var}_INCS=\"\$${ngx_var}_INCS $ngx_module_incs\"
+[154]     fi
+[155] 
+[156]     if test -n "$ngx_module_deps"; then
+[157]         NGX_ADDON_DEPS="$NGX_ADDON_DEPS $ngx_module_deps"
+[158]     fi
+[159] 
+[160]     for lib in $ngx_module_libs
+[161]     do
+[162]         case $lib in
+[163] 
+[164]             PCRE | OPENSSL | ZLIB | LIBXSLT | LIBGD | PERL | GEOIP)
+[165]                 eval USE_${lib}=YES
+[166]             ;;
+[167] 
+[168]             MD5 | SHA1)
+[169]                 # obsolete
+[170]             ;;
+[171] 
+[172]             *)
+[173]                 CORE_LIBS="$CORE_LIBS $lib"
+[174]             ;;
+[175] 
+[176]         esac
+[177]     done
+[178] fi

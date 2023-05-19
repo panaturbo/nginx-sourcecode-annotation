@@ -1,171 +1,171 @@
-
-# Copyright (C) Igor Sysoev
-# Copyright (C) Nginx, Inc.
-
-
-# MSVC 6.0 SP2                            cl 12.00
-# MSVC Toolkit 2003 (7.1)                 cl 13.10
-# MSVC 2005 Express Edition SP1 (8.0)     cl 14.00
-# MSVC 2008 Express Edition (9.0)         cl 15.00
-# MSVC 2010 (10.0)                        cl 16.00
-# MSVC 2015 (14.0)                        cl 19.00
-
-
-NGX_MSVC_VER=`$NGX_WINE $CC 2>&1 | grep 'C/C++.* [0-9][0-9]*\.[0-9]' 2>&1 \
-                                 | sed -e 's/^.* \([0-9][0-9]*\.[0-9].*\)/\1/'`
-
-echo " + cl version: $NGX_MSVC_VER"
-
-have=NGX_COMPILER value="\"cl $NGX_MSVC_VER\"" . auto/define
-
-
-ngx_msvc_ver=`echo $NGX_MSVC_VER | sed -e 's/^\([0-9]*\).*/\1/'`
-
-
-# detect x64 builds
-
-case "$NGX_MSVC_VER" in
-
-    *x64)
-        NGX_MACHINE=amd64
-    ;;
-
-    *)
-        NGX_MACHINE=i386
-    ;;
-
-esac
-
-
-# optimizations
-
-# maximize speed, equivalent to -Og -Oi -Ot -Oy -Ob2 -Gs -GF -Gy
-CFLAGS="$CFLAGS -O2"
-
-# enable global optimization
-#CFLAGS="$CFLAGS -Og"
-# enable intrinsic functions
-#CFLAGS="$CFLAGS -Oi"
-
-# disable inline expansion
-#CFLAGS="$CFLAGS -Ob0"
-# explicit inline expansion
-#CFLAGS="$CFLAGS -Ob1"
-# explicit and implicit inline expansion
-#CFLAGS="$CFLAGS -Ob2"
-
-# enable frame pointer omission
-#CFLAGS="$CFLAGS -Oy"
-# disable stack checking calls
-#CFLAGS="$CFLAGS -Gs"
-
-# pools strings as read/write
-#CFLAGS="$CFLAGS -Gf"
-# pools strings as read-only
-#CFLAGS="$CFLAGS -GF"
-
-
-case $CPU in
-    pentium)
-        # optimize for Pentium and Athlon
-        CPU_OPT="-G5"
-    ;;
-
-    pentiumpro)
-        # optimize for Pentium Pro, Pentium II and Pentium III
-        CPU_OPT="-G6"
-    ;;
-
-    pentium4)
-        # optimize for Pentium 4, MSVC 7
-        CPU_OPT="-G7"
-    ;;
-esac
-
-# __cdecl, default, must be used with OpenSSL, md5 asm, and sha1 asm
-#CPU_OPT="$CPU_OPT -Gd"
-# __stdcall
-#CPU_OPT="$CPU_OPT -Gz"
-# __fastcall
-#CPU_OPT="$CPU_OPT -Gr"
-
-
-CFLAGS="$CFLAGS $CPU_OPT"
-
-
-# warnings
-
-CFLAGS="$CFLAGS -W4"
-
-# stop on warning
-CFLAGS="$CFLAGS -WX"
-
-# disable logo
-CFLAGS="$CFLAGS -nologo"
-
-# the link flags
-CORE_LINK="$CORE_LINK -link -verbose:lib"
-
-# link with libcmt.lib, multithreaded
-LIBC="-MT"
-# link with msvcrt.dll
-# however, MSVC Toolkit 2003 has no MSVCRT.LIB
-#LIBC="-MD"
-
-CFLAGS="$CFLAGS $LIBC"
-
-CORE_LIBS="$CORE_LIBS kernel32.lib user32.lib"
-
-# Win32 GUI mode application
-#CORE_LINK="$CORE_LINK -subsystem:windows -entry:mainCRTStartup"
-
-# debug
-# msvc under Wine issues
-# C1902: Program database manager mismatch; please check your installation
-if [ -z "$NGX_WINE" ]; then
-   CFLAGS="$CFLAGS -Zi -Fd$NGX_OBJS/nginx.pdb"
-   CORE_LINK="$CORE_LINK -debug"
-fi
-
-
-# MSVC 2005 supports C99 variadic macros
-if [ "$ngx_msvc_ver" -ge 14 ]; then
-    have=NGX_HAVE_C99_VARIADIC_MACROS . auto/have
-fi
-
-
-# precompiled headers
-CORE_DEPS="$CORE_DEPS $NGX_OBJS/ngx_config.pch"
-CORE_LINK="$CORE_LINK $NGX_OBJS/ngx_pch.obj"
-NGX_PCH="$NGX_OBJS/ngx_config.pch"
-NGX_BUILD_PCH="-Ycngx_config.h -Fp$NGX_OBJS/ngx_config.pch"
-NGX_USE_PCH="-Yungx_config.h -Fp$NGX_OBJS/ngx_config.pch"
-
-
-# the resource file
-NGX_RES="$NGX_OBJS/nginx.res"
-NGX_RCC="rc -fo$NGX_RES \$(CORE_INCS) $NGX_WIN32_RC"
-CORE_LINK="$NGX_RES $CORE_LINK"
-
-
-# dynamic modules
-#MAIN_LINK="-link -def:$NGX_OBJS/nginx.def"
-#MODULE_LINK="-LD $NGX_OBJS/nginx.lib"
-
-
-ngx_pic_opt=
-ngx_objout="-Fo"
-ngx_binout="-Fe"
-ngx_objext="obj"
-
-ngx_long_start='@<<
-	'
-ngx_long_end='<<'
-ngx_long_regex_cont=' \
-	'
-ngx_long_cont='
-	'
-
-# MSVC understand / in path
-#ngx_regex_dirsep='\\'
-#ngx_dirsep="\\"
+[1] 
+[2] # Copyright (C) Igor Sysoev
+[3] # Copyright (C) Nginx, Inc.
+[4] 
+[5] 
+[6] # MSVC 6.0 SP2                            cl 12.00
+[7] # MSVC Toolkit 2003 (7.1)                 cl 13.10
+[8] # MSVC 2005 Express Edition SP1 (8.0)     cl 14.00
+[9] # MSVC 2008 Express Edition (9.0)         cl 15.00
+[10] # MSVC 2010 (10.0)                        cl 16.00
+[11] # MSVC 2015 (14.0)                        cl 19.00
+[12] 
+[13] 
+[14] NGX_MSVC_VER=`$NGX_WINE $CC 2>&1 | grep 'C/C++.* [0-9][0-9]*\.[0-9]' 2>&1 \
+[15]                                  | sed -e 's/^.* \([0-9][0-9]*\.[0-9].*\)/\1/'`
+[16] 
+[17] echo " + cl version: $NGX_MSVC_VER"
+[18] 
+[19] have=NGX_COMPILER value="\"cl $NGX_MSVC_VER\"" . auto/define
+[20] 
+[21] 
+[22] ngx_msvc_ver=`echo $NGX_MSVC_VER | sed -e 's/^\([0-9]*\).*/\1/'`
+[23] 
+[24] 
+[25] # detect x64 builds
+[26] 
+[27] case "$NGX_MSVC_VER" in
+[28] 
+[29]     *x64)
+[30]         NGX_MACHINE=amd64
+[31]     ;;
+[32] 
+[33]     *)
+[34]         NGX_MACHINE=i386
+[35]     ;;
+[36] 
+[37] esac
+[38] 
+[39] 
+[40] # optimizations
+[41] 
+[42] # maximize speed, equivalent to -Og -Oi -Ot -Oy -Ob2 -Gs -GF -Gy
+[43] CFLAGS="$CFLAGS -O2"
+[44] 
+[45] # enable global optimization
+[46] #CFLAGS="$CFLAGS -Og"
+[47] # enable intrinsic functions
+[48] #CFLAGS="$CFLAGS -Oi"
+[49] 
+[50] # disable inline expansion
+[51] #CFLAGS="$CFLAGS -Ob0"
+[52] # explicit inline expansion
+[53] #CFLAGS="$CFLAGS -Ob1"
+[54] # explicit and implicit inline expansion
+[55] #CFLAGS="$CFLAGS -Ob2"
+[56] 
+[57] # enable frame pointer omission
+[58] #CFLAGS="$CFLAGS -Oy"
+[59] # disable stack checking calls
+[60] #CFLAGS="$CFLAGS -Gs"
+[61] 
+[62] # pools strings as read/write
+[63] #CFLAGS="$CFLAGS -Gf"
+[64] # pools strings as read-only
+[65] #CFLAGS="$CFLAGS -GF"
+[66] 
+[67] 
+[68] case $CPU in
+[69]     pentium)
+[70]         # optimize for Pentium and Athlon
+[71]         CPU_OPT="-G5"
+[72]     ;;
+[73] 
+[74]     pentiumpro)
+[75]         # optimize for Pentium Pro, Pentium II and Pentium III
+[76]         CPU_OPT="-G6"
+[77]     ;;
+[78] 
+[79]     pentium4)
+[80]         # optimize for Pentium 4, MSVC 7
+[81]         CPU_OPT="-G7"
+[82]     ;;
+[83] esac
+[84] 
+[85] # __cdecl, default, must be used with OpenSSL, md5 asm, and sha1 asm
+[86] #CPU_OPT="$CPU_OPT -Gd"
+[87] # __stdcall
+[88] #CPU_OPT="$CPU_OPT -Gz"
+[89] # __fastcall
+[90] #CPU_OPT="$CPU_OPT -Gr"
+[91] 
+[92] 
+[93] CFLAGS="$CFLAGS $CPU_OPT"
+[94] 
+[95] 
+[96] # warnings
+[97] 
+[98] CFLAGS="$CFLAGS -W4"
+[99] 
+[100] # stop on warning
+[101] CFLAGS="$CFLAGS -WX"
+[102] 
+[103] # disable logo
+[104] CFLAGS="$CFLAGS -nologo"
+[105] 
+[106] # the link flags
+[107] CORE_LINK="$CORE_LINK -link -verbose:lib"
+[108] 
+[109] # link with libcmt.lib, multithreaded
+[110] LIBC="-MT"
+[111] # link with msvcrt.dll
+[112] # however, MSVC Toolkit 2003 has no MSVCRT.LIB
+[113] #LIBC="-MD"
+[114] 
+[115] CFLAGS="$CFLAGS $LIBC"
+[116] 
+[117] CORE_LIBS="$CORE_LIBS kernel32.lib user32.lib"
+[118] 
+[119] # Win32 GUI mode application
+[120] #CORE_LINK="$CORE_LINK -subsystem:windows -entry:mainCRTStartup"
+[121] 
+[122] # debug
+[123] # msvc under Wine issues
+[124] # C1902: Program database manager mismatch; please check your installation
+[125] if [ -z "$NGX_WINE" ]; then
+[126]    CFLAGS="$CFLAGS -Zi -Fd$NGX_OBJS/nginx.pdb"
+[127]    CORE_LINK="$CORE_LINK -debug"
+[128] fi
+[129] 
+[130] 
+[131] # MSVC 2005 supports C99 variadic macros
+[132] if [ "$ngx_msvc_ver" -ge 14 ]; then
+[133]     have=NGX_HAVE_C99_VARIADIC_MACROS . auto/have
+[134] fi
+[135] 
+[136] 
+[137] # precompiled headers
+[138] CORE_DEPS="$CORE_DEPS $NGX_OBJS/ngx_config.pch"
+[139] CORE_LINK="$CORE_LINK $NGX_OBJS/ngx_pch.obj"
+[140] NGX_PCH="$NGX_OBJS/ngx_config.pch"
+[141] NGX_BUILD_PCH="-Ycngx_config.h -Fp$NGX_OBJS/ngx_config.pch"
+[142] NGX_USE_PCH="-Yungx_config.h -Fp$NGX_OBJS/ngx_config.pch"
+[143] 
+[144] 
+[145] # the resource file
+[146] NGX_RES="$NGX_OBJS/nginx.res"
+[147] NGX_RCC="rc -fo$NGX_RES \$(CORE_INCS) $NGX_WIN32_RC"
+[148] CORE_LINK="$NGX_RES $CORE_LINK"
+[149] 
+[150] 
+[151] # dynamic modules
+[152] #MAIN_LINK="-link -def:$NGX_OBJS/nginx.def"
+[153] #MODULE_LINK="-LD $NGX_OBJS/nginx.lib"
+[154] 
+[155] 
+[156] ngx_pic_opt=
+[157] ngx_objout="-Fo"
+[158] ngx_binout="-Fe"
+[159] ngx_objext="obj"
+[160] 
+[161] ngx_long_start='@<<
+[162] 	'
+[163] ngx_long_end='<<'
+[164] ngx_long_regex_cont=' \
+[165] 	'
+[166] ngx_long_cont='
+[167] 	'
+[168] 
+[169] # MSVC understand / in path
+[170] #ngx_regex_dirsep='\\'
+[171] #ngx_dirsep="\\"

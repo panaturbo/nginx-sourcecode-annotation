@@ -1,123 +1,123 @@
-
-# Copyright (C) Igor Sysoev
-# Copyright (C) Nginx, Inc.
-
-
-echo $ngx_n "checking for $ngx_feature ...$ngx_c"
-
-cat << END >> $NGX_AUTOCONF_ERR
-
-----------------------------------------
-checking for $ngx_feature
-
-END
-
-ngx_found=no
-
-if test -n "$ngx_feature_name"; then
-    ngx_have_feature=`echo $ngx_feature_name \
-                   | tr abcdefghijklmnopqrstuvwxyz ABCDEFGHIJKLMNOPQRSTUVWXYZ`
-fi
-
-if test -n "$ngx_feature_path"; then
-    for ngx_temp in $ngx_feature_path; do
-        ngx_feature_inc_path="$ngx_feature_inc_path -I $ngx_temp"
-    done
-fi
-
-cat << END > $NGX_AUTOTEST.c
-
-#include <sys/types.h>
-$NGX_INCLUDE_UNISTD_H
-$ngx_feature_incs
-
-int main(void) {
-    $ngx_feature_test;
-    return 0;
-}
-
-END
-
-
-ngx_test="$CC $CC_TEST_FLAGS $CC_AUX_FLAGS $ngx_feature_inc_path \
-          -o $NGX_AUTOTEST $NGX_AUTOTEST.c $NGX_TEST_LD_OPT $ngx_feature_libs"
-
-ngx_feature_inc_path=
-
-eval "/bin/sh -c \"$ngx_test\" >> $NGX_AUTOCONF_ERR 2>&1"
-
-
-if [ -x $NGX_AUTOTEST ]; then
-
-    case "$ngx_feature_run" in
-
-        yes)
-            # /bin/sh is used to intercept "Killed" or "Abort trap" messages
-            if /bin/sh -c $NGX_AUTOTEST >> $NGX_AUTOCONF_ERR 2>&1; then
-                echo " found"
-                ngx_found=yes
-
-                if test -n "$ngx_feature_name"; then
-                    have=$ngx_have_feature . auto/have
-                fi
-
-            else
-                echo " found but is not working"
-            fi
-        ;;
-
-        value)
-            # /bin/sh is used to intercept "Killed" or "Abort trap" messages
-            if /bin/sh -c $NGX_AUTOTEST >> $NGX_AUTOCONF_ERR 2>&1; then
-                echo " found"
-                ngx_found=yes
-
-                cat << END >> $NGX_AUTO_CONFIG_H
-
-#ifndef $ngx_feature_name
-#define $ngx_feature_name  `$NGX_AUTOTEST`
-#endif
-
-END
-            else
-                echo " found but is not working"
-            fi
-        ;;
-
-        bug)
-            # /bin/sh is used to intercept "Killed" or "Abort trap" messages
-            if /bin/sh -c $NGX_AUTOTEST >> $NGX_AUTOCONF_ERR 2>&1; then
-                echo " not found"
-
-            else
-                echo " found"
-                ngx_found=yes
-
-                if test -n "$ngx_feature_name"; then
-                    have=$ngx_have_feature . auto/have
-                fi
-            fi
-        ;;
-
-        *)
-            echo " found"
-            ngx_found=yes
-
-            if test -n "$ngx_feature_name"; then
-                have=$ngx_have_feature . auto/have
-            fi
-        ;;
-
-    esac
-
-else
-    echo " not found"
-
-    echo "----------"    >> $NGX_AUTOCONF_ERR
-    cat $NGX_AUTOTEST.c  >> $NGX_AUTOCONF_ERR
-    echo "----------"    >> $NGX_AUTOCONF_ERR
-    echo $ngx_test       >> $NGX_AUTOCONF_ERR
-    echo "----------"    >> $NGX_AUTOCONF_ERR
-fi
-
-rm -rf $NGX_AUTOTEST*
+[1] 
+[2] # Copyright (C) Igor Sysoev
+[3] # Copyright (C) Nginx, Inc.
+[4] 
+[5] 
+[6] echo $ngx_n "checking for $ngx_feature ...$ngx_c"
+[7] 
+[8] cat << END >> $NGX_AUTOCONF_ERR
+[9] 
+[10] ----------------------------------------
+[11] checking for $ngx_feature
+[12] 
+[13] END
+[14] 
+[15] ngx_found=no
+[16] 
+[17] if test -n "$ngx_feature_name"; then
+[18]     ngx_have_feature=`echo $ngx_feature_name \
+[19]                    | tr abcdefghijklmnopqrstuvwxyz ABCDEFGHIJKLMNOPQRSTUVWXYZ`
+[20] fi
+[21] 
+[22] if test -n "$ngx_feature_path"; then
+[23]     for ngx_temp in $ngx_feature_path; do
+[24]         ngx_feature_inc_path="$ngx_feature_inc_path -I $ngx_temp"
+[25]     done
+[26] fi
+[27] 
+[28] cat << END > $NGX_AUTOTEST.c
+[29] 
+[30] #include <sys/types.h>
+[31] $NGX_INCLUDE_UNISTD_H
+[32] $ngx_feature_incs
+[33] 
+[34] int main(void) {
+[35]     $ngx_feature_test;
+[36]     return 0;
+[37] }
+[38] 
+[39] END
+[40] 
+[41] 
+[42] ngx_test="$CC $CC_TEST_FLAGS $CC_AUX_FLAGS $ngx_feature_inc_path \
+[43]           -o $NGX_AUTOTEST $NGX_AUTOTEST.c $NGX_TEST_LD_OPT $ngx_feature_libs"
+[44] 
+[45] ngx_feature_inc_path=
+[46] 
+[47] eval "/bin/sh -c \"$ngx_test\" >> $NGX_AUTOCONF_ERR 2>&1"
+[48] 
+[49] 
+[50] if [ -x $NGX_AUTOTEST ]; then
+[51] 
+[52]     case "$ngx_feature_run" in
+[53] 
+[54]         yes)
+[55]             # /bin/sh is used to intercept "Killed" or "Abort trap" messages
+[56]             if /bin/sh -c $NGX_AUTOTEST >> $NGX_AUTOCONF_ERR 2>&1; then
+[57]                 echo " found"
+[58]                 ngx_found=yes
+[59] 
+[60]                 if test -n "$ngx_feature_name"; then
+[61]                     have=$ngx_have_feature . auto/have
+[62]                 fi
+[63] 
+[64]             else
+[65]                 echo " found but is not working"
+[66]             fi
+[67]         ;;
+[68] 
+[69]         value)
+[70]             # /bin/sh is used to intercept "Killed" or "Abort trap" messages
+[71]             if /bin/sh -c $NGX_AUTOTEST >> $NGX_AUTOCONF_ERR 2>&1; then
+[72]                 echo " found"
+[73]                 ngx_found=yes
+[74] 
+[75]                 cat << END >> $NGX_AUTO_CONFIG_H
+[76] 
+[77] #ifndef $ngx_feature_name
+[78] #define $ngx_feature_name  `$NGX_AUTOTEST`
+[79] #endif
+[80] 
+[81] END
+[82]             else
+[83]                 echo " found but is not working"
+[84]             fi
+[85]         ;;
+[86] 
+[87]         bug)
+[88]             # /bin/sh is used to intercept "Killed" or "Abort trap" messages
+[89]             if /bin/sh -c $NGX_AUTOTEST >> $NGX_AUTOCONF_ERR 2>&1; then
+[90]                 echo " not found"
+[91] 
+[92]             else
+[93]                 echo " found"
+[94]                 ngx_found=yes
+[95] 
+[96]                 if test -n "$ngx_feature_name"; then
+[97]                     have=$ngx_have_feature . auto/have
+[98]                 fi
+[99]             fi
+[100]         ;;
+[101] 
+[102]         *)
+[103]             echo " found"
+[104]             ngx_found=yes
+[105] 
+[106]             if test -n "$ngx_feature_name"; then
+[107]                 have=$ngx_have_feature . auto/have
+[108]             fi
+[109]         ;;
+[110] 
+[111]     esac
+[112] 
+[113] else
+[114]     echo " not found"
+[115] 
+[116]     echo "----------"    >> $NGX_AUTOCONF_ERR
+[117]     cat $NGX_AUTOTEST.c  >> $NGX_AUTOCONF_ERR
+[118]     echo "----------"    >> $NGX_AUTOCONF_ERR
+[119]     echo $ngx_test       >> $NGX_AUTOCONF_ERR
+[120]     echo "----------"    >> $NGX_AUTOCONF_ERR
+[121] fi
+[122] 
+[123] rm -rf $NGX_AUTOTEST*

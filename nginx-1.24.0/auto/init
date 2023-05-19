@@ -1,53 +1,53 @@
-
-# Copyright (C) Igor Sysoev
-# Copyright (C) Nginx, Inc.
-
-
-NGX_MAKEFILE=$NGX_OBJS/Makefile
-NGX_MODULES_C=$NGX_OBJS/ngx_modules.c
-
-NGX_AUTO_HEADERS_H=$NGX_OBJS/ngx_auto_headers.h
-NGX_AUTO_CONFIG_H=$NGX_OBJS/ngx_auto_config.h
-
-NGX_AUTOTEST=$NGX_OBJS/autotest
-NGX_AUTOCONF_ERR=$NGX_OBJS/autoconf.err
-
-# STUBs
-NGX_ERR=$NGX_OBJS/autoconf.err
-MAKEFILE=$NGX_OBJS/Makefile
-
-
-NGX_PCH=
-NGX_USE_PCH=
-
-
-# check the echo's "-n" option and "\c" capability
-
-if echo "test\c" | grep c >/dev/null; then
-
-    if echo -n test | grep n >/dev/null; then
-        ngx_n=
-        ngx_c=
-
-    else
-        ngx_n=-n
-        ngx_c=
-    fi
-
-else
-    ngx_n=
-    ngx_c='\c'
-fi
-
-
-# create Makefile
-
-cat << END > Makefile
-
-default:	build
-
-clean:
-	rm -rf Makefile $NGX_OBJS
-
-.PHONY:	default clean
-END
+[1] 
+[2] # Copyright (C) Igor Sysoev
+[3] # Copyright (C) Nginx, Inc.
+[4] 
+[5] 
+[6] NGX_MAKEFILE=$NGX_OBJS/Makefile
+[7] NGX_MODULES_C=$NGX_OBJS/ngx_modules.c
+[8] 
+[9] NGX_AUTO_HEADERS_H=$NGX_OBJS/ngx_auto_headers.h
+[10] NGX_AUTO_CONFIG_H=$NGX_OBJS/ngx_auto_config.h
+[11] 
+[12] NGX_AUTOTEST=$NGX_OBJS/autotest
+[13] NGX_AUTOCONF_ERR=$NGX_OBJS/autoconf.err
+[14] 
+[15] # STUBs
+[16] NGX_ERR=$NGX_OBJS/autoconf.err
+[17] MAKEFILE=$NGX_OBJS/Makefile
+[18] 
+[19] 
+[20] NGX_PCH=
+[21] NGX_USE_PCH=
+[22] 
+[23] 
+[24] # check the echo's "-n" option and "\c" capability
+[25] 
+[26] if echo "test\c" | grep c >/dev/null; then
+[27] 
+[28]     if echo -n test | grep n >/dev/null; then
+[29]         ngx_n=
+[30]         ngx_c=
+[31] 
+[32]     else
+[33]         ngx_n=-n
+[34]         ngx_c=
+[35]     fi
+[36] 
+[37] else
+[38]     ngx_n=
+[39]     ngx_c='\c'
+[40] fi
+[41] 
+[42] 
+[43] # create Makefile
+[44] 
+[45] cat << END > Makefile
+[46] 
+[47] default:	build
+[48] 
+[49] clean:
+[50] 	rm -rf Makefile $NGX_OBJS
+[51] 
+[52] .PHONY:	default clean
+[53] END

@@ -1,6 +1,6 @@
-
-// Copyright (C) Igor Sysoev
-// Copyright (C) Nginx, Inc.
-
-
-nginx   icon  discardable  "src\\os\\win32\\nginx.ico"
+[1] 
+[2] // Copyright (C) Igor Sysoev
+[3] // Copyright (C) Nginx, Inc.
+[4] 
+[5] 
+[6] nginx   icon  discardable  "src\\os\\win32\\nginx.ico"

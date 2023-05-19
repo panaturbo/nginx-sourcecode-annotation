@@ -1,12 +1,12 @@
-
-# Copyright (C) Igor Sysoev
-# Copyright (C) Nginx, Inc.
-
-
-cat << END >> $NGX_AUTO_CONFIG_H
-
-#ifndef $have
-#define $have  $value
-#endif
-
-END
+[1] 
+[2] # Copyright (C) Igor Sysoev
+[3] # Copyright (C) Nginx, Inc.
+[4] 
+[5] 
+[6] cat << END >> $NGX_AUTO_CONFIG_H
+[7] 
+[8] #ifndef $have
+[9] #define $have  $value
+[10] #endif
+[11] 
+[12] END

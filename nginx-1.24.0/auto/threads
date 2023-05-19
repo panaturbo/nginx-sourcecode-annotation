@@ -1,21 +1,21 @@
-
-# Copyright (C) Nginx, Inc.
-
-
-if [ $USE_THREADS = YES ]; then
-
-    if [ "$NGX_PLATFORM" = win32 ]; then
-        cat << END
-
-$0: --with-threads is not supported on Windows
-
-END
-        exit 1
-    fi
-
-    have=NGX_THREADS . auto/have
-    CORE_DEPS="$CORE_DEPS $THREAD_POOL_DEPS"
-    CORE_SRCS="$CORE_SRCS $THREAD_POOL_SRCS"
-    CORE_LIBS="$CORE_LIBS -lpthread"
-    NGX_LIBPTHREAD="-lpthread"
-fi
+[1] 
+[2] # Copyright (C) Nginx, Inc.
+[3] 
+[4] 
+[5] if [ $USE_THREADS = YES ]; then
+[6] 
+[7]     if [ "$NGX_PLATFORM" = win32 ]; then
+[8]         cat << END
+[9] 
+[10] $0: --with-threads is not supported on Windows
+[11] 
+[12] END
+[13]         exit 1
+[14]     fi
+[15] 
+[16]     have=NGX_THREADS . auto/have
+[17]     CORE_DEPS="$CORE_DEPS $THREAD_POOL_DEPS"
+[18]     CORE_SRCS="$CORE_SRCS $THREAD_POOL_SRCS"
+[19]     CORE_LIBS="$CORE_LIBS -lpthread"
+[20]     NGX_LIBPTHREAD="-lpthread"
+[21] fi

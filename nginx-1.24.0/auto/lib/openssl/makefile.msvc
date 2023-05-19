@@ -1,21 +1,21 @@
-
-# Copyright (C) Igor Sysoev
-# Copyright (C) Nginx, Inc.
-
-
-all:
-	cd $(OPENSSL)
-
-	perl Configure $(OPENSSL_TARGET) no-shared no-threads		\
-		--prefix="%cd%/openssl" 				\
-		--openssldir="%cd%/openssl/ssl" 			\
-		$(OPENSSL_OPT)
-
-	if exist ms\do_ms.bat (						\
-		ms\do_ms						\
-		&& $(MAKE) -f ms\nt.mak					\
-		&& $(MAKE) -f ms\nt.mak install				\
-	) else (							\
-		$(MAKE)							\
-		&& $(MAKE) install_sw					\
-	)
+[1] 
+[2] # Copyright (C) Igor Sysoev
+[3] # Copyright (C) Nginx, Inc.
+[4] 
+[5] 
+[6] all:
+[7] 	cd $(OPENSSL)
+[8] 
+[9] 	perl Configure $(OPENSSL_TARGET) no-shared no-threads		\
+[10] 		--prefix="%cd%/openssl" 				\
+[11] 		--openssldir="%cd%/openssl/ssl" 			\
+[12] 		$(OPENSSL_OPT)
+[13] 
+[14] 	if exist ms\do_ms.bat (						\
+[15] 		ms\do_ms						\
+[16] 		&& $(MAKE) -f ms\nt.mak					\
+[17] 		&& $(MAKE) -f ms\nt.mak install				\
+[18] 	) else (							\
+[19] 		$(MAKE)							\
+[20] 		&& $(MAKE) install_sw					\
+[21] 	)

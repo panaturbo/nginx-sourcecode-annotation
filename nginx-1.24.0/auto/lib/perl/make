@@ -1,46 +1,46 @@
-
-# Copyright (C) Igor Sysoev
-# Copyright (C) Nginx, Inc.
-
-
-cat << END                                                    >> $NGX_MAKEFILE
-
-$NGX_OBJS/src/http/modules/perl/ngx_http_perl_module.o: \\
-		$NGX_OBJS/$ngx_perl_module
-
-$NGX_OBJS/$ngx_perl_module: \\
-		\$(CORE_DEPS) \$(HTTP_DEPS) \\
-		src/http/modules/perl/ngx_http_perl_module.h \\
-		$NGX_OBJS/src/http/modules/perl/Makefile
-	cd $NGX_OBJS/src/http/modules/perl && \$(MAKE)
-
-	rm -rf $NGX_OBJS/install_perl
-
-
-$NGX_OBJS/src/http/modules/perl/Makefile: \\
-		$NGX_AUTO_CONFIG_H \\
-		src/core/nginx.h \\
-		src/http/modules/perl/Makefile.PL \\
-		src/http/modules/perl/nginx.pm \\
-		src/http/modules/perl/nginx.xs \\
-		src/http/modules/perl/typemap
-	grep 'define NGINX_VERSION' src/core/nginx.h \\
-		| sed -e 's/^.*"\(.*\)".*/\1/' > \\
-		$NGX_OBJS/src/http/modules/perl/version
-	sed "s/%%VERSION%%/\`cat $NGX_OBJS/src/http/modules/perl/version\`/" \\
-		src/http/modules/perl/nginx.pm > \\
-		$NGX_OBJS/src/http/modules/perl/nginx.pm
-	cp -p src/http/modules/perl/nginx.xs $NGX_OBJS/src/http/modules/perl/
-	cp -p src/http/modules/perl/typemap $NGX_OBJS/src/http/modules/perl/
-	cp -p src/http/modules/perl/Makefile.PL $NGX_OBJS/src/http/modules/perl/
-
-	cd $NGX_OBJS/src/http/modules/perl \\
-		&& NGX_PM_CFLAGS="\$(NGX_PM_CFLAGS) -g $NGX_CC_OPT" \\
-			NGX_PM_LDFLAGS="$NGX_LD_OPT \$(NGX_PM_LDFLAGS)" \\
-			NGX_INCS="$CORE_INCS $NGX_OBJS $HTTP_INCS" \\
-			NGX_DEPS="\$(CORE_DEPS) \$(HTTP_DEPS)" \\
-		$NGX_PERL Makefile.PL \\
-			LIB=$NGX_PERL_MODULES \\
-			INSTALLSITEMAN3DIR=$NGX_PERL_MODULES_MAN
-
-END
+[1] 
+[2] # Copyright (C) Igor Sysoev
+[3] # Copyright (C) Nginx, Inc.
+[4] 
+[5] 
+[6] cat << END                                                    >> $NGX_MAKEFILE
+[7] 
+[8] $NGX_OBJS/src/http/modules/perl/ngx_http_perl_module.o: \\
+[9] 		$NGX_OBJS/$ngx_perl_module
+[10] 
+[11] $NGX_OBJS/$ngx_perl_module: \\
+[12] 		\$(CORE_DEPS) \$(HTTP_DEPS) \\
+[13] 		src/http/modules/perl/ngx_http_perl_module.h \\
+[14] 		$NGX_OBJS/src/http/modules/perl/Makefile
+[15] 	cd $NGX_OBJS/src/http/modules/perl && \$(MAKE)
+[16] 
+[17] 	rm -rf $NGX_OBJS/install_perl
+[18] 
+[19] 
+[20] $NGX_OBJS/src/http/modules/perl/Makefile: \\
+[21] 		$NGX_AUTO_CONFIG_H \\
+[22] 		src/core/nginx.h \\
+[23] 		src/http/modules/perl/Makefile.PL \\
+[24] 		src/http/modules/perl/nginx.pm \\
+[25] 		src/http/modules/perl/nginx.xs \\
+[26] 		src/http/modules/perl/typemap
+[27] 	grep 'define NGINX_VERSION' src/core/nginx.h \\
+[28] 		| sed -e 's/^.*"\(.*\)".*/\1/' > \\
+[29] 		$NGX_OBJS/src/http/modules/perl/version
+[30] 	sed "s/%%VERSION%%/\`cat $NGX_OBJS/src/http/modules/perl/version\`/" \\
+[31] 		src/http/modules/perl/nginx.pm > \\
+[32] 		$NGX_OBJS/src/http/modules/perl/nginx.pm
+[33] 	cp -p src/http/modules/perl/nginx.xs $NGX_OBJS/src/http/modules/perl/
+[34] 	cp -p src/http/modules/perl/typemap $NGX_OBJS/src/http/modules/perl/
+[35] 	cp -p src/http/modules/perl/Makefile.PL $NGX_OBJS/src/http/modules/perl/
+[36] 
+[37] 	cd $NGX_OBJS/src/http/modules/perl \\
+[38] 		&& NGX_PM_CFLAGS="\$(NGX_PM_CFLAGS) -g $NGX_CC_OPT" \\
+[39] 			NGX_PM_LDFLAGS="$NGX_LD_OPT \$(NGX_PM_LDFLAGS)" \\
+[40] 			NGX_INCS="$CORE_INCS $NGX_OBJS $HTTP_INCS" \\
+[41] 			NGX_DEPS="\$(CORE_DEPS) \$(HTTP_DEPS)" \\
+[42] 		$NGX_PERL Makefile.PL \\
+[43] 			LIB=$NGX_PERL_MODULES \\
+[44] 			INSTALLSITEMAN3DIR=$NGX_PERL_MODULES_MAN
+[45] 
+[46] END

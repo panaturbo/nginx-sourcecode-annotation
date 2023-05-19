@@ -1,103 +1,103 @@
-
-# Copyright (C) Igor Sysoev
-# Copyright (C) Nginx, Inc.
-
-
-# Open Watcom C 1.0, 1.2, 1.3
-
-# optimizations
-
-# maximize speed
-CFLAGS="$CFLAGS -ot"
-# reorder instructions for best pipeline usage
-CFLAGS="$CFLAGS -op"
-# inline intrinsic functions
-CFLAGS="$CFLAGS -oi"
-# inline expansion
-CFLAGS="$CFLAGS -oe"
-# disable stack checking calls
-CFLAGS="$CFLAGS -s"
-
-case $CPU in
-    pentium)
-        # optimize for Pentium and Athlon
-        # register-based arguments passing conventions
-        CPU_OPT="-5r"
-        # stack-based arguments passing conventions
-        #CPU_OPT="-5s"
-    ;;
-
-    pentiumpro)
-        # optimize for Pentium Pro, Pentium II and Pentium III
-        # register-based arguments passing conventions
-        CPU_OPT="-6r"
-        # stack-based arguments passing conventions
-        #CPU_OPT="-6s"
-    ;;
-esac
-
-CFLAGS="$CFLAGS $CPU_OPT"
-
-
-# warnings
-
-# maximum level
-CFLAGS="$CFLAGS -wx"
-#CFLAGS="$CFLAGS -w3"
-
-# stop on warning
-CFLAGS="$CFLAGS -we"
-
-# built target is NT
-CFLAGS="$CFLAGS -bt=nt"
-
-# multithreaded
-CFLAGS="$CFLAGS -bm"
-
-# debug
-CFLAGS="$CFLAGS -d2"
-
-# quiet
-CFLAGS="$CFLAGS -zq"
-
-# Open Watcom C 1.2
-have=NGX_HAVE_C99_VARIADIC_MACROS . auto/have
-
-
-# the precompiled headers
-#CORE_DEPS="$CORE_DEPS $NGX_OBJS/ngx_config.pch"
-#NGX_PCH="$NGX_OBJS/ngx_config.pch"
-#NGX_BUILD_PCH="-fhq=$NGX_OBJS/ngx_config.pch"
-#NGX_USE_PCH="-fh=$NGX_OBJS/ngx_config.pch"
-
-
-# the link flags, built target is NT GUI mode application
-#CORE_LINK="$CORE_LINK -l=nt_win"
-
-
-# the resource file
-NGX_RCC="wrc \$(CORE_INCS) -fo=$NGX_OBJS/nginx.res "
-NGX_RCC="$NGX_RCC $NGX_WIN32_RC $NGX_OBJS/nginx.exe"
-
-
-ngx_include_opt="-i="
-ngx_objout="-fo"
-ngx_binout="-fe="
-ngx_objext="obj"
-
-ngx_regex_dirsep='\\'
-ngx_dirsep="\\"
-
-ngx_long_start=' '
-ngx_long_end=' '
-ngx_long_regex_cont=' \&\
-	'
-ngx_long_cont=' &
-	'
-
-ngx_regex_cont=' \&\
-	'
-ngx_cont=' &
-	'
-ngx_tab=' &
-		'
+[1] 
+[2] # Copyright (C) Igor Sysoev
+[3] # Copyright (C) Nginx, Inc.
+[4] 
+[5] 
+[6] # Open Watcom C 1.0, 1.2, 1.3
+[7] 
+[8] # optimizations
+[9] 
+[10] # maximize speed
+[11] CFLAGS="$CFLAGS -ot"
+[12] # reorder instructions for best pipeline usage
+[13] CFLAGS="$CFLAGS -op"
+[14] # inline intrinsic functions
+[15] CFLAGS="$CFLAGS -oi"
+[16] # inline expansion
+[17] CFLAGS="$CFLAGS -oe"
+[18] # disable stack checking calls
+[19] CFLAGS="$CFLAGS -s"
+[20] 
+[21] case $CPU in
+[22]     pentium)
+[23]         # optimize for Pentium and Athlon
+[24]         # register-based arguments passing conventions
+[25]         CPU_OPT="-5r"
+[26]         # stack-based arguments passing conventions
+[27]         #CPU_OPT="-5s"
+[28]     ;;
+[29] 
+[30]     pentiumpro)
+[31]         # optimize for Pentium Pro, Pentium II and Pentium III
+[32]         # register-based arguments passing conventions
+[33]         CPU_OPT="-6r"
+[34]         # stack-based arguments passing conventions
+[35]         #CPU_OPT="-6s"
+[36]     ;;
+[37] esac
+[38] 
+[39] CFLAGS="$CFLAGS $CPU_OPT"
+[40] 
+[41] 
+[42] # warnings
+[43] 
+[44] # maximum level
+[45] CFLAGS="$CFLAGS -wx"
+[46] #CFLAGS="$CFLAGS -w3"
+[47] 
+[48] # stop on warning
+[49] CFLAGS="$CFLAGS -we"
+[50] 
+[51] # built target is NT
+[52] CFLAGS="$CFLAGS -bt=nt"
+[53] 
+[54] # multithreaded
+[55] CFLAGS="$CFLAGS -bm"
+[56] 
+[57] # debug
+[58] CFLAGS="$CFLAGS -d2"
+[59] 
+[60] # quiet
+[61] CFLAGS="$CFLAGS -zq"
+[62] 
+[63] # Open Watcom C 1.2
+[64] have=NGX_HAVE_C99_VARIADIC_MACROS . auto/have
+[65] 
+[66] 
+[67] # the precompiled headers
+[68] #CORE_DEPS="$CORE_DEPS $NGX_OBJS/ngx_config.pch"
+[69] #NGX_PCH="$NGX_OBJS/ngx_config.pch"
+[70] #NGX_BUILD_PCH="-fhq=$NGX_OBJS/ngx_config.pch"
+[71] #NGX_USE_PCH="-fh=$NGX_OBJS/ngx_config.pch"
+[72] 
+[73] 
+[74] # the link flags, built target is NT GUI mode application
+[75] #CORE_LINK="$CORE_LINK -l=nt_win"
+[76] 
+[77] 
+[78] # the resource file
+[79] NGX_RCC="wrc \$(CORE_INCS) -fo=$NGX_OBJS/nginx.res "
+[80] NGX_RCC="$NGX_RCC $NGX_WIN32_RC $NGX_OBJS/nginx.exe"
+[81] 
+[82] 
+[83] ngx_include_opt="-i="
+[84] ngx_objout="-fo"
+[85] ngx_binout="-fe="
+[86] ngx_objext="obj"
+[87] 
+[88] ngx_regex_dirsep='\\'
+[89] ngx_dirsep="\\"
+[90] 
+[91] ngx_long_start=' '
+[92] ngx_long_end=' '
+[93] ngx_long_regex_cont=' \&\
+[94] 	'
+[95] ngx_long_cont=' &
+[96] 	'
+[97] 
+[98] ngx_regex_cont=' \&\
+[99] 	'
+[100] ngx_cont=' &
+[101] 	'
+[102] ngx_tab=' &
+[103] 		'

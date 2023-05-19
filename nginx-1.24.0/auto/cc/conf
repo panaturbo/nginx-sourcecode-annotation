@@ -1,254 +1,254 @@
-
-# Copyright (C) Igor Sysoev
-# Copyright (C) Nginx, Inc.
-
-
-LINK="\$(CC)"
-
-MAIN_LINK=
-MODULE_LINK="-shared"
-
-ngx_include_opt="-I "
-ngx_compile_opt="-c"
-ngx_pic_opt="-fPIC"
-ngx_objout="-o "
-ngx_binout="-o "
-ngx_objext="o"
-ngx_binext=
-ngx_modext=".so"
-
-ngx_long_start=
-ngx_long_end=
-
-ngx_regex_dirsep="\/"
-ngx_dirsep='/'
-
-ngx_regex_cont=' \\\
-	'
-ngx_cont=' \
-	'
-ngx_tab=' \
-		'
-ngx_spacer=
-
-ngx_long_regex_cont=$ngx_regex_cont
-ngx_long_cont=$ngx_cont
-
-. auto/cc/name
-
-if test -n "$CFLAGS"; then
-
-    CC_TEST_FLAGS="$CFLAGS $NGX_CC_OPT"
-
-    case $NGX_CC_NAME in
-
-        ccc)
-            # Compaq C V6.5-207
-
-            ngx_include_opt="-I"
-        ;;
-
-        sunc)
-
-            MAIN_LINK=
-            MODULE_LINK="-G"
-
-            case "$NGX_MACHINE" in
-
-                i86pc)
-                    NGX_AUX=" src/os/unix/ngx_sunpro_x86.il"
-                ;;
-
-                sun4u | sun4v)
-                    NGX_AUX=" src/os/unix/ngx_sunpro_sparc64.il"
-                ;;
-
-            esac
-
-            case $CPU in
-
-                amd64)
-                    NGX_AUX=" src/os/unix/ngx_sunpro_amd64.il"
-                ;;
-
-            esac
-        ;;
-
-    esac
-
-else
-
-    case $NGX_CC_NAME in
-        gcc)
-            # gcc 2.7.2.3, 2.8.1, 2.95.4, egcs-1.1.2
-            #     3.0.4, 3.1.1, 3.2.3, 3.3.2, 3.3.3, 3.3.4, 3.4.0, 3.4.2
-            #     4.0.0, 4.0.1, 4.1.0
-
-            . auto/cc/gcc
-        ;;
-
-        clang)
-            # Clang C compiler
-
-            . auto/cc/clang
-        ;;
-
-        icc)
-            # Intel C++ compiler 7.1, 8.0, 8.1
-
-            . auto/cc/icc
-        ;;
-
-        sunc)
-            # Sun C 5.7 Patch 117837-04 2005/05/11
-
-            . auto/cc/sunc
-        ;;
-
-        ccc)
-            # Compaq C V6.5-207
-
-            . auto/cc/ccc
-        ;;
-
-        acc)
-            # aCC: HP ANSI C++ B3910B A.03.55.02
-
-            . auto/cc/acc
-        ;;
-
-        msvc)
-            # MSVC++ 6.0 SP2, MSVC++ Toolkit 2003
-
-            . auto/cc/msvc
-        ;;
-
-        owc)
-            # Open Watcom C 1.0, 1.2
-
-            . auto/cc/owc
-        ;;
-
-        bcc)
-            # Borland C++ 5.5
-
-            . auto/cc/bcc
-        ;;
-
-    esac
-
-    CC_TEST_FLAGS="$CC_TEST_FLAGS $NGX_CC_OPT"
-
-fi
-
-CFLAGS="$CFLAGS $NGX_CC_OPT"
-NGX_TEST_LD_OPT="$NGX_LD_OPT"
-
-if [ "$NGX_PLATFORM" != win32 ]; then
-
-    if test -n "$NGX_LD_OPT"; then
-        ngx_feature=--with-ld-opt=\"$NGX_LD_OPT\"
-        ngx_feature_name=
-        ngx_feature_run=no
-        ngx_feature_incs=
-        ngx_feature_path=
-        ngx_feature_libs=
-        ngx_feature_test=
-        . auto/feature
-
-        if [ $ngx_found = no ]; then
-            echo $0: error: the invalid value in --with-ld-opt=\"$NGX_LD_OPT\"
-            echo
-            exit 1
-        fi
-    fi
-
-
-    ngx_feature="-Wl,-E switch"
-    ngx_feature_name=
-    ngx_feature_run=no
-    ngx_feature_incs=
-    ngx_feature_path=
-    ngx_feature_libs=-Wl,-E
-    ngx_feature_test=
-    . auto/feature
-
-    if [ $ngx_found = yes ]; then
-        MAIN_LINK="-Wl,-E"
-    fi
-
-
-    if [ "$NGX_CC_NAME" = "sunc" ]; then
-        echo "checking for gcc builtin atomic operations ... disabled"
-    else
-        ngx_feature="gcc builtin atomic operations"
-        ngx_feature_name=NGX_HAVE_GCC_ATOMIC
-        ngx_feature_run=yes
-        ngx_feature_incs=
-        ngx_feature_path=
-        ngx_feature_libs=
-        ngx_feature_test="long  n = 0;
-                          if (!__sync_bool_compare_and_swap(&n, 0, 1))
-                              return 1;
-                          if (__sync_fetch_and_add(&n, 1) != 1)
-                              return 1;
-                          if (n != 2)
-                              return 1;
-                          __sync_synchronize();"
-        . auto/feature
-    fi
-
-
-    if [ "$NGX_CC_NAME" = "ccc" ]; then
-        echo "checking for C99 variadic macros ... disabled"
-    else
-        ngx_feature="C99 variadic macros"
-        ngx_feature_name="NGX_HAVE_C99_VARIADIC_MACROS"
-        ngx_feature_run=yes
-        ngx_feature_incs="#include <stdio.h>
-#define var(dummy, ...)  sprintf(__VA_ARGS__)"
-        ngx_feature_path=
-        ngx_feature_libs=
-        ngx_feature_test="char  buf[30]; buf[0] = '0';
-                          var(0, buf, \"%d\", 1);
-                          if (buf[0] != '1') return 1"
-        . auto/feature
-    fi
-
-
-    ngx_feature="gcc variadic macros"
-    ngx_feature_name="NGX_HAVE_GCC_VARIADIC_MACROS"
-    ngx_feature_run=yes
-    ngx_feature_incs="#include <stdio.h>
-#define var(dummy, args...)  sprintf(args)"
-    ngx_feature_path=
-    ngx_feature_libs=
-    ngx_feature_test="char  buf[30]; buf[0] = '0';
-                      var(0, buf, \"%d\", 1);
-                      if (buf[0] != '1') return 1"
-    . auto/feature
-
-
-    ngx_feature="gcc builtin 64 bit byteswap"
-    ngx_feature_name="NGX_HAVE_GCC_BSWAP64"
-    ngx_feature_run=no
-    ngx_feature_incs=
-    ngx_feature_path=
-    ngx_feature_libs=
-    ngx_feature_test="if (__builtin_bswap64(0)) return 1"
-    . auto/feature
-
-
-#    ngx_feature="inline"
-#    ngx_feature_name=
-#    ngx_feature_run=no
-#    ngx_feature_incs="int inline f(void) { return 1 }"
-#    ngx_feature_path=
-#    ngx_feature_libs=
-#    ngx_feature_test=
-#    . auto/feature
-#
-#    if [ $ngx_found = yes ]; then
-#    fi
-
-fi
+[1] 
+[2] # Copyright (C) Igor Sysoev
+[3] # Copyright (C) Nginx, Inc.
+[4] 
+[5] 
+[6] LINK="\$(CC)"
+[7] 
+[8] MAIN_LINK=
+[9] MODULE_LINK="-shared"
+[10] 
+[11] ngx_include_opt="-I "
+[12] ngx_compile_opt="-c"
+[13] ngx_pic_opt="-fPIC"
+[14] ngx_objout="-o "
+[15] ngx_binout="-o "
+[16] ngx_objext="o"
+[17] ngx_binext=
+[18] ngx_modext=".so"
+[19] 
+[20] ngx_long_start=
+[21] ngx_long_end=
+[22] 
+[23] ngx_regex_dirsep="\/"
+[24] ngx_dirsep='/'
+[25] 
+[26] ngx_regex_cont=' \\\
+[27] 	'
+[28] ngx_cont=' \
+[29] 	'
+[30] ngx_tab=' \
+[31] 		'
+[32] ngx_spacer=
+[33] 
+[34] ngx_long_regex_cont=$ngx_regex_cont
+[35] ngx_long_cont=$ngx_cont
+[36] 
+[37] . auto/cc/name
+[38] 
+[39] if test -n "$CFLAGS"; then
+[40] 
+[41]     CC_TEST_FLAGS="$CFLAGS $NGX_CC_OPT"
+[42] 
+[43]     case $NGX_CC_NAME in
+[44] 
+[45]         ccc)
+[46]             # Compaq C V6.5-207
+[47] 
+[48]             ngx_include_opt="-I"
+[49]         ;;
+[50] 
+[51]         sunc)
+[52] 
+[53]             MAIN_LINK=
+[54]             MODULE_LINK="-G"
+[55] 
+[56]             case "$NGX_MACHINE" in
+[57] 
+[58]                 i86pc)
+[59]                     NGX_AUX=" src/os/unix/ngx_sunpro_x86.il"
+[60]                 ;;
+[61] 
+[62]                 sun4u | sun4v)
+[63]                     NGX_AUX=" src/os/unix/ngx_sunpro_sparc64.il"
+[64]                 ;;
+[65] 
+[66]             esac
+[67] 
+[68]             case $CPU in
+[69] 
+[70]                 amd64)
+[71]                     NGX_AUX=" src/os/unix/ngx_sunpro_amd64.il"
+[72]                 ;;
+[73] 
+[74]             esac
+[75]         ;;
+[76] 
+[77]     esac
+[78] 
+[79] else
+[80] 
+[81]     case $NGX_CC_NAME in
+[82]         gcc)
+[83]             # gcc 2.7.2.3, 2.8.1, 2.95.4, egcs-1.1.2
+[84]             #     3.0.4, 3.1.1, 3.2.3, 3.3.2, 3.3.3, 3.3.4, 3.4.0, 3.4.2
+[85]             #     4.0.0, 4.0.1, 4.1.0
+[86] 
+[87]             . auto/cc/gcc
+[88]         ;;
+[89] 
+[90]         clang)
+[91]             # Clang C compiler
+[92] 
+[93]             . auto/cc/clang
+[94]         ;;
+[95] 
+[96]         icc)
+[97]             # Intel C++ compiler 7.1, 8.0, 8.1
+[98] 
+[99]             . auto/cc/icc
+[100]         ;;
+[101] 
+[102]         sunc)
+[103]             # Sun C 5.7 Patch 117837-04 2005/05/11
+[104] 
+[105]             . auto/cc/sunc
+[106]         ;;
+[107] 
+[108]         ccc)
+[109]             # Compaq C V6.5-207
+[110] 
+[111]             . auto/cc/ccc
+[112]         ;;
+[113] 
+[114]         acc)
+[115]             # aCC: HP ANSI C++ B3910B A.03.55.02
+[116] 
+[117]             . auto/cc/acc
+[118]         ;;
+[119] 
+[120]         msvc)
+[121]             # MSVC++ 6.0 SP2, MSVC++ Toolkit 2003
+[122] 
+[123]             . auto/cc/msvc
+[124]         ;;
+[125] 
+[126]         owc)
+[127]             # Open Watcom C 1.0, 1.2
+[128] 
+[129]             . auto/cc/owc
+[130]         ;;
+[131] 
+[132]         bcc)
+[133]             # Borland C++ 5.5
+[134] 
+[135]             . auto/cc/bcc
+[136]         ;;
+[137] 
+[138]     esac
+[139] 
+[140]     CC_TEST_FLAGS="$CC_TEST_FLAGS $NGX_CC_OPT"
+[141] 
+[142] fi
+[143] 
+[144] CFLAGS="$CFLAGS $NGX_CC_OPT"
+[145] NGX_TEST_LD_OPT="$NGX_LD_OPT"
+[146] 
+[147] if [ "$NGX_PLATFORM" != win32 ]; then
+[148] 
+[149]     if test -n "$NGX_LD_OPT"; then
+[150]         ngx_feature=--with-ld-opt=\"$NGX_LD_OPT\"
+[151]         ngx_feature_name=
+[152]         ngx_feature_run=no
+[153]         ngx_feature_incs=
+[154]         ngx_feature_path=
+[155]         ngx_feature_libs=
+[156]         ngx_feature_test=
+[157]         . auto/feature
+[158] 
+[159]         if [ $ngx_found = no ]; then
+[160]             echo $0: error: the invalid value in --with-ld-opt=\"$NGX_LD_OPT\"
+[161]             echo
+[162]             exit 1
+[163]         fi
+[164]     fi
+[165] 
+[166] 
+[167]     ngx_feature="-Wl,-E switch"
+[168]     ngx_feature_name=
+[169]     ngx_feature_run=no
+[170]     ngx_feature_incs=
+[171]     ngx_feature_path=
+[172]     ngx_feature_libs=-Wl,-E
+[173]     ngx_feature_test=
+[174]     . auto/feature
+[175] 
+[176]     if [ $ngx_found = yes ]; then
+[177]         MAIN_LINK="-Wl,-E"
+[178]     fi
+[179] 
+[180] 
+[181]     if [ "$NGX_CC_NAME" = "sunc" ]; then
+[182]         echo "checking for gcc builtin atomic operations ... disabled"
+[183]     else
+[184]         ngx_feature="gcc builtin atomic operations"
+[185]         ngx_feature_name=NGX_HAVE_GCC_ATOMIC
+[186]         ngx_feature_run=yes
+[187]         ngx_feature_incs=
+[188]         ngx_feature_path=
+[189]         ngx_feature_libs=
+[190]         ngx_feature_test="long  n = 0;
+[191]                           if (!__sync_bool_compare_and_swap(&n, 0, 1))
+[192]                               return 1;
+[193]                           if (__sync_fetch_and_add(&n, 1) != 1)
+[194]                               return 1;
+[195]                           if (n != 2)
+[196]                               return 1;
+[197]                           __sync_synchronize();"
+[198]         . auto/feature
+[199]     fi
+[200] 
+[201] 
+[202]     if [ "$NGX_CC_NAME" = "ccc" ]; then
+[203]         echo "checking for C99 variadic macros ... disabled"
+[204]     else
+[205]         ngx_feature="C99 variadic macros"
+[206]         ngx_feature_name="NGX_HAVE_C99_VARIADIC_MACROS"
+[207]         ngx_feature_run=yes
+[208]         ngx_feature_incs="#include <stdio.h>
+[209] #define var(dummy, ...)  sprintf(__VA_ARGS__)"
+[210]         ngx_feature_path=
+[211]         ngx_feature_libs=
+[212]         ngx_feature_test="char  buf[30]; buf[0] = '0';
+[213]                           var(0, buf, \"%d\", 1);
+[214]                           if (buf[0] != '1') return 1"
+[215]         . auto/feature
+[216]     fi
+[217] 
+[218] 
+[219]     ngx_feature="gcc variadic macros"
+[220]     ngx_feature_name="NGX_HAVE_GCC_VARIADIC_MACROS"
+[221]     ngx_feature_run=yes
+[222]     ngx_feature_incs="#include <stdio.h>
+[223] #define var(dummy, args...)  sprintf(args)"
+[224]     ngx_feature_path=
+[225]     ngx_feature_libs=
+[226]     ngx_feature_test="char  buf[30]; buf[0] = '0';
+[227]                       var(0, buf, \"%d\", 1);
+[228]                       if (buf[0] != '1') return 1"
+[229]     . auto/feature
+[230] 
+[231] 
+[232]     ngx_feature="gcc builtin 64 bit byteswap"
+[233]     ngx_feature_name="NGX_HAVE_GCC_BSWAP64"
+[234]     ngx_feature_run=no
+[235]     ngx_feature_incs=
+[236]     ngx_feature_path=
+[237]     ngx_feature_libs=
+[238]     ngx_feature_test="if (__builtin_bswap64(0)) return 1"
+[239]     . auto/feature
+[240] 
+[241] 
+[242] #    ngx_feature="inline"
+[243] #    ngx_feature_name=
+[244] #    ngx_feature_run=no
+[245] #    ngx_feature_incs="int inline f(void) { return 1 }"
+[246] #    ngx_feature_path=
+[247] #    ngx_feature_libs=
+[248] #    ngx_feature_test=
+[249] #    . auto/feature
+[250] #
+[251] #    if [ $ngx_found = yes ]; then
+[252] #    fi
+[253] 
+[254] fi

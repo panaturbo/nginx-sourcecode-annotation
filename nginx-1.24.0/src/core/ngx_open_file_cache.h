@@ -1,129 +1,129 @@
-
-/*
- * Copyright (C) Igor Sysoev
- * Copyright (C) Nginx, Inc.
- */
-
-
-#include <ngx_config.h>
-#include <ngx_core.h>
-
-
-#ifndef _NGX_OPEN_FILE_CACHE_H_INCLUDED_
-#define _NGX_OPEN_FILE_CACHE_H_INCLUDED_
-
-
-#define NGX_OPEN_FILE_DIRECTIO_OFF  NGX_MAX_OFF_T_VALUE
-
-
-typedef struct {
-    ngx_fd_t                 fd;
-    ngx_file_uniq_t          uniq;
-    time_t                   mtime;
-    off_t                    size;
-    off_t                    fs_size;
-    off_t                    directio;
-    size_t                   read_ahead;
-
-    ngx_err_t                err;
-    char                    *failed;
-
-    time_t                   valid;
-
-    ngx_uint_t               min_uses;
-
-#if (NGX_HAVE_OPENAT)
-    size_t                   disable_symlinks_from;
-    unsigned                 disable_symlinks:2;
-#endif
-
-    unsigned                 test_dir:1;
-    unsigned                 test_only:1;
-    unsigned                 log:1;
-    unsigned                 errors:1;
-    unsigned                 events:1;
-
-    unsigned                 is_dir:1;
-    unsigned                 is_file:1;
-    unsigned                 is_link:1;
-    unsigned                 is_exec:1;
-    unsigned                 is_directio:1;
-} ngx_open_file_info_t;
-
-
-typedef struct ngx_cached_open_file_s  ngx_cached_open_file_t;
-
-struct ngx_cached_open_file_s {
-    ngx_rbtree_node_t        node;
-    ngx_queue_t              queue;
-
-    u_char                  *name;
-    time_t                   created;
-    time_t                   accessed;
-
-    ngx_fd_t                 fd;
-    ngx_file_uniq_t          uniq;
-    time_t                   mtime;
-    off_t                    size;
-    ngx_err_t                err;
-
-    uint32_t                 uses;
-
-#if (NGX_HAVE_OPENAT)
-    size_t                   disable_symlinks_from;
-    unsigned                 disable_symlinks:2;
-#endif
-
-    unsigned                 count:24;
-    unsigned                 close:1;
-    unsigned                 use_event:1;
-
-    unsigned                 is_dir:1;
-    unsigned                 is_file:1;
-    unsigned                 is_link:1;
-    unsigned                 is_exec:1;
-    unsigned                 is_directio:1;
-
-    ngx_event_t             *event;
-};
-
-
-typedef struct {
-    ngx_rbtree_t             rbtree;
-    ngx_rbtree_node_t        sentinel;
-    ngx_queue_t              expire_queue;
-
-    ngx_uint_t               current;
-    ngx_uint_t               max;
-    time_t                   inactive;
-} ngx_open_file_cache_t;
-
-
-typedef struct {
-    ngx_open_file_cache_t   *cache;
-    ngx_cached_open_file_t  *file;
-    ngx_uint_t               min_uses;
-    ngx_log_t               *log;
-} ngx_open_file_cache_cleanup_t;
-
-
-typedef struct {
-
-    /* ngx_connection_t stub to allow use c->fd as event ident */
-    void                    *data;
-    ngx_event_t             *read;
-    ngx_event_t             *write;
-    ngx_fd_t                 fd;
-
-    ngx_cached_open_file_t  *file;
-    ngx_open_file_cache_t   *cache;
-} ngx_open_file_cache_event_t;
-
-
-ngx_open_file_cache_t *ngx_open_file_cache_init(ngx_pool_t *pool,
-    ngx_uint_t max, time_t inactive);
-ngx_int_t ngx_open_cached_file(ngx_open_file_cache_t *cache, ngx_str_t *name,
-    ngx_open_file_info_t *of, ngx_pool_t *pool);
-
-
-#endif /* _NGX_OPEN_FILE_CACHE_H_INCLUDED_ */
+[1] 
+[2] /*
+[3]  * Copyright (C) Igor Sysoev
+[4]  * Copyright (C) Nginx, Inc.
+[5]  */
+[6] 
+[7] 
+[8] #include <ngx_config.h>
+[9] #include <ngx_core.h>
+[10] 
+[11] 
+[12] #ifndef _NGX_OPEN_FILE_CACHE_H_INCLUDED_
+[13] #define _NGX_OPEN_FILE_CACHE_H_INCLUDED_
+[14] 
+[15] 
+[16] #define NGX_OPEN_FILE_DIRECTIO_OFF  NGX_MAX_OFF_T_VALUE
+[17] 
+[18] 
+[19] typedef struct {
+[20]     ngx_fd_t                 fd;
+[21]     ngx_file_uniq_t          uniq;
+[22]     time_t                   mtime;
+[23]     off_t                    size;
+[24]     off_t                    fs_size;
+[25]     off_t                    directio;
+[26]     size_t                   read_ahead;
+[27] 
+[28]     ngx_err_t                err;
+[29]     char                    *failed;
+[30] 
+[31]     time_t                   valid;
+[32] 
+[33]     ngx_uint_t               min_uses;
+[34] 
+[35] #if (NGX_HAVE_OPENAT)
+[36]     size_t                   disable_symlinks_from;
+[37]     unsigned                 disable_symlinks:2;
+[38] #endif
+[39] 
+[40]     unsigned                 test_dir:1;
+[41]     unsigned                 test_only:1;
+[42]     unsigned                 log:1;
+[43]     unsigned                 errors:1;
+[44]     unsigned                 events:1;
+[45] 
+[46]     unsigned                 is_dir:1;
+[47]     unsigned                 is_file:1;
+[48]     unsigned                 is_link:1;
+[49]     unsigned                 is_exec:1;
+[50]     unsigned                 is_directio:1;
+[51] } ngx_open_file_info_t;
+[52] 
+[53] 
+[54] typedef struct ngx_cached_open_file_s  ngx_cached_open_file_t;
+[55] 
+[56] struct ngx_cached_open_file_s {
+[57]     ngx_rbtree_node_t        node;
+[58]     ngx_queue_t              queue;
+[59] 
+[60]     u_char                  *name;
+[61]     time_t                   created;
+[62]     time_t                   accessed;
+[63] 
+[64]     ngx_fd_t                 fd;
+[65]     ngx_file_uniq_t          uniq;
+[66]     time_t                   mtime;
+[67]     off_t                    size;
+[68]     ngx_err_t                err;
+[69] 
+[70]     uint32_t                 uses;
+[71] 
+[72] #if (NGX_HAVE_OPENAT)
+[73]     size_t                   disable_symlinks_from;
+[74]     unsigned                 disable_symlinks:2;
+[75] #endif
+[76] 
+[77]     unsigned                 count:24;
+[78]     unsigned                 close:1;
+[79]     unsigned                 use_event:1;
+[80] 
+[81]     unsigned                 is_dir:1;
+[82]     unsigned                 is_file:1;
+[83]     unsigned                 is_link:1;
+[84]     unsigned                 is_exec:1;
+[85]     unsigned                 is_directio:1;
+[86] 
+[87]     ngx_event_t             *event;
+[88] };
+[89] 
+[90] 
+[91] typedef struct {
+[92]     ngx_rbtree_t             rbtree;
+[93]     ngx_rbtree_node_t        sentinel;
+[94]     ngx_queue_t              expire_queue;
+[95] 
+[96]     ngx_uint_t               current;
+[97]     ngx_uint_t               max;
+[98]     time_t                   inactive;
+[99] } ngx_open_file_cache_t;
+[100] 
+[101] 
+[102] typedef struct {
+[103]     ngx_open_file_cache_t   *cache;
+[104]     ngx_cached_open_file_t  *file;
+[105]     ngx_uint_t               min_uses;
+[106]     ngx_log_t               *log;
+[107] } ngx_open_file_cache_cleanup_t;
+[108] 
+[109] 
+[110] typedef struct {
+[111] 
+[112]     /* ngx_connection_t stub to allow use c->fd as event ident */
+[113]     void                    *data;
+[114]     ngx_event_t             *read;
+[115]     ngx_event_t             *write;
+[116]     ngx_fd_t                 fd;
+[117] 
+[118]     ngx_cached_open_file_t  *file;
+[119]     ngx_open_file_cache_t   *cache;
+[120] } ngx_open_file_cache_event_t;
+[121] 
+[122] 
+[123] ngx_open_file_cache_t *ngx_open_file_cache_init(ngx_pool_t *pool,
+[124]     ngx_uint_t max, time_t inactive);
+[125] ngx_int_t ngx_open_cached_file(ngx_open_file_cache_t *cache, ngx_str_t *name,
+[126]     ngx_open_file_info_t *of, ngx_pool_t *pool);
+[127] 
+[128] 
+[129] #endif /* _NGX_OPEN_FILE_CACHE_H_INCLUDED_ */

@@ -1,109 +1,109 @@
-
-# This map is not a full koi8-r <> utf8 map: it does not contain
-# box-drawing and some other characters.  Besides this map contains
-# several koi8-u and Byelorussian letters which are not in koi8-r.
-# If you need a full and standard map, use contrib/unicode2nginx/koi-utf
-# map instead.
-
-charset_map  koi8-r  utf-8 {
-
-    80  E282AC ; # euro
-
-    95  E280A2 ; # bullet
-
-    9A  C2A0 ;   # &nbsp;
-
-    9E  C2B7 ;   # &middot;
-
-    A3  D191 ;   # small yo
-    A4  D194 ;   # small Ukrainian ye
-
-    A6  D196 ;   # small Ukrainian i
-    A7  D197 ;   # small Ukrainian yi
-
-    AD  D291 ;   # small Ukrainian soft g
-    AE  D19E ;   # small Byelorussian short u
-
-    B0  C2B0 ;   # &deg;
-
-    B3  D081 ;   # capital YO
-    B4  D084 ;   # capital Ukrainian YE
-
-    B6  D086 ;   # capital Ukrainian I
-    B7  D087 ;   # capital Ukrainian YI
-
-    B9  E28496 ; # numero sign
-
-    BD  D290 ;   # capital Ukrainian soft G
-    BE  D18E ;   # capital Byelorussian short U
-
-    BF  C2A9 ;   # (C)
-
-    C0  D18E ;   # small yu
-    C1  D0B0 ;   # small a
-    C2  D0B1 ;   # small b
-    C3  D186 ;   # small ts
-    C4  D0B4 ;   # small d
-    C5  D0B5 ;   # small ye
-    C6  D184 ;   # small f
-    C7  D0B3 ;   # small g
-    C8  D185 ;   # small kh
-    C9  D0B8 ;   # small i
-    CA  D0B9 ;   # small j
-    CB  D0BA ;   # small k
-    CC  D0BB ;   # small l
-    CD  D0BC ;   # small m
-    CE  D0BD ;   # small n
-    CF  D0BE ;   # small o
-
-    D0  D0BF ;   # small p
-    D1  D18F ;   # small ya
-    D2  D180 ;   # small r
-    D3  D181 ;   # small s
-    D4  D182 ;   # small t
-    D5  D183 ;   # small u
-    D6  D0B6 ;   # small zh
-    D7  D0B2 ;   # small v
-    D8  D18C ;   # small soft sign
-    D9  D18B ;   # small y
-    DA  D0B7 ;   # small z
-    DB  D188 ;   # small sh
-    DC  D18D ;   # small e
-    DD  D189 ;   # small shch
-    DE  D187 ;   # small ch
-    DF  D18A ;   # small hard sign
-
-    E0  D0AE ;   # capital YU
-    E1  D090 ;   # capital A
-    E2  D091 ;   # capital B
-    E3  D0A6 ;   # capital TS
-    E4  D094 ;   # capital D
-    E5  D095 ;   # capital YE
-    E6  D0A4 ;   # capital F
-    E7  D093 ;   # capital G
-    E8  D0A5 ;   # capital KH
-    E9  D098 ;   # capital I
-    EA  D099 ;   # capital J
-    EB  D09A ;   # capital K
-    EC  D09B ;   # capital L
-    ED  D09C ;   # capital M
-    EE  D09D ;   # capital N
-    EF  D09E ;   # capital O
-
-    F0  D09F ;   # capital P
-    F1  D0AF ;   # capital YA
-    F2  D0A0 ;   # capital R
-    F3  D0A1 ;   # capital S
-    F4  D0A2 ;   # capital T
-    F5  D0A3 ;   # capital U
-    F6  D096 ;   # capital ZH
-    F7  D092 ;   # capital V
-    F8  D0AC ;   # capital soft sign
-    F9  D0AB ;   # capital Y
-    FA  D097 ;   # capital Z
-    FB  D0A8 ;   # capital SH
-    FC  D0AD ;   # capital E
-    FD  D0A9 ;   # capital SHCH
-    FE  D0A7 ;   # capital CH
-    FF  D0AA ;   # capital hard sign
-}
+[1] 
+[2] # This map is not a full koi8-r <> utf8 map: it does not contain
+[3] # box-drawing and some other characters.  Besides this map contains
+[4] # several koi8-u and Byelorussian letters which are not in koi8-r.
+[5] # If you need a full and standard map, use contrib/unicode2nginx/koi-utf
+[6] # map instead.
+[7] 
+[8] charset_map  koi8-r  utf-8 {
+[9] 
+[10]     80  E282AC ; # euro
+[11] 
+[12]     95  E280A2 ; # bullet
+[13] 
+[14]     9A  C2A0 ;   # &nbsp;
+[15] 
+[16]     9E  C2B7 ;   # &middot;
+[17] 
+[18]     A3  D191 ;   # small yo
+[19]     A4  D194 ;   # small Ukrainian ye
+[20] 
+[21]     A6  D196 ;   # small Ukrainian i
+[22]     A7  D197 ;   # small Ukrainian yi
+[23] 
+[24]     AD  D291 ;   # small Ukrainian soft g
+[25]     AE  D19E ;   # small Byelorussian short u
+[26] 
+[27]     B0  C2B0 ;   # &deg;
+[28] 
+[29]     B3  D081 ;   # capital YO
+[30]     B4  D084 ;   # capital Ukrainian YE
+[31] 
+[32]     B6  D086 ;   # capital Ukrainian I
+[33]     B7  D087 ;   # capital Ukrainian YI
+[34] 
+[35]     B9  E28496 ; # numero sign
+[36] 
+[37]     BD  D290 ;   # capital Ukrainian soft G
+[38]     BE  D18E ;   # capital Byelorussian short U
+[39] 
+[40]     BF  C2A9 ;   # (C)
+[41] 
+[42]     C0  D18E ;   # small yu
+[43]     C1  D0B0 ;   # small a
+[44]     C2  D0B1 ;   # small b
+[45]     C3  D186 ;   # small ts
+[46]     C4  D0B4 ;   # small d
+[47]     C5  D0B5 ;   # small ye
+[48]     C6  D184 ;   # small f
+[49]     C7  D0B3 ;   # small g
+[50]     C8  D185 ;   # small kh
+[51]     C9  D0B8 ;   # small i
+[52]     CA  D0B9 ;   # small j
+[53]     CB  D0BA ;   # small k
+[54]     CC  D0BB ;   # small l
+[55]     CD  D0BC ;   # small m
+[56]     CE  D0BD ;   # small n
+[57]     CF  D0BE ;   # small o
+[58] 
+[59]     D0  D0BF ;   # small p
+[60]     D1  D18F ;   # small ya
+[61]     D2  D180 ;   # small r
+[62]     D3  D181 ;   # small s
+[63]     D4  D182 ;   # small t
+[64]     D5  D183 ;   # small u
+[65]     D6  D0B6 ;   # small zh
+[66]     D7  D0B2 ;   # small v
+[67]     D8  D18C ;   # small soft sign
+[68]     D9  D18B ;   # small y
+[69]     DA  D0B7 ;   # small z
+[70]     DB  D188 ;   # small sh
+[71]     DC  D18D ;   # small e
+[72]     DD  D189 ;   # small shch
+[73]     DE  D187 ;   # small ch
+[74]     DF  D18A ;   # small hard sign
+[75] 
+[76]     E0  D0AE ;   # capital YU
+[77]     E1  D090 ;   # capital A
+[78]     E2  D091 ;   # capital B
+[79]     E3  D0A6 ;   # capital TS
+[80]     E4  D094 ;   # capital D
+[81]     E5  D095 ;   # capital YE
+[82]     E6  D0A4 ;   # capital F
+[83]     E7  D093 ;   # capital G
+[84]     E8  D0A5 ;   # capital KH
+[85]     E9  D098 ;   # capital I
+[86]     EA  D099 ;   # capital J
+[87]     EB  D09A ;   # capital K
+[88]     EC  D09B ;   # capital L
+[89]     ED  D09C ;   # capital M
+[90]     EE  D09D ;   # capital N
+[91]     EF  D09E ;   # capital O
+[92] 
+[93]     F0  D09F ;   # capital P
+[94]     F1  D0AF ;   # capital YA
+[95]     F2  D0A0 ;   # capital R
+[96]     F3  D0A1 ;   # capital S
+[97]     F4  D0A2 ;   # capital T
+[98]     F5  D0A3 ;   # capital U
+[99]     F6  D096 ;   # capital ZH
+[100]     F7  D092 ;   # capital V
+[101]     F8  D0AC ;   # capital soft sign
+[102]     F9  D0AB ;   # capital Y
+[103]     FA  D097 ;   # capital Z
+[104]     FB  D0A8 ;   # capital SH
+[105]     FC  D0AD ;   # capital E
+[106]     FD  D0A9 ;   # capital SHCH
+[107]     FE  D0A7 ;   # capital CH
+[108]     FF  D0AA ;   # capital hard sign
+[109] }

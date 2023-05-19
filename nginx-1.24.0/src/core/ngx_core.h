@@ -1,113 +1,113 @@
-
-/*
- * Copyright (C) Igor Sysoev
- * Copyright (C) Nginx, Inc.
- */
-
-
-#ifndef _NGX_CORE_H_INCLUDED_
-#define _NGX_CORE_H_INCLUDED_
-
-
-#include <ngx_config.h>
-
-
-typedef struct ngx_module_s          ngx_module_t;
-typedef struct ngx_conf_s            ngx_conf_t;
-typedef struct ngx_cycle_s           ngx_cycle_t;
-typedef struct ngx_pool_s            ngx_pool_t;
-typedef struct ngx_chain_s           ngx_chain_t;
-typedef struct ngx_log_s             ngx_log_t;
-typedef struct ngx_open_file_s       ngx_open_file_t;
-typedef struct ngx_command_s         ngx_command_t;
-typedef struct ngx_file_s            ngx_file_t;
-typedef struct ngx_event_s           ngx_event_t;
-typedef struct ngx_event_aio_s       ngx_event_aio_t;
-typedef struct ngx_connection_s      ngx_connection_t;
-typedef struct ngx_thread_task_s     ngx_thread_task_t;
-typedef struct ngx_ssl_s             ngx_ssl_t;
-typedef struct ngx_proxy_protocol_s  ngx_proxy_protocol_t;
-typedef struct ngx_ssl_connection_s  ngx_ssl_connection_t;
-typedef struct ngx_udp_connection_s  ngx_udp_connection_t;
-
-typedef void (*ngx_event_handler_pt)(ngx_event_t *ev);
-typedef void (*ngx_connection_handler_pt)(ngx_connection_t *c);
-
-
-#define  NGX_OK          0
-#define  NGX_ERROR      -1
-#define  NGX_AGAIN      -2
-#define  NGX_BUSY       -3
-#define  NGX_DONE       -4
-#define  NGX_DECLINED   -5
-#define  NGX_ABORT      -6
-
-
-#include <ngx_errno.h>
-#include <ngx_atomic.h>
-#include <ngx_thread.h>
-#include <ngx_rbtree.h>
-#include <ngx_time.h>
-#include <ngx_socket.h>
-#include <ngx_string.h>
-#include <ngx_files.h>
-#include <ngx_shmem.h>
-#include <ngx_process.h>
-#include <ngx_user.h>
-#include <ngx_dlopen.h>
-#include <ngx_parse.h>
-#include <ngx_parse_time.h>
-#include <ngx_log.h>
-#include <ngx_alloc.h>
-#include <ngx_palloc.h>
-#include <ngx_buf.h>
-#include <ngx_queue.h>
-#include <ngx_array.h>
-#include <ngx_list.h>
-#include <ngx_hash.h>
-#include <ngx_file.h>
-#include <ngx_crc.h>
-#include <ngx_crc32.h>
-#include <ngx_murmurhash.h>
-#if (NGX_PCRE)
-#include <ngx_regex.h>
-#endif
-#include <ngx_radix_tree.h>
-#include <ngx_times.h>
-#include <ngx_rwlock.h>
-#include <ngx_shmtx.h>
-#include <ngx_slab.h>
-#include <ngx_inet.h>
-#include <ngx_cycle.h>
-#include <ngx_resolver.h>
-#if (NGX_OPENSSL)
-#include <ngx_event_openssl.h>
-#endif
-#include <ngx_process_cycle.h>
-#include <ngx_conf_file.h>
-#include <ngx_module.h>
-#include <ngx_open_file_cache.h>
-#include <ngx_os.h>
-#include <ngx_connection.h>
-#include <ngx_syslog.h>
-#include <ngx_proxy_protocol.h>
-
-
-#define LF     (u_char) '\n'
-#define CR     (u_char) '\r'
-#define CRLF   "\r\n"
-
-
-#define ngx_abs(value)       (((value) >= 0) ? (value) : - (value))
-#define ngx_max(val1, val2)  ((val1 < val2) ? (val2) : (val1))
-#define ngx_min(val1, val2)  ((val1 > val2) ? (val2) : (val1))
-
-void ngx_cpuinfo(void);
-
-#if (NGX_HAVE_OPENAT)
-#define NGX_DISABLE_SYMLINKS_OFF        0
-#define NGX_DISABLE_SYMLINKS_ON         1
-#define NGX_DISABLE_SYMLINKS_NOTOWNER   2
-#endif
-
-#endif /* _NGX_CORE_H_INCLUDED_ */
+[1] 
+[2] /*
+[3]  * Copyright (C) Igor Sysoev
+[4]  * Copyright (C) Nginx, Inc.
+[5]  */
+[6] 
+[7] 
+[8] #ifndef _NGX_CORE_H_INCLUDED_
+[9] #define _NGX_CORE_H_INCLUDED_
+[10] 
+[11] 
+[12] #include <ngx_config.h>
+[13] 
+[14] 
+[15] typedef struct ngx_module_s          ngx_module_t;
+[16] typedef struct ngx_conf_s            ngx_conf_t;
+[17] typedef struct ngx_cycle_s           ngx_cycle_t;
+[18] typedef struct ngx_pool_s            ngx_pool_t;
+[19] typedef struct ngx_chain_s           ngx_chain_t;
+[20] typedef struct ngx_log_s             ngx_log_t;
+[21] typedef struct ngx_open_file_s       ngx_open_file_t;
+[22] typedef struct ngx_command_s         ngx_command_t;
+[23] typedef struct ngx_file_s            ngx_file_t;
+[24] typedef struct ngx_event_s           ngx_event_t;
+[25] typedef struct ngx_event_aio_s       ngx_event_aio_t;
+[26] typedef struct ngx_connection_s      ngx_connection_t;
+[27] typedef struct ngx_thread_task_s     ngx_thread_task_t;
+[28] typedef struct ngx_ssl_s             ngx_ssl_t;
+[29] typedef struct ngx_proxy_protocol_s  ngx_proxy_protocol_t;
+[30] typedef struct ngx_ssl_connection_s  ngx_ssl_connection_t;
+[31] typedef struct ngx_udp_connection_s  ngx_udp_connection_t;
+[32] 
+[33] typedef void (*ngx_event_handler_pt)(ngx_event_t *ev);
+[34] typedef void (*ngx_connection_handler_pt)(ngx_connection_t *c);
+[35] 
+[36] 
+[37] #define  NGX_OK          0
+[38] #define  NGX_ERROR      -1
+[39] #define  NGX_AGAIN      -2
+[40] #define  NGX_BUSY       -3
+[41] #define  NGX_DONE       -4
+[42] #define  NGX_DECLINED   -5
+[43] #define  NGX_ABORT      -6
+[44] 
+[45] 
+[46] #include <ngx_errno.h>
+[47] #include <ngx_atomic.h>
+[48] #include <ngx_thread.h>
+[49] #include <ngx_rbtree.h>
+[50] #include <ngx_time.h>
+[51] #include <ngx_socket.h>
+[52] #include <ngx_string.h>
+[53] #include <ngx_files.h>
+[54] #include <ngx_shmem.h>
+[55] #include <ngx_process.h>
+[56] #include <ngx_user.h>
+[57] #include <ngx_dlopen.h>
+[58] #include <ngx_parse.h>
+[59] #include <ngx_parse_time.h>
+[60] #include <ngx_log.h>
+[61] #include <ngx_alloc.h>
+[62] #include <ngx_palloc.h>
+[63] #include <ngx_buf.h>
+[64] #include <ngx_queue.h>
+[65] #include <ngx_array.h>
+[66] #include <ngx_list.h>
+[67] #include <ngx_hash.h>
+[68] #include <ngx_file.h>
+[69] #include <ngx_crc.h>
+[70] #include <ngx_crc32.h>
+[71] #include <ngx_murmurhash.h>
+[72] #if (NGX_PCRE)
+[73] #include <ngx_regex.h>
+[74] #endif
+[75] #include <ngx_radix_tree.h>
+[76] #include <ngx_times.h>
+[77] #include <ngx_rwlock.h>
+[78] #include <ngx_shmtx.h>
+[79] #include <ngx_slab.h>
+[80] #include <ngx_inet.h>
+[81] #include <ngx_cycle.h>
+[82] #include <ngx_resolver.h>
+[83] #if (NGX_OPENSSL)
+[84] #include <ngx_event_openssl.h>
+[85] #endif
+[86] #include <ngx_process_cycle.h>
+[87] #include <ngx_conf_file.h>
+[88] #include <ngx_module.h>
+[89] #include <ngx_open_file_cache.h>
+[90] #include <ngx_os.h>
+[91] #include <ngx_connection.h>
+[92] #include <ngx_syslog.h>
+[93] #include <ngx_proxy_protocol.h>
+[94] 
+[95] 
+[96] #define LF     (u_char) '\n'
+[97] #define CR     (u_char) '\r'
+[98] #define CRLF   "\r\n"
+[99] 
+[100] 
+[101] #define ngx_abs(value)       (((value) >= 0) ? (value) : - (value))
+[102] #define ngx_max(val1, val2)  ((val1 < val2) ? (val2) : (val1))
+[103] #define ngx_min(val1, val2)  ((val1 > val2) ? (val2) : (val1))
+[104] 
+[105] void ngx_cpuinfo(void);
+[106] 
+[107] #if (NGX_HAVE_OPENAT)
+[108] #define NGX_DISABLE_SYMLINKS_OFF        0
+[109] #define NGX_DISABLE_SYMLINKS_ON         1
+[110] #define NGX_DISABLE_SYMLINKS_NOTOWNER   2
+[111] #endif
+[112] 
+[113] #endif /* _NGX_CORE_H_INCLUDED_ */

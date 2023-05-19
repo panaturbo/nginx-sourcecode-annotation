@@ -1,75 +1,75 @@
-
-# Copyright (C) Igor Sysoev
-# Copyright (C) Nginx, Inc.
-
-
-case "$CC" in
-
-    cl)
-
-        case "$NGX_MACHINE" in
-
-            amd64)
-                OPENSSL_TARGET=VC-WIN64A
-            ;;
-
-            *)
-                OPENSSL_TARGET=VC-WIN32
-            ;;
-
-        esac
-
-        cat << END                                            >> $NGX_MAKEFILE
-
-$OPENSSL/openssl/include/openssl/ssl.h:	$NGX_MAKEFILE
-	\$(MAKE) -f auto/lib/openssl/makefile.msvc			\
-		OPENSSL="$OPENSSL" OPENSSL_OPT="$OPENSSL_OPT"		\
-		OPENSSL_TARGET="$OPENSSL_TARGET"
-
-END
-
-    ;;
-
-    bcc32)
-
-        ngx_opt=`echo "-DOPENSSL=\"$OPENSSL\" -DOPENSSL_OPT=\"$OPENSSL_OPT\"" \
-            | sed -e "s/\//$ngx_regex_dirsep/g"`
-
-        cat << END                                            >> $NGX_MAKEFILE
-
-`echo "$OPENSSL\\openssl\\lib\\libeay32.lib:				\
-	$OPENSSL\\openssl\\include\\openssl\\ssl.h"			\
-	| sed -e "s/\//$ngx_regex_dirsep/g"`
-
-`echo "$OPENSSL\\openssl\\lib\\ssleay32.lib:				\
-	$OPENSSL\\openssl\\include\\openssl\\ssl.h"			\
-	| sed -e "s/\//$ngx_regex_dirsep/g"`
-
-`echo "$OPENSSL\\openssl\\include\\openssl\\ssl.h:	$NGX_MAKEFILE"	\
-	| sed -e "s/\//$ngx_regex_dirsep/g"`
-	\$(MAKE) -f auto/lib/openssl/makefile.bcc $ngx_opt
-
-END
-
-    ;;
-
-    *)
-        case $OPENSSL in
-            /*) ngx_prefix="$OPENSSL/.openssl" ;;
-            *)  ngx_prefix="$PWD/$OPENSSL/.openssl" ;;
-        esac
-
-        cat << END                                            >> $NGX_MAKEFILE
-
-$OPENSSL/.openssl/include/openssl/ssl.h:	$NGX_MAKEFILE
-	cd $OPENSSL \\
-	&& if [ -f Makefile ]; then \$(MAKE) clean; fi \\
-	&& ./config --prefix=$ngx_prefix no-shared no-threads $OPENSSL_OPT \\
-	&& \$(MAKE) \\
-	&& \$(MAKE) install_sw LIBDIR=lib
-
-END
-
-    ;;
-
-esac
+[1] 
+[2] # Copyright (C) Igor Sysoev
+[3] # Copyright (C) Nginx, Inc.
+[4] 
+[5] 
+[6] case "$CC" in
+[7] 
+[8]     cl)
+[9] 
+[10]         case "$NGX_MACHINE" in
+[11] 
+[12]             amd64)
+[13]                 OPENSSL_TARGET=VC-WIN64A
+[14]             ;;
+[15] 
+[16]             *)
+[17]                 OPENSSL_TARGET=VC-WIN32
+[18]             ;;
+[19] 
+[20]         esac
+[21] 
+[22]         cat << END                                            >> $NGX_MAKEFILE
+[23] 
+[24] $OPENSSL/openssl/include/openssl/ssl.h:	$NGX_MAKEFILE
+[25] 	\$(MAKE) -f auto/lib/openssl/makefile.msvc			\
+[26] 		OPENSSL="$OPENSSL" OPENSSL_OPT="$OPENSSL_OPT"		\
+[27] 		OPENSSL_TARGET="$OPENSSL_TARGET"
+[28] 
+[29] END
+[30] 
+[31]     ;;
+[32] 
+[33]     bcc32)
+[34] 
+[35]         ngx_opt=`echo "-DOPENSSL=\"$OPENSSL\" -DOPENSSL_OPT=\"$OPENSSL_OPT\"" \
+[36]             | sed -e "s/\//$ngx_regex_dirsep/g"`
+[37] 
+[38]         cat << END                                            >> $NGX_MAKEFILE
+[39] 
+[40] `echo "$OPENSSL\\openssl\\lib\\libeay32.lib:				\
+[41] 	$OPENSSL\\openssl\\include\\openssl\\ssl.h"			\
+[42] 	| sed -e "s/\//$ngx_regex_dirsep/g"`
+[43] 
+[44] `echo "$OPENSSL\\openssl\\lib\\ssleay32.lib:				\
+[45] 	$OPENSSL\\openssl\\include\\openssl\\ssl.h"			\
+[46] 	| sed -e "s/\//$ngx_regex_dirsep/g"`
+[47] 
+[48] `echo "$OPENSSL\\openssl\\include\\openssl\\ssl.h:	$NGX_MAKEFILE"	\
+[49] 	| sed -e "s/\//$ngx_regex_dirsep/g"`
+[50] 	\$(MAKE) -f auto/lib/openssl/makefile.bcc $ngx_opt
+[51] 
+[52] END
+[53] 
+[54]     ;;
+[55] 
+[56]     *)
+[57]         case $OPENSSL in
+[58]             /*) ngx_prefix="$OPENSSL/.openssl" ;;
+[59]             *)  ngx_prefix="$PWD/$OPENSSL/.openssl" ;;
+[60]         esac
+[61] 
+[62]         cat << END                                            >> $NGX_MAKEFILE
+[63] 
+[64] $OPENSSL/.openssl/include/openssl/ssl.h:	$NGX_MAKEFILE
+[65] 	cd $OPENSSL \\
+[66] 	&& if [ -f Makefile ]; then \$(MAKE) clean; fi \\
+[67] 	&& ./config --prefix=$ngx_prefix no-shared no-threads $OPENSSL_OPT \\
+[68] 	&& \$(MAKE) \\
+[69] 	&& \$(MAKE) install_sw LIBDIR=lib
+[70] 
+[71] END
+[72] 
+[73]     ;;
+[74] 
+[75] esac

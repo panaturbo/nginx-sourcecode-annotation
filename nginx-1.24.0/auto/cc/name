@@ -1,70 +1,70 @@
-
-# Copyright (C) Igor Sysoev
-# Copyright (C) Nginx, Inc.
-
-
-if [ "$NGX_PLATFORM" != win32 ]; then
-
-    ngx_feature="C compiler"
-    ngx_feature_name=
-    ngx_feature_run=yes
-    ngx_feature_incs=
-    ngx_feature_path=
-    ngx_feature_libs=
-    ngx_feature_test=
-    . auto/feature
-
-    if [ $ngx_found = no ]; then
-        echo
-        echo $0: error: C compiler $CC is not found
-        echo
-        exit 1
-    fi
-
-fi
-
-
-if [ "$CC" = cl ]; then
-    NGX_CC_NAME=msvc
-    echo " + using Microsoft Visual C++ compiler"
-
-elif [ "$CC" = wcl386 ]; then
-    NGX_CC_NAME=owc
-    echo " + using Open Watcom C compiler"
-
-elif [ "$CC" = bcc32 ]; then
-    NGX_CC_NAME=bcc
-    echo " + using Borland C++ compiler"
-
-elif `$CC -V 2>&1 | grep '^Intel(R) C' >/dev/null 2>&1`; then
-    NGX_CC_NAME=icc
-    echo " + using Intel C++ compiler"
-
-elif `$CC -v 2>&1 | grep 'gcc version' >/dev/null 2>&1`; then
-    NGX_CC_NAME=gcc
-    echo " + using GNU C compiler"
-
-elif `$CC -v 2>&1 | grep 'clang version' >/dev/null 2>&1`; then
-    NGX_CC_NAME=clang
-    echo " + using Clang C compiler"
-
-elif `$CC -v 2>&1 | grep 'LLVM version' >/dev/null 2>&1`; then
-    NGX_CC_NAME=clang
-    echo " + using Clang C compiler"
-
-elif `$CC -V 2>&1 | grep 'Sun C' >/dev/null 2>&1`; then
-    NGX_CC_NAME=sunc
-    echo " + using Sun C compiler"
-
-elif `$CC -V 2>&1 | grep '^Compaq C' >/dev/null 2>&1`; then
-    NGX_CC_NAME=ccc
-    echo " + using Compaq C compiler"
-
-elif `$CC -V 2>&1 | grep '^aCC: ' >/dev/null 2>&1`; then
-    NGX_CC_NAME=acc
-    echo " + using HP aC++ compiler"
-
-else
-    NGX_CC_NAME=unknown
-
-fi
+[1] 
+[2] # Copyright (C) Igor Sysoev
+[3] # Copyright (C) Nginx, Inc.
+[4] 
+[5] 
+[6] if [ "$NGX_PLATFORM" != win32 ]; then
+[7] 
+[8]     ngx_feature="C compiler"
+[9]     ngx_feature_name=
+[10]     ngx_feature_run=yes
+[11]     ngx_feature_incs=
+[12]     ngx_feature_path=
+[13]     ngx_feature_libs=
+[14]     ngx_feature_test=
+[15]     . auto/feature
+[16] 
+[17]     if [ $ngx_found = no ]; then
+[18]         echo
+[19]         echo $0: error: C compiler $CC is not found
+[20]         echo
+[21]         exit 1
+[22]     fi
+[23] 
+[24] fi
+[25] 
+[26] 
+[27] if [ "$CC" = cl ]; then
+[28]     NGX_CC_NAME=msvc
+[29]     echo " + using Microsoft Visual C++ compiler"
+[30] 
+[31] elif [ "$CC" = wcl386 ]; then
+[32]     NGX_CC_NAME=owc
+[33]     echo " + using Open Watcom C compiler"
+[34] 
+[35] elif [ "$CC" = bcc32 ]; then
+[36]     NGX_CC_NAME=bcc
+[37]     echo " + using Borland C++ compiler"
+[38] 
+[39] elif `$CC -V 2>&1 | grep '^Intel(R) C' >/dev/null 2>&1`; then
+[40]     NGX_CC_NAME=icc
+[41]     echo " + using Intel C++ compiler"
+[42] 
+[43] elif `$CC -v 2>&1 | grep 'gcc version' >/dev/null 2>&1`; then
+[44]     NGX_CC_NAME=gcc
+[45]     echo " + using GNU C compiler"
+[46] 
+[47] elif `$CC -v 2>&1 | grep 'clang version' >/dev/null 2>&1`; then
+[48]     NGX_CC_NAME=clang
+[49]     echo " + using Clang C compiler"
+[50] 
+[51] elif `$CC -v 2>&1 | grep 'LLVM version' >/dev/null 2>&1`; then
+[52]     NGX_CC_NAME=clang
+[53]     echo " + using Clang C compiler"
+[54] 
+[55] elif `$CC -V 2>&1 | grep 'Sun C' >/dev/null 2>&1`; then
+[56]     NGX_CC_NAME=sunc
+[57]     echo " + using Sun C compiler"
+[58] 
+[59] elif `$CC -V 2>&1 | grep '^Compaq C' >/dev/null 2>&1`; then
+[60]     NGX_CC_NAME=ccc
+[61]     echo " + using Compaq C compiler"
+[62] 
+[63] elif `$CC -V 2>&1 | grep '^aCC: ' >/dev/null 2>&1`; then
+[64]     NGX_CC_NAME=acc
+[65]     echo " + using HP aC++ compiler"
+[66] 
+[67] else
+[68]     NGX_CC_NAME=unknown
+[69] 
+[70] fi

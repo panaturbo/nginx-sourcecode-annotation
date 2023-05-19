@@ -1,25 +1,25 @@
-
-# Copyright (C) Igor Sysoev
-# Copyright (C) Nginx, Inc.
-
-
-CFLAGS =	-c -zq -bt=nt -ot -op -oi -oe -s -bm $(CPU_OPT)
-PCREFLAGS =	-DHAVE_CONFIG_H -DPCRE_STATIC -DPOSIX_MALLOC_THRESHOLD=10 &
-		-DSUPPORT_PCRE8 -DHAVE_MEMMOVE
-
-
-pcre.lib:
-	cd $(PCRE)
-
-	wcl386 $(CFLAGS) -i=. $(PCREFLAGS) pcre_*.c
-
-	dir /b *.obj > pcre.lst
-
-	wlib -n pcre.lib @pcre.lst
-
-pcre.h:
-	cd $(PCRE)
-
-	copy /y pcre.h.generic pcre.h
-	copy /y config.h.generic config.h
-	copy /y pcre_chartables.c.dist pcre_chartables.c
+[1] 
+[2] # Copyright (C) Igor Sysoev
+[3] # Copyright (C) Nginx, Inc.
+[4] 
+[5] 
+[6] CFLAGS =	-c -zq -bt=nt -ot -op -oi -oe -s -bm $(CPU_OPT)
+[7] PCREFLAGS =	-DHAVE_CONFIG_H -DPCRE_STATIC -DPOSIX_MALLOC_THRESHOLD=10 &
+[8] 		-DSUPPORT_PCRE8 -DHAVE_MEMMOVE
+[9] 
+[10] 
+[11] pcre.lib:
+[12] 	cd $(PCRE)
+[13] 
+[14] 	wcl386 $(CFLAGS) -i=. $(PCREFLAGS) pcre_*.c
+[15] 
+[16] 	dir /b *.obj > pcre.lst
+[17] 
+[18] 	wlib -n pcre.lib @pcre.lst
+[19] 
+[20] pcre.h:
+[21] 	cd $(PCRE)
+[22] 
+[23] 	copy /y pcre.h.generic pcre.h
+[24] 	copy /y config.h.generic config.h
+[25] 	copy /y pcre_chartables.c.dist pcre_chartables.c

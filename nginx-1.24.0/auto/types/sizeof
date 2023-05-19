@@ -1,76 +1,76 @@
-
-# Copyright (C) Igor Sysoev
-# Copyright (C) Nginx, Inc.
-
-
-echo $ngx_n "checking for $ngx_type size ...$ngx_c"
-
-cat << END >> $NGX_AUTOCONF_ERR
-
-----------------------------------------
-checking for $ngx_type size
-
-END
-
-ngx_size=
-
-cat << END > $NGX_AUTOTEST.c
-
-#include <sys/types.h>
-#include <sys/time.h>
-$NGX_INCLUDE_UNISTD_H
-#include <signal.h>
-#include <stdio.h>
-#include <sys/resource.h>
-$NGX_INCLUDE_INTTYPES_H
-$NGX_INCLUDE_AUTO_CONFIG_H
-
-int main(void) {
-    printf("%d", (int) sizeof($ngx_type));
-    return 0;
-}
-
-END
-
-
-ngx_test="$CC $CC_TEST_FLAGS $CC_AUX_FLAGS \
-          -o $NGX_AUTOTEST $NGX_AUTOTEST.c $NGX_LD_OPT $ngx_feature_libs"
-
-eval "$ngx_test >> $NGX_AUTOCONF_ERR 2>&1"
-
-
-if [ -x $NGX_AUTOTEST ]; then
-    ngx_size=`$NGX_AUTOTEST`
-    echo " $ngx_size bytes"
-fi
-
-
-case $ngx_size in
-    4)
-        ngx_max_value=2147483647
-        ngx_max_len='(sizeof("-2147483648") - 1)'
-    ;;
-
-    8)
-        ngx_max_value=9223372036854775807LL
-        ngx_max_len='(sizeof("-9223372036854775808") - 1)'
-    ;;
-
-    *)
-        echo
-        echo "$0: error: can not detect $ngx_type size"
-
-        echo "----------"    >> $NGX_AUTOCONF_ERR
-        cat $NGX_AUTOTEST.c  >> $NGX_AUTOCONF_ERR
-        echo "----------"    >> $NGX_AUTOCONF_ERR
-        echo $ngx_test       >> $NGX_AUTOCONF_ERR
-        echo "----------"    >> $NGX_AUTOCONF_ERR
-
-        rm -rf $NGX_AUTOTEST*
-
-        exit 1
-esac
-
-
-rm -rf $NGX_AUTOTEST*
-
+[1] 
+[2] # Copyright (C) Igor Sysoev
+[3] # Copyright (C) Nginx, Inc.
+[4] 
+[5] 
+[6] echo $ngx_n "checking for $ngx_type size ...$ngx_c"
+[7] 
+[8] cat << END >> $NGX_AUTOCONF_ERR
+[9] 
+[10] ----------------------------------------
+[11] checking for $ngx_type size
+[12] 
+[13] END
+[14] 
+[15] ngx_size=
+[16] 
+[17] cat << END > $NGX_AUTOTEST.c
+[18] 
+[19] #include <sys/types.h>
+[20] #include <sys/time.h>
+[21] $NGX_INCLUDE_UNISTD_H
+[22] #include <signal.h>
+[23] #include <stdio.h>
+[24] #include <sys/resource.h>
+[25] $NGX_INCLUDE_INTTYPES_H
+[26] $NGX_INCLUDE_AUTO_CONFIG_H
+[27] 
+[28] int main(void) {
+[29]     printf("%d", (int) sizeof($ngx_type));
+[30]     return 0;
+[31] }
+[32] 
+[33] END
+[34] 
+[35] 
+[36] ngx_test="$CC $CC_TEST_FLAGS $CC_AUX_FLAGS \
+[37]           -o $NGX_AUTOTEST $NGX_AUTOTEST.c $NGX_LD_OPT $ngx_feature_libs"
+[38] 
+[39] eval "$ngx_test >> $NGX_AUTOCONF_ERR 2>&1"
+[40] 
+[41] 
+[42] if [ -x $NGX_AUTOTEST ]; then
+[43]     ngx_size=`$NGX_AUTOTEST`
+[44]     echo " $ngx_size bytes"
+[45] fi
+[46] 
+[47] 
+[48] case $ngx_size in
+[49]     4)
+[50]         ngx_max_value=2147483647
+[51]         ngx_max_len='(sizeof("-2147483648") - 1)'
+[52]     ;;
+[53] 
+[54]     8)
+[55]         ngx_max_value=9223372036854775807LL
+[56]         ngx_max_len='(sizeof("-9223372036854775808") - 1)'
+[57]     ;;
+[58] 
+[59]     *)
+[60]         echo
+[61]         echo "$0: error: can not detect $ngx_type size"
+[62] 
+[63]         echo "----------"    >> $NGX_AUTOCONF_ERR
+[64]         cat $NGX_AUTOTEST.c  >> $NGX_AUTOCONF_ERR
+[65]         echo "----------"    >> $NGX_AUTOCONF_ERR
+[66]         echo $ngx_test       >> $NGX_AUTOCONF_ERR
+[67]         echo "----------"    >> $NGX_AUTOCONF_ERR
+[68] 
+[69]         rm -rf $NGX_AUTOTEST*
+[70] 
+[71]         exit 1
+[72] esac
+[73] 
+[74] 
+[75] rm -rf $NGX_AUTOTEST*
+[76] 

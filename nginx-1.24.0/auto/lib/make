@@ -1,24 +1,24 @@
-
-# Copyright (C) Igor Sysoev
-# Copyright (C) Nginx, Inc.
-
-
-if [ $PCRE != NONE -a $PCRE != NO -a $PCRE != YES ]; then
-    . auto/lib/pcre/make
-fi
-
-if [ $OPENSSL != NONE -a $OPENSSL != NO -a $OPENSSL != YES ]; then
-    . auto/lib/openssl/make
-fi
-
-if [ $ZLIB != NONE -a $ZLIB != NO -a $ZLIB != YES ]; then
-    . auto/lib/zlib/make
-fi
-
-if [ $NGX_LIBATOMIC != NO -a $NGX_LIBATOMIC != YES ]; then
-    . auto/lib/libatomic/make
-fi
-
-if [ $USE_PERL != NO ]; then
-    . auto/lib/perl/make
-fi
+[1] 
+[2] # Copyright (C) Igor Sysoev
+[3] # Copyright (C) Nginx, Inc.
+[4] 
+[5] 
+[6] if [ $PCRE != NONE -a $PCRE != NO -a $PCRE != YES ]; then
+[7]     . auto/lib/pcre/make
+[8] fi
+[9] 
+[10] if [ $OPENSSL != NONE -a $OPENSSL != NO -a $OPENSSL != YES ]; then
+[11]     . auto/lib/openssl/make
+[12] fi
+[13] 
+[14] if [ $ZLIB != NONE -a $ZLIB != NO -a $ZLIB != YES ]; then
+[15]     . auto/lib/zlib/make
+[16] fi
+[17] 
+[18] if [ $NGX_LIBATOMIC != NO -a $NGX_LIBATOMIC != YES ]; then
+[19]     . auto/lib/libatomic/make
+[20] fi
+[21] 
+[22] if [ $USE_PERL != NO ]; then
+[23]     . auto/lib/perl/make
+[24] fi

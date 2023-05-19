@@ -1,99 +1,99 @@
-
-types {
-    text/html                                        html htm shtml;
-    text/css                                         css;
-    text/xml                                         xml;
-    image/gif                                        gif;
-    image/jpeg                                       jpeg jpg;
-    application/javascript                           js;
-    application/atom+xml                             atom;
-    application/rss+xml                              rss;
-
-    text/mathml                                      mml;
-    text/plain                                       txt;
-    text/vnd.sun.j2me.app-descriptor                 jad;
-    text/vnd.wap.wml                                 wml;
-    text/x-component                                 htc;
-
-    image/avif                                       avif;
-    image/png                                        png;
-    image/svg+xml                                    svg svgz;
-    image/tiff                                       tif tiff;
-    image/vnd.wap.wbmp                               wbmp;
-    image/webp                                       webp;
-    image/x-icon                                     ico;
-    image/x-jng                                      jng;
-    image/x-ms-bmp                                   bmp;
-
-    font/woff                                        woff;
-    font/woff2                                       woff2;
-
-    application/java-archive                         jar war ear;
-    application/json                                 json;
-    application/mac-binhex40                         hqx;
-    application/msword                               doc;
-    application/pdf                                  pdf;
-    application/postscript                           ps eps ai;
-    application/rtf                                  rtf;
-    application/vnd.apple.mpegurl                    m3u8;
-    application/vnd.google-earth.kml+xml             kml;
-    application/vnd.google-earth.kmz                 kmz;
-    application/vnd.ms-excel                         xls;
-    application/vnd.ms-fontobject                    eot;
-    application/vnd.ms-powerpoint                    ppt;
-    application/vnd.oasis.opendocument.graphics      odg;
-    application/vnd.oasis.opendocument.presentation  odp;
-    application/vnd.oasis.opendocument.spreadsheet   ods;
-    application/vnd.oasis.opendocument.text          odt;
-    application/vnd.openxmlformats-officedocument.presentationml.presentation
-                                                     pptx;
-    application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
-                                                     xlsx;
-    application/vnd.openxmlformats-officedocument.wordprocessingml.document
-                                                     docx;
-    application/vnd.wap.wmlc                         wmlc;
-    application/wasm                                 wasm;
-    application/x-7z-compressed                      7z;
-    application/x-cocoa                              cco;
-    application/x-java-archive-diff                  jardiff;
-    application/x-java-jnlp-file                     jnlp;
-    application/x-makeself                           run;
-    application/x-perl                               pl pm;
-    application/x-pilot                              prc pdb;
-    application/x-rar-compressed                     rar;
-    application/x-redhat-package-manager             rpm;
-    application/x-sea                                sea;
-    application/x-shockwave-flash                    swf;
-    application/x-stuffit                            sit;
-    application/x-tcl                                tcl tk;
-    application/x-x509-ca-cert                       der pem crt;
-    application/x-xpinstall                          xpi;
-    application/xhtml+xml                            xhtml;
-    application/xspf+xml                             xspf;
-    application/zip                                  zip;
-
-    application/octet-stream                         bin exe dll;
-    application/octet-stream                         deb;
-    application/octet-stream                         dmg;
-    application/octet-stream                         iso img;
-    application/octet-stream                         msi msp msm;
-
-    audio/midi                                       mid midi kar;
-    audio/mpeg                                       mp3;
-    audio/ogg                                        ogg;
-    audio/x-m4a                                      m4a;
-    audio/x-realaudio                                ra;
-
-    video/3gpp                                       3gpp 3gp;
-    video/mp2t                                       ts;
-    video/mp4                                        mp4;
-    video/mpeg                                       mpeg mpg;
-    video/quicktime                                  mov;
-    video/webm                                       webm;
-    video/x-flv                                      flv;
-    video/x-m4v                                      m4v;
-    video/x-mng                                      mng;
-    video/x-ms-asf                                   asx asf;
-    video/x-ms-wmv                                   wmv;
-    video/x-msvideo                                  avi;
-}
+[1] 
+[2] types {
+[3]     text/html                                        html htm shtml;
+[4]     text/css                                         css;
+[5]     text/xml                                         xml;
+[6]     image/gif                                        gif;
+[7]     image/jpeg                                       jpeg jpg;
+[8]     application/javascript                           js;
+[9]     application/atom+xml                             atom;
+[10]     application/rss+xml                              rss;
+[11] 
+[12]     text/mathml                                      mml;
+[13]     text/plain                                       txt;
+[14]     text/vnd.sun.j2me.app-descriptor                 jad;
+[15]     text/vnd.wap.wml                                 wml;
+[16]     text/x-component                                 htc;
+[17] 
+[18]     image/avif                                       avif;
+[19]     image/png                                        png;
+[20]     image/svg+xml                                    svg svgz;
+[21]     image/tiff                                       tif tiff;
+[22]     image/vnd.wap.wbmp                               wbmp;
+[23]     image/webp                                       webp;
+[24]     image/x-icon                                     ico;
+[25]     image/x-jng                                      jng;
+[26]     image/x-ms-bmp                                   bmp;
+[27] 
+[28]     font/woff                                        woff;
+[29]     font/woff2                                       woff2;
+[30] 
+[31]     application/java-archive                         jar war ear;
+[32]     application/json                                 json;
+[33]     application/mac-binhex40                         hqx;
+[34]     application/msword                               doc;
+[35]     application/pdf                                  pdf;
+[36]     application/postscript                           ps eps ai;
+[37]     application/rtf                                  rtf;
+[38]     application/vnd.apple.mpegurl                    m3u8;
+[39]     application/vnd.google-earth.kml+xml             kml;
+[40]     application/vnd.google-earth.kmz                 kmz;
+[41]     application/vnd.ms-excel                         xls;
+[42]     application/vnd.ms-fontobject                    eot;
+[43]     application/vnd.ms-powerpoint                    ppt;
+[44]     application/vnd.oasis.opendocument.graphics      odg;
+[45]     application/vnd.oasis.opendocument.presentation  odp;
+[46]     application/vnd.oasis.opendocument.spreadsheet   ods;
+[47]     application/vnd.oasis.opendocument.text          odt;
+[48]     application/vnd.openxmlformats-officedocument.presentationml.presentation
+[49]                                                      pptx;
+[50]     application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
+[51]                                                      xlsx;
+[52]     application/vnd.openxmlformats-officedocument.wordprocessingml.document
+[53]                                                      docx;
+[54]     application/vnd.wap.wmlc                         wmlc;
+[55]     application/wasm                                 wasm;
+[56]     application/x-7z-compressed                      7z;
+[57]     application/x-cocoa                              cco;
+[58]     application/x-java-archive-diff                  jardiff;
+[59]     application/x-java-jnlp-file                     jnlp;
+[60]     application/x-makeself                           run;
+[61]     application/x-perl                               pl pm;
+[62]     application/x-pilot                              prc pdb;
+[63]     application/x-rar-compressed                     rar;
+[64]     application/x-redhat-package-manager             rpm;
+[65]     application/x-sea                                sea;
+[66]     application/x-shockwave-flash                    swf;
+[67]     application/x-stuffit                            sit;
+[68]     application/x-tcl                                tcl tk;
+[69]     application/x-x509-ca-cert                       der pem crt;
+[70]     application/x-xpinstall                          xpi;
+[71]     application/xhtml+xml                            xhtml;
+[72]     application/xspf+xml                             xspf;
+[73]     application/zip                                  zip;
+[74] 
+[75]     application/octet-stream                         bin exe dll;
+[76]     application/octet-stream                         deb;
+[77]     application/octet-stream                         dmg;
+[78]     application/octet-stream                         iso img;
+[79]     application/octet-stream                         msi msp msm;
+[80] 
+[81]     audio/midi                                       mid midi kar;
+[82]     audio/mpeg                                       mp3;
+[83]     audio/ogg                                        ogg;
+[84]     audio/x-m4a                                      m4a;
+[85]     audio/x-realaudio                                ra;
+[86] 
+[87]     video/3gpp                                       3gpp 3gp;
+[88]     video/mp2t                                       ts;
+[89]     video/mp4                                        mp4;
+[90]     video/mpeg                                       mpeg mpg;
+[91]     video/quicktime                                  mov;
+[92]     video/webm                                       webm;
+[93]     video/x-flv                                      flv;
+[94]     video/x-m4v                                      m4v;
+[95]     video/x-mng                                      mng;
+[96]     video/x-ms-asf                                   asx asf;
+[97]     video/x-ms-wmv                                   wmv;
+[98]     video/x-msvideo                                  avi;
+[99] }

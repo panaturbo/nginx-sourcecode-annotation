@@ -1,261 +1,261 @@
-
-# Copyright (C) Igor Sysoev
-# Copyright (C) Nginx, Inc.
-
-
-CORE_MODULES="ngx_core_module ngx_errlog_module ngx_conf_module"
-
-CORE_INCS="src/core"
-
-CORE_DEPS="src/core/nginx.h \
-           src/core/ngx_config.h \
-           src/core/ngx_core.h \
-           src/core/ngx_log.h \
-           src/core/ngx_palloc.h \
-           src/core/ngx_array.h \
-           src/core/ngx_list.h \
-           src/core/ngx_hash.h \
-           src/core/ngx_buf.h \
-           src/core/ngx_queue.h \
-           src/core/ngx_string.h \
-           src/core/ngx_parse.h \
-           src/core/ngx_parse_time.h \
-           src/core/ngx_inet.h \
-           src/core/ngx_file.h \
-           src/core/ngx_crc.h \
-           src/core/ngx_crc32.h \
-           src/core/ngx_murmurhash.h \
-           src/core/ngx_md5.h \
-           src/core/ngx_sha1.h \
-           src/core/ngx_rbtree.h \
-           src/core/ngx_radix_tree.h \
-           src/core/ngx_rwlock.h \
-           src/core/ngx_slab.h \
-           src/core/ngx_times.h \
-           src/core/ngx_shmtx.h \
-           src/core/ngx_connection.h \
-           src/core/ngx_cycle.h \
-           src/core/ngx_conf_file.h \
-           src/core/ngx_module.h \
-           src/core/ngx_resolver.h \
-           src/core/ngx_open_file_cache.h \
-           src/core/ngx_crypt.h \
-           src/core/ngx_proxy_protocol.h \
-           src/core/ngx_syslog.h"
-
-
-CORE_SRCS="src/core/nginx.c \
-           src/core/ngx_log.c \
-           src/core/ngx_palloc.c \
-           src/core/ngx_array.c \
-           src/core/ngx_list.c \
-           src/core/ngx_hash.c \
-           src/core/ngx_buf.c \
-           src/core/ngx_queue.c \
-           src/core/ngx_output_chain.c \
-           src/core/ngx_string.c \
-           src/core/ngx_parse.c \
-           src/core/ngx_parse_time.c \
-           src/core/ngx_inet.c \
-           src/core/ngx_file.c \
-           src/core/ngx_crc32.c \
-           src/core/ngx_murmurhash.c \
-           src/core/ngx_md5.c \
-           src/core/ngx_sha1.c \
-           src/core/ngx_rbtree.c \
-           src/core/ngx_radix_tree.c \
-           src/core/ngx_slab.c \
-           src/core/ngx_times.c \
-           src/core/ngx_shmtx.c \
-           src/core/ngx_connection.c \
-           src/core/ngx_cycle.c \
-           src/core/ngx_spinlock.c \
-           src/core/ngx_rwlock.c \
-           src/core/ngx_cpuinfo.c \
-           src/core/ngx_conf_file.c \
-           src/core/ngx_module.c \
-           src/core/ngx_resolver.c \
-           src/core/ngx_open_file_cache.c \
-           src/core/ngx_crypt.c \
-           src/core/ngx_proxy_protocol.c \
-           src/core/ngx_syslog.c"
-
-
-EVENT_MODULES="ngx_events_module ngx_event_core_module"
-
-EVENT_INCS="src/event src/event/modules"
-
-EVENT_DEPS="src/event/ngx_event.h \
-            src/event/ngx_event_timer.h \
-            src/event/ngx_event_posted.h \
-            src/event/ngx_event_connect.h \
-            src/event/ngx_event_pipe.h \
-            src/event/ngx_event_udp.h"
-
-EVENT_SRCS="src/event/ngx_event.c \
-            src/event/ngx_event_timer.c \
-            src/event/ngx_event_posted.c \
-            src/event/ngx_event_accept.c \
-            src/event/ngx_event_udp.c \
-            src/event/ngx_event_connect.c \
-            src/event/ngx_event_pipe.c"
-
-
-SELECT_MODULE=ngx_select_module
-SELECT_SRCS=src/event/modules/ngx_select_module.c
-WIN32_SELECT_SRCS=src/event/modules/ngx_win32_select_module.c
-
-POLL_MODULE=ngx_poll_module
-POLL_SRCS=src/event/modules/ngx_poll_module.c
-WIN32_POLL_SRCS=src/event/modules/ngx_win32_poll_module.c
-
-KQUEUE_MODULE=ngx_kqueue_module
-KQUEUE_SRCS=src/event/modules/ngx_kqueue_module.c
-
-DEVPOLL_MODULE=ngx_devpoll_module
-DEVPOLL_SRCS=src/event/modules/ngx_devpoll_module.c
-
-EVENTPORT_MODULE=ngx_eventport_module
-EVENTPORT_SRCS=src/event/modules/ngx_eventport_module.c
-
-EPOLL_MODULE=ngx_epoll_module
-EPOLL_SRCS=src/event/modules/ngx_epoll_module.c
-
-IOCP_MODULE=ngx_iocp_module
-IOCP_SRCS=src/event/modules/ngx_iocp_module.c
-
-FILE_AIO_SRCS="src/os/unix/ngx_file_aio_read.c"
-LINUX_AIO_SRCS="src/os/unix/ngx_linux_aio_read.c"
-
-UNIX_INCS="$CORE_INCS $EVENT_INCS src/os/unix"
-
-UNIX_DEPS="$CORE_DEPS $EVENT_DEPS \
-            src/os/unix/ngx_time.h \
-            src/os/unix/ngx_errno.h \
-            src/os/unix/ngx_alloc.h \
-            src/os/unix/ngx_files.h \
-            src/os/unix/ngx_channel.h \
-            src/os/unix/ngx_shmem.h \
-            src/os/unix/ngx_process.h \
-            src/os/unix/ngx_setaffinity.h \
-            src/os/unix/ngx_setproctitle.h \
-            src/os/unix/ngx_atomic.h \
-            src/os/unix/ngx_gcc_atomic_x86.h \
-            src/os/unix/ngx_thread.h \
-            src/os/unix/ngx_socket.h \
-            src/os/unix/ngx_os.h \
-            src/os/unix/ngx_user.h \
-            src/os/unix/ngx_dlopen.h \
-            src/os/unix/ngx_process_cycle.h"
-
-# add to UNIX_DEPS
-#            src/os/unix/ngx_gcc_atomic_amd64.h \
-#            src/os/unix/ngx_gcc_atomic_sparc64.h \
-#            src/os/unix/ngx_gcc_atomic_ppc.h \
-#            src/os/unix/ngx_sunpro_atomic_sparc64.h \
-#            src/os/unix/ngx_sunpro_x86.il \
-#            src/os/unix/ngx_sunpro_amd64.il \
-#            src/os/unix/ngx_sunpro_sparc64.il \
-
-
-UNIX_SRCS="$CORE_SRCS $EVENT_SRCS \
-            src/os/unix/ngx_time.c \
-            src/os/unix/ngx_errno.c \
-            src/os/unix/ngx_alloc.c \
-            src/os/unix/ngx_files.c \
-            src/os/unix/ngx_socket.c \
-            src/os/unix/ngx_recv.c \
-            src/os/unix/ngx_readv_chain.c \
-            src/os/unix/ngx_udp_recv.c \
-            src/os/unix/ngx_send.c \
-            src/os/unix/ngx_writev_chain.c \
-            src/os/unix/ngx_udp_send.c \
-            src/os/unix/ngx_udp_sendmsg_chain.c \
-            src/os/unix/ngx_channel.c \
-            src/os/unix/ngx_shmem.c \
-            src/os/unix/ngx_process.c \
-            src/os/unix/ngx_daemon.c \
-            src/os/unix/ngx_setaffinity.c \
-            src/os/unix/ngx_setproctitle.c \
-            src/os/unix/ngx_posix_init.c \
-            src/os/unix/ngx_user.c \
-            src/os/unix/ngx_dlopen.c \
-            src/os/unix/ngx_process_cycle.c"
-
-POSIX_DEPS=src/os/unix/ngx_posix_config.h
-
-THREAD_POOL_MODULE=ngx_thread_pool_module
-THREAD_POOL_DEPS=src/core/ngx_thread_pool.h
-THREAD_POOL_SRCS="src/core/ngx_thread_pool.c
-                  src/os/unix/ngx_thread_cond.c
-                  src/os/unix/ngx_thread_mutex.c
-                  src/os/unix/ngx_thread_id.c"
-
-FREEBSD_DEPS="src/os/unix/ngx_freebsd_config.h src/os/unix/ngx_freebsd.h"
-FREEBSD_SRCS=src/os/unix/ngx_freebsd_init.c
-FREEBSD_SENDFILE_SRCS=src/os/unix/ngx_freebsd_sendfile_chain.c
-
-LINUX_DEPS="src/os/unix/ngx_linux_config.h src/os/unix/ngx_linux.h"
-LINUX_SRCS=src/os/unix/ngx_linux_init.c
-LINUX_SENDFILE_SRCS=src/os/unix/ngx_linux_sendfile_chain.c
-
-
-SOLARIS_DEPS="src/os/unix/ngx_solaris_config.h src/os/unix/ngx_solaris.h"
-SOLARIS_SRCS=src/os/unix/ngx_solaris_init.c
-SOLARIS_SENDFILEV_SRCS=src/os/unix/ngx_solaris_sendfilev_chain.c
-
-
-DARWIN_DEPS="src/os/unix/ngx_darwin_config.h src/os/unix/ngx_darwin.h"
-DARWIN_SRCS=src/os/unix/ngx_darwin_init.c
-DARWIN_SENDFILE_SRCS=src/os/unix/ngx_darwin_sendfile_chain.c
-
-
-WIN32_INCS="$CORE_INCS $EVENT_INCS src/os/win32"
-
-WIN32_DEPS="$CORE_DEPS $EVENT_DEPS \
-            src/os/win32/ngx_win32_config.h \
-            src/os/win32/ngx_time.h \
-            src/os/win32/ngx_errno.h \
-            src/os/win32/ngx_alloc.h \
-            src/os/win32/ngx_files.h \
-            src/os/win32/ngx_shmem.h \
-            src/os/win32/ngx_process.h \
-            src/os/win32/ngx_atomic.h \
-            src/os/win32/ngx_thread.h \
-            src/os/win32/ngx_socket.h \
-            src/os/win32/ngx_os.h \
-            src/os/win32/ngx_user.h \
-            src/os/win32/ngx_dlopen.h \
-            src/os/win32/ngx_process_cycle.h"
-
-WIN32_CONFIG=src/os/win32/ngx_win32_config.h
-
-WIN32_SRCS="$CORE_SRCS $EVENT_SRCS \
-            src/os/win32/ngx_errno.c \
-            src/os/win32/ngx_alloc.c \
-            src/os/win32/ngx_files.c \
-            src/os/win32/ngx_shmem.c \
-            src/os/win32/ngx_time.c \
-            src/os/win32/ngx_process.c \
-            src/os/win32/ngx_thread.c \
-            src/os/win32/ngx_socket.c \
-            src/os/win32/ngx_wsarecv.c \
-            src/os/win32/ngx_wsarecv_chain.c \
-            src/os/win32/ngx_udp_wsarecv.c \
-            src/os/win32/ngx_wsasend.c \
-            src/os/win32/ngx_wsasend_chain.c \
-            src/os/win32/ngx_win32_init.c \
-            src/os/win32/ngx_user.c \
-            src/os/win32/ngx_dlopen.c \
-            src/os/win32/ngx_event_log.c \
-            src/os/win32/ngx_process_cycle.c \
-            src/event/ngx_event_acceptex.c"
-
-NGX_WIN32_ICONS="src/os/win32/nginx.ico"
-NGX_WIN32_RC="src/os/win32/nginx.rc"
-
-
-HTTP_FILE_CACHE_SRCS=src/http/ngx_http_file_cache.c
-
-HTTP_HUFF_SRCS="src/http/ngx_http_huff_decode.c
-                src/http/ngx_http_huff_encode.c"
+[1] 
+[2] # Copyright (C) Igor Sysoev
+[3] # Copyright (C) Nginx, Inc.
+[4] 
+[5] 
+[6] CORE_MODULES="ngx_core_module ngx_errlog_module ngx_conf_module"
+[7] 
+[8] CORE_INCS="src/core"
+[9] 
+[10] CORE_DEPS="src/core/nginx.h \
+[11]            src/core/ngx_config.h \
+[12]            src/core/ngx_core.h \
+[13]            src/core/ngx_log.h \
+[14]            src/core/ngx_palloc.h \
+[15]            src/core/ngx_array.h \
+[16]            src/core/ngx_list.h \
+[17]            src/core/ngx_hash.h \
+[18]            src/core/ngx_buf.h \
+[19]            src/core/ngx_queue.h \
+[20]            src/core/ngx_string.h \
+[21]            src/core/ngx_parse.h \
+[22]            src/core/ngx_parse_time.h \
+[23]            src/core/ngx_inet.h \
+[24]            src/core/ngx_file.h \
+[25]            src/core/ngx_crc.h \
+[26]            src/core/ngx_crc32.h \
+[27]            src/core/ngx_murmurhash.h \
+[28]            src/core/ngx_md5.h \
+[29]            src/core/ngx_sha1.h \
+[30]            src/core/ngx_rbtree.h \
+[31]            src/core/ngx_radix_tree.h \
+[32]            src/core/ngx_rwlock.h \
+[33]            src/core/ngx_slab.h \
+[34]            src/core/ngx_times.h \
+[35]            src/core/ngx_shmtx.h \
+[36]            src/core/ngx_connection.h \
+[37]            src/core/ngx_cycle.h \
+[38]            src/core/ngx_conf_file.h \
+[39]            src/core/ngx_module.h \
+[40]            src/core/ngx_resolver.h \
+[41]            src/core/ngx_open_file_cache.h \
+[42]            src/core/ngx_crypt.h \
+[43]            src/core/ngx_proxy_protocol.h \
+[44]            src/core/ngx_syslog.h"
+[45] 
+[46] 
+[47] CORE_SRCS="src/core/nginx.c \
+[48]            src/core/ngx_log.c \
+[49]            src/core/ngx_palloc.c \
+[50]            src/core/ngx_array.c \
+[51]            src/core/ngx_list.c \
+[52]            src/core/ngx_hash.c \
+[53]            src/core/ngx_buf.c \
+[54]            src/core/ngx_queue.c \
+[55]            src/core/ngx_output_chain.c \
+[56]            src/core/ngx_string.c \
+[57]            src/core/ngx_parse.c \
+[58]            src/core/ngx_parse_time.c \
+[59]            src/core/ngx_inet.c \
+[60]            src/core/ngx_file.c \
+[61]            src/core/ngx_crc32.c \
+[62]            src/core/ngx_murmurhash.c \
+[63]            src/core/ngx_md5.c \
+[64]            src/core/ngx_sha1.c \
+[65]            src/core/ngx_rbtree.c \
+[66]            src/core/ngx_radix_tree.c \
+[67]            src/core/ngx_slab.c \
+[68]            src/core/ngx_times.c \
+[69]            src/core/ngx_shmtx.c \
+[70]            src/core/ngx_connection.c \
+[71]            src/core/ngx_cycle.c \
+[72]            src/core/ngx_spinlock.c \
+[73]            src/core/ngx_rwlock.c \
+[74]            src/core/ngx_cpuinfo.c \
+[75]            src/core/ngx_conf_file.c \
+[76]            src/core/ngx_module.c \
+[77]            src/core/ngx_resolver.c \
+[78]            src/core/ngx_open_file_cache.c \
+[79]            src/core/ngx_crypt.c \
+[80]            src/core/ngx_proxy_protocol.c \
+[81]            src/core/ngx_syslog.c"
+[82] 
+[83] 
+[84] EVENT_MODULES="ngx_events_module ngx_event_core_module"
+[85] 
+[86] EVENT_INCS="src/event src/event/modules"
+[87] 
+[88] EVENT_DEPS="src/event/ngx_event.h \
+[89]             src/event/ngx_event_timer.h \
+[90]             src/event/ngx_event_posted.h \
+[91]             src/event/ngx_event_connect.h \
+[92]             src/event/ngx_event_pipe.h \
+[93]             src/event/ngx_event_udp.h"
+[94] 
+[95] EVENT_SRCS="src/event/ngx_event.c \
+[96]             src/event/ngx_event_timer.c \
+[97]             src/event/ngx_event_posted.c \
+[98]             src/event/ngx_event_accept.c \
+[99]             src/event/ngx_event_udp.c \
+[100]             src/event/ngx_event_connect.c \
+[101]             src/event/ngx_event_pipe.c"
+[102] 
+[103] 
+[104] SELECT_MODULE=ngx_select_module
+[105] SELECT_SRCS=src/event/modules/ngx_select_module.c
+[106] WIN32_SELECT_SRCS=src/event/modules/ngx_win32_select_module.c
+[107] 
+[108] POLL_MODULE=ngx_poll_module
+[109] POLL_SRCS=src/event/modules/ngx_poll_module.c
+[110] WIN32_POLL_SRCS=src/event/modules/ngx_win32_poll_module.c
+[111] 
+[112] KQUEUE_MODULE=ngx_kqueue_module
+[113] KQUEUE_SRCS=src/event/modules/ngx_kqueue_module.c
+[114] 
+[115] DEVPOLL_MODULE=ngx_devpoll_module
+[116] DEVPOLL_SRCS=src/event/modules/ngx_devpoll_module.c
+[117] 
+[118] EVENTPORT_MODULE=ngx_eventport_module
+[119] EVENTPORT_SRCS=src/event/modules/ngx_eventport_module.c
+[120] 
+[121] EPOLL_MODULE=ngx_epoll_module
+[122] EPOLL_SRCS=src/event/modules/ngx_epoll_module.c
+[123] 
+[124] IOCP_MODULE=ngx_iocp_module
+[125] IOCP_SRCS=src/event/modules/ngx_iocp_module.c
+[126] 
+[127] FILE_AIO_SRCS="src/os/unix/ngx_file_aio_read.c"
+[128] LINUX_AIO_SRCS="src/os/unix/ngx_linux_aio_read.c"
+[129] 
+[130] UNIX_INCS="$CORE_INCS $EVENT_INCS src/os/unix"
+[131] 
+[132] UNIX_DEPS="$CORE_DEPS $EVENT_DEPS \
+[133]             src/os/unix/ngx_time.h \
+[134]             src/os/unix/ngx_errno.h \
+[135]             src/os/unix/ngx_alloc.h \
+[136]             src/os/unix/ngx_files.h \
+[137]             src/os/unix/ngx_channel.h \
+[138]             src/os/unix/ngx_shmem.h \
+[139]             src/os/unix/ngx_process.h \
+[140]             src/os/unix/ngx_setaffinity.h \
+[141]             src/os/unix/ngx_setproctitle.h \
+[142]             src/os/unix/ngx_atomic.h \
+[143]             src/os/unix/ngx_gcc_atomic_x86.h \
+[144]             src/os/unix/ngx_thread.h \
+[145]             src/os/unix/ngx_socket.h \
+[146]             src/os/unix/ngx_os.h \
+[147]             src/os/unix/ngx_user.h \
+[148]             src/os/unix/ngx_dlopen.h \
+[149]             src/os/unix/ngx_process_cycle.h"
+[150] 
+[151] # add to UNIX_DEPS
+[152] #            src/os/unix/ngx_gcc_atomic_amd64.h \
+[153] #            src/os/unix/ngx_gcc_atomic_sparc64.h \
+[154] #            src/os/unix/ngx_gcc_atomic_ppc.h \
+[155] #            src/os/unix/ngx_sunpro_atomic_sparc64.h \
+[156] #            src/os/unix/ngx_sunpro_x86.il \
+[157] #            src/os/unix/ngx_sunpro_amd64.il \
+[158] #            src/os/unix/ngx_sunpro_sparc64.il \
+[159] 
+[160] 
+[161] UNIX_SRCS="$CORE_SRCS $EVENT_SRCS \
+[162]             src/os/unix/ngx_time.c \
+[163]             src/os/unix/ngx_errno.c \
+[164]             src/os/unix/ngx_alloc.c \
+[165]             src/os/unix/ngx_files.c \
+[166]             src/os/unix/ngx_socket.c \
+[167]             src/os/unix/ngx_recv.c \
+[168]             src/os/unix/ngx_readv_chain.c \
+[169]             src/os/unix/ngx_udp_recv.c \
+[170]             src/os/unix/ngx_send.c \
+[171]             src/os/unix/ngx_writev_chain.c \
+[172]             src/os/unix/ngx_udp_send.c \
+[173]             src/os/unix/ngx_udp_sendmsg_chain.c \
+[174]             src/os/unix/ngx_channel.c \
+[175]             src/os/unix/ngx_shmem.c \
+[176]             src/os/unix/ngx_process.c \
+[177]             src/os/unix/ngx_daemon.c \
+[178]             src/os/unix/ngx_setaffinity.c \
+[179]             src/os/unix/ngx_setproctitle.c \
+[180]             src/os/unix/ngx_posix_init.c \
+[181]             src/os/unix/ngx_user.c \
+[182]             src/os/unix/ngx_dlopen.c \
+[183]             src/os/unix/ngx_process_cycle.c"
+[184] 
+[185] POSIX_DEPS=src/os/unix/ngx_posix_config.h
+[186] 
+[187] THREAD_POOL_MODULE=ngx_thread_pool_module
+[188] THREAD_POOL_DEPS=src/core/ngx_thread_pool.h
+[189] THREAD_POOL_SRCS="src/core/ngx_thread_pool.c
+[190]                   src/os/unix/ngx_thread_cond.c
+[191]                   src/os/unix/ngx_thread_mutex.c
+[192]                   src/os/unix/ngx_thread_id.c"
+[193] 
+[194] FREEBSD_DEPS="src/os/unix/ngx_freebsd_config.h src/os/unix/ngx_freebsd.h"
+[195] FREEBSD_SRCS=src/os/unix/ngx_freebsd_init.c
+[196] FREEBSD_SENDFILE_SRCS=src/os/unix/ngx_freebsd_sendfile_chain.c
+[197] 
+[198] LINUX_DEPS="src/os/unix/ngx_linux_config.h src/os/unix/ngx_linux.h"
+[199] LINUX_SRCS=src/os/unix/ngx_linux_init.c
+[200] LINUX_SENDFILE_SRCS=src/os/unix/ngx_linux_sendfile_chain.c
+[201] 
+[202] 
+[203] SOLARIS_DEPS="src/os/unix/ngx_solaris_config.h src/os/unix/ngx_solaris.h"
+[204] SOLARIS_SRCS=src/os/unix/ngx_solaris_init.c
+[205] SOLARIS_SENDFILEV_SRCS=src/os/unix/ngx_solaris_sendfilev_chain.c
+[206] 
+[207] 
+[208] DARWIN_DEPS="src/os/unix/ngx_darwin_config.h src/os/unix/ngx_darwin.h"
+[209] DARWIN_SRCS=src/os/unix/ngx_darwin_init.c
+[210] DARWIN_SENDFILE_SRCS=src/os/unix/ngx_darwin_sendfile_chain.c
+[211] 
+[212] 
+[213] WIN32_INCS="$CORE_INCS $EVENT_INCS src/os/win32"
+[214] 
+[215] WIN32_DEPS="$CORE_DEPS $EVENT_DEPS \
+[216]             src/os/win32/ngx_win32_config.h \
+[217]             src/os/win32/ngx_time.h \
+[218]             src/os/win32/ngx_errno.h \
+[219]             src/os/win32/ngx_alloc.h \
+[220]             src/os/win32/ngx_files.h \
+[221]             src/os/win32/ngx_shmem.h \
+[222]             src/os/win32/ngx_process.h \
+[223]             src/os/win32/ngx_atomic.h \
+[224]             src/os/win32/ngx_thread.h \
+[225]             src/os/win32/ngx_socket.h \
+[226]             src/os/win32/ngx_os.h \
+[227]             src/os/win32/ngx_user.h \
+[228]             src/os/win32/ngx_dlopen.h \
+[229]             src/os/win32/ngx_process_cycle.h"
+[230] 
+[231] WIN32_CONFIG=src/os/win32/ngx_win32_config.h
+[232] 
+[233] WIN32_SRCS="$CORE_SRCS $EVENT_SRCS \
+[234]             src/os/win32/ngx_errno.c \
+[235]             src/os/win32/ngx_alloc.c \
+[236]             src/os/win32/ngx_files.c \
+[237]             src/os/win32/ngx_shmem.c \
+[238]             src/os/win32/ngx_time.c \
+[239]             src/os/win32/ngx_process.c \
+[240]             src/os/win32/ngx_thread.c \
+[241]             src/os/win32/ngx_socket.c \
+[242]             src/os/win32/ngx_wsarecv.c \
+[243]             src/os/win32/ngx_wsarecv_chain.c \
+[244]             src/os/win32/ngx_udp_wsarecv.c \
+[245]             src/os/win32/ngx_wsasend.c \
+[246]             src/os/win32/ngx_wsasend_chain.c \
+[247]             src/os/win32/ngx_win32_init.c \
+[248]             src/os/win32/ngx_user.c \
+[249]             src/os/win32/ngx_dlopen.c \
+[250]             src/os/win32/ngx_event_log.c \
+[251]             src/os/win32/ngx_process_cycle.c \
+[252]             src/event/ngx_event_acceptex.c"
+[253] 
+[254] NGX_WIN32_ICONS="src/os/win32/nginx.ico"
+[255] NGX_WIN32_RC="src/os/win32/nginx.rc"
+[256] 
+[257] 
+[258] HTTP_FILE_CACHE_SRCS=src/http/ngx_http_file_cache.c
+[259] 
+[260] HTTP_HUFF_SRCS="src/http/ngx_http_huff_decode.c
+[261]                 src/http/ngx_http_huff_encode.c"

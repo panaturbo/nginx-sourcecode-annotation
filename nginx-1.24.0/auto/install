@@ -1,220 +1,220 @@
-
-# Copyright (C) Igor Sysoev
-# Copyright (C) Nginx, Inc.
-
-
-if [ $USE_PERL != NO ]; then
-
-    cat << END                                                >> $NGX_MAKEFILE
-
-install_perl_modules:
-	cd $NGX_OBJS/src/http/modules/perl && \$(MAKE) install
-END
-
-    NGX_INSTALL_PERL_MODULES=install_perl_modules
-
-fi
-
-
-case ".$NGX_SBIN_PATH" in
-    ./*)
-    ;;
-
-    *)
-        NGX_SBIN_PATH=$NGX_PREFIX/$NGX_SBIN_PATH
-    ;;
-esac
-
-
-case ".$NGX_MODULES_PATH" in
-    ./*)
-    ;;
-
-    *)
-        NGX_MODULES_PATH=$NGX_PREFIX/$NGX_MODULES_PATH
-    ;;
-esac
-
-NGX_MODULES_PATH=`dirname $NGX_MODULES_PATH/.`
-
-
-case ".$NGX_CONF_PATH" in
-    ./*)
-    ;;
-
-    *)
-        NGX_CONF_PATH=$NGX_PREFIX/$NGX_CONF_PATH
-    ;;
-esac
-
-
-NGX_CONF_PREFIX=`dirname $NGX_CONF_PATH`
-
-
-case ".$NGX_PID_PATH" in
-    ./*)
-    ;;
-
-    *)
-        NGX_PID_PATH=$NGX_PREFIX/$NGX_PID_PATH
-    ;;
-esac
-
-
-case ".$NGX_ERROR_LOG_PATH" in
-    ./* | .)
-    ;;
-
-    *)
-        NGX_ERROR_LOG_PATH=$NGX_PREFIX/$NGX_ERROR_LOG_PATH
-    ;;
-esac
-
-
-case ".$NGX_HTTP_LOG_PATH" in
-    ./*)
-    ;;
-
-    *)
-        NGX_HTTP_LOG_PATH=$NGX_PREFIX/$NGX_HTTP_LOG_PATH
-    ;;
-esac
-
-
-if test -f man/nginx.8 ; then
-    NGX_MAN=man/nginx.8
-else
-    NGX_MAN=docs/man/nginx.8
-fi
-
-if test -d html ; then
-    NGX_HTML=html
-else
-    NGX_HTML=docs/html
-fi
-
-cat << END                                                    >> $NGX_MAKEFILE
-
-manpage:	$NGX_OBJS/nginx.8
-
-$NGX_OBJS/nginx.8:	$NGX_MAN $NGX_AUTO_CONFIG_H
-	sed -e "s|%%PREFIX%%|$NGX_PREFIX|" \\
-		-e "s|%%PID_PATH%%|$NGX_PID_PATH|" \\
-		-e "s|%%CONF_PATH%%|$NGX_CONF_PATH|" \\
-		-e "s|%%ERROR_LOG_PATH%%|${NGX_ERROR_LOG_PATH:-stderr}|" \\
-		< $NGX_MAN > \$@
-
-install:	build $NGX_INSTALL_PERL_MODULES
-	test -d '\$(DESTDIR)$NGX_PREFIX' || mkdir -p '\$(DESTDIR)$NGX_PREFIX'
-
-	test -d '\$(DESTDIR)`dirname "$NGX_SBIN_PATH"`' \\
-		|| mkdir -p '\$(DESTDIR)`dirname "$NGX_SBIN_PATH"`'
-	test ! -f '\$(DESTDIR)$NGX_SBIN_PATH' \\
-		|| mv '\$(DESTDIR)$NGX_SBIN_PATH' \\
-			'\$(DESTDIR)$NGX_SBIN_PATH.old'
-	cp $NGX_OBJS/nginx '\$(DESTDIR)$NGX_SBIN_PATH'
-
-	test -d '\$(DESTDIR)$NGX_CONF_PREFIX' \\
-		|| mkdir -p '\$(DESTDIR)$NGX_CONF_PREFIX'
-
-	cp conf/koi-win '\$(DESTDIR)$NGX_CONF_PREFIX'
-	cp conf/koi-utf '\$(DESTDIR)$NGX_CONF_PREFIX'
-	cp conf/win-utf '\$(DESTDIR)$NGX_CONF_PREFIX'
-
-	test -f '\$(DESTDIR)$NGX_CONF_PREFIX/mime.types' \\
-		|| cp conf/mime.types '\$(DESTDIR)$NGX_CONF_PREFIX'
-	cp conf/mime.types '\$(DESTDIR)$NGX_CONF_PREFIX/mime.types.default'
-
-	test -f '\$(DESTDIR)$NGX_CONF_PREFIX/fastcgi_params' \\
-		|| cp conf/fastcgi_params '\$(DESTDIR)$NGX_CONF_PREFIX'
-	cp conf/fastcgi_params \\
-		'\$(DESTDIR)$NGX_CONF_PREFIX/fastcgi_params.default'
-
-	test -f '\$(DESTDIR)$NGX_CONF_PREFIX/fastcgi.conf' \\
-		|| cp conf/fastcgi.conf '\$(DESTDIR)$NGX_CONF_PREFIX'
-	cp conf/fastcgi.conf '\$(DESTDIR)$NGX_CONF_PREFIX/fastcgi.conf.default'
-
-	test -f '\$(DESTDIR)$NGX_CONF_PREFIX/uwsgi_params' \\
-		|| cp conf/uwsgi_params '\$(DESTDIR)$NGX_CONF_PREFIX'
-	cp conf/uwsgi_params \\
-		'\$(DESTDIR)$NGX_CONF_PREFIX/uwsgi_params.default'
-
-	test -f '\$(DESTDIR)$NGX_CONF_PREFIX/scgi_params' \\
-		|| cp conf/scgi_params '\$(DESTDIR)$NGX_CONF_PREFIX'
-	cp conf/scgi_params \\
-		'\$(DESTDIR)$NGX_CONF_PREFIX/scgi_params.default'
-
-	test -f '\$(DESTDIR)$NGX_CONF_PATH' \\
-		|| cp conf/nginx.conf '\$(DESTDIR)$NGX_CONF_PATH'
-	cp conf/nginx.conf '\$(DESTDIR)$NGX_CONF_PREFIX/nginx.conf.default'
-
-	test -d '\$(DESTDIR)`dirname "$NGX_PID_PATH"`' \\
-		|| mkdir -p '\$(DESTDIR)`dirname "$NGX_PID_PATH"`'
-
-	test -d '\$(DESTDIR)`dirname "$NGX_HTTP_LOG_PATH"`' \\
-		|| mkdir -p '\$(DESTDIR)`dirname "$NGX_HTTP_LOG_PATH"`'
-
-	test -d '\$(DESTDIR)$NGX_PREFIX/html' \\
-		|| cp -R $NGX_HTML '\$(DESTDIR)$NGX_PREFIX'
-END
-
-
-if test -n "$NGX_ERROR_LOG_PATH"; then
-    cat << END                                                >> $NGX_MAKEFILE
-
-	test -d '\$(DESTDIR)`dirname "$NGX_ERROR_LOG_PATH"`' \\
-		|| mkdir -p '\$(DESTDIR)`dirname "$NGX_ERROR_LOG_PATH"`'
-END
-
-fi
-
-
-if test -n "$DYNAMIC_MODULES"; then
-    cat << END                                                >> $NGX_MAKEFILE
-
-	test -d '\$(DESTDIR)$NGX_MODULES_PATH' \\
-		|| mkdir -p '\$(DESTDIR)$NGX_MODULES_PATH'
-END
-
-fi
-
-
-for ngx_module in $DYNAMIC_MODULES
-do
-    ngx_module=$ngx_module$ngx_modext
-
-    cat << END                                                >> $NGX_MAKEFILE
-
-	test ! -f '\$(DESTDIR)$NGX_MODULES_PATH/$ngx_module' \\
-		|| mv '\$(DESTDIR)$NGX_MODULES_PATH/$ngx_module' \\
-			'\$(DESTDIR)$NGX_MODULES_PATH/$ngx_module.old'
-	cp $NGX_OBJS/$ngx_module '\$(DESTDIR)$NGX_MODULES_PATH/$ngx_module'
-END
-
-done
-
-
-# create Makefile
-
-cat << END >> Makefile
-
-build:
-	\$(MAKE) -f $NGX_MAKEFILE
-
-install:
-	\$(MAKE) -f $NGX_MAKEFILE install
-
-modules:
-	\$(MAKE) -f $NGX_MAKEFILE modules
-
-upgrade:
-	$NGX_SBIN_PATH -t
-
-	kill -USR2 \`cat $NGX_PID_PATH\`
-	sleep 1
-	test -f $NGX_PID_PATH.oldbin
-
-	kill -QUIT \`cat $NGX_PID_PATH.oldbin\`
-
-.PHONY:	build install modules upgrade
-END
+[1] 
+[2] # Copyright (C) Igor Sysoev
+[3] # Copyright (C) Nginx, Inc.
+[4] 
+[5] 
+[6] if [ $USE_PERL != NO ]; then
+[7] 
+[8]     cat << END                                                >> $NGX_MAKEFILE
+[9] 
+[10] install_perl_modules:
+[11] 	cd $NGX_OBJS/src/http/modules/perl && \$(MAKE) install
+[12] END
+[13] 
+[14]     NGX_INSTALL_PERL_MODULES=install_perl_modules
+[15] 
+[16] fi
+[17] 
+[18] 
+[19] case ".$NGX_SBIN_PATH" in
+[20]     ./*)
+[21]     ;;
+[22] 
+[23]     *)
+[24]         NGX_SBIN_PATH=$NGX_PREFIX/$NGX_SBIN_PATH
+[25]     ;;
+[26] esac
+[27] 
+[28] 
+[29] case ".$NGX_MODULES_PATH" in
+[30]     ./*)
+[31]     ;;
+[32] 
+[33]     *)
+[34]         NGX_MODULES_PATH=$NGX_PREFIX/$NGX_MODULES_PATH
+[35]     ;;
+[36] esac
+[37] 
+[38] NGX_MODULES_PATH=`dirname $NGX_MODULES_PATH/.`
+[39] 
+[40] 
+[41] case ".$NGX_CONF_PATH" in
+[42]     ./*)
+[43]     ;;
+[44] 
+[45]     *)
+[46]         NGX_CONF_PATH=$NGX_PREFIX/$NGX_CONF_PATH
+[47]     ;;
+[48] esac
+[49] 
+[50] 
+[51] NGX_CONF_PREFIX=`dirname $NGX_CONF_PATH`
+[52] 
+[53] 
+[54] case ".$NGX_PID_PATH" in
+[55]     ./*)
+[56]     ;;
+[57] 
+[58]     *)
+[59]         NGX_PID_PATH=$NGX_PREFIX/$NGX_PID_PATH
+[60]     ;;
+[61] esac
+[62] 
+[63] 
+[64] case ".$NGX_ERROR_LOG_PATH" in
+[65]     ./* | .)
+[66]     ;;
+[67] 
+[68]     *)
+[69]         NGX_ERROR_LOG_PATH=$NGX_PREFIX/$NGX_ERROR_LOG_PATH
+[70]     ;;
+[71] esac
+[72] 
+[73] 
+[74] case ".$NGX_HTTP_LOG_PATH" in
+[75]     ./*)
+[76]     ;;
+[77] 
+[78]     *)
+[79]         NGX_HTTP_LOG_PATH=$NGX_PREFIX/$NGX_HTTP_LOG_PATH
+[80]     ;;
+[81] esac
+[82] 
+[83] 
+[84] if test -f man/nginx.8 ; then
+[85]     NGX_MAN=man/nginx.8
+[86] else
+[87]     NGX_MAN=docs/man/nginx.8
+[88] fi
+[89] 
+[90] if test -d html ; then
+[91]     NGX_HTML=html
+[92] else
+[93]     NGX_HTML=docs/html
+[94] fi
+[95] 
+[96] cat << END                                                    >> $NGX_MAKEFILE
+[97] 
+[98] manpage:	$NGX_OBJS/nginx.8
+[99] 
+[100] $NGX_OBJS/nginx.8:	$NGX_MAN $NGX_AUTO_CONFIG_H
+[101] 	sed -e "s|%%PREFIX%%|$NGX_PREFIX|" \\
+[102] 		-e "s|%%PID_PATH%%|$NGX_PID_PATH|" \\
+[103] 		-e "s|%%CONF_PATH%%|$NGX_CONF_PATH|" \\
+[104] 		-e "s|%%ERROR_LOG_PATH%%|${NGX_ERROR_LOG_PATH:-stderr}|" \\
+[105] 		< $NGX_MAN > \$@
+[106] 
+[107] install:	build $NGX_INSTALL_PERL_MODULES
+[108] 	test -d '\$(DESTDIR)$NGX_PREFIX' || mkdir -p '\$(DESTDIR)$NGX_PREFIX'
+[109] 
+[110] 	test -d '\$(DESTDIR)`dirname "$NGX_SBIN_PATH"`' \\
+[111] 		|| mkdir -p '\$(DESTDIR)`dirname "$NGX_SBIN_PATH"`'
+[112] 	test ! -f '\$(DESTDIR)$NGX_SBIN_PATH' \\
+[113] 		|| mv '\$(DESTDIR)$NGX_SBIN_PATH' \\
+[114] 			'\$(DESTDIR)$NGX_SBIN_PATH.old'
+[115] 	cp $NGX_OBJS/nginx '\$(DESTDIR)$NGX_SBIN_PATH'
+[116] 
+[117] 	test -d '\$(DESTDIR)$NGX_CONF_PREFIX' \\
+[118] 		|| mkdir -p '\$(DESTDIR)$NGX_CONF_PREFIX'
+[119] 
+[120] 	cp conf/koi-win '\$(DESTDIR)$NGX_CONF_PREFIX'
+[121] 	cp conf/koi-utf '\$(DESTDIR)$NGX_CONF_PREFIX'
+[122] 	cp conf/win-utf '\$(DESTDIR)$NGX_CONF_PREFIX'
+[123] 
+[124] 	test -f '\$(DESTDIR)$NGX_CONF_PREFIX/mime.types' \\
+[125] 		|| cp conf/mime.types '\$(DESTDIR)$NGX_CONF_PREFIX'
+[126] 	cp conf/mime.types '\$(DESTDIR)$NGX_CONF_PREFIX/mime.types.default'
+[127] 
+[128] 	test -f '\$(DESTDIR)$NGX_CONF_PREFIX/fastcgi_params' \\
+[129] 		|| cp conf/fastcgi_params '\$(DESTDIR)$NGX_CONF_PREFIX'
+[130] 	cp conf/fastcgi_params \\
+[131] 		'\$(DESTDIR)$NGX_CONF_PREFIX/fastcgi_params.default'
+[132] 
+[133] 	test -f '\$(DESTDIR)$NGX_CONF_PREFIX/fastcgi.conf' \\
+[134] 		|| cp conf/fastcgi.conf '\$(DESTDIR)$NGX_CONF_PREFIX'
+[135] 	cp conf/fastcgi.conf '\$(DESTDIR)$NGX_CONF_PREFIX/fastcgi.conf.default'
+[136] 
+[137] 	test -f '\$(DESTDIR)$NGX_CONF_PREFIX/uwsgi_params' \\
+[138] 		|| cp conf/uwsgi_params '\$(DESTDIR)$NGX_CONF_PREFIX'
+[139] 	cp conf/uwsgi_params \\
+[140] 		'\$(DESTDIR)$NGX_CONF_PREFIX/uwsgi_params.default'
+[141] 
+[142] 	test -f '\$(DESTDIR)$NGX_CONF_PREFIX/scgi_params' \\
+[143] 		|| cp conf/scgi_params '\$(DESTDIR)$NGX_CONF_PREFIX'
+[144] 	cp conf/scgi_params \\
+[145] 		'\$(DESTDIR)$NGX_CONF_PREFIX/scgi_params.default'
+[146] 
+[147] 	test -f '\$(DESTDIR)$NGX_CONF_PATH' \\
+[148] 		|| cp conf/nginx.conf '\$(DESTDIR)$NGX_CONF_PATH'
+[149] 	cp conf/nginx.conf '\$(DESTDIR)$NGX_CONF_PREFIX/nginx.conf.default'
+[150] 
+[151] 	test -d '\$(DESTDIR)`dirname "$NGX_PID_PATH"`' \\
+[152] 		|| mkdir -p '\$(DESTDIR)`dirname "$NGX_PID_PATH"`'
+[153] 
+[154] 	test -d '\$(DESTDIR)`dirname "$NGX_HTTP_LOG_PATH"`' \\
+[155] 		|| mkdir -p '\$(DESTDIR)`dirname "$NGX_HTTP_LOG_PATH"`'
+[156] 
+[157] 	test -d '\$(DESTDIR)$NGX_PREFIX/html' \\
+[158] 		|| cp -R $NGX_HTML '\$(DESTDIR)$NGX_PREFIX'
+[159] END
+[160] 
+[161] 
+[162] if test -n "$NGX_ERROR_LOG_PATH"; then
+[163]     cat << END                                                >> $NGX_MAKEFILE
+[164] 
+[165] 	test -d '\$(DESTDIR)`dirname "$NGX_ERROR_LOG_PATH"`' \\
+[166] 		|| mkdir -p '\$(DESTDIR)`dirname "$NGX_ERROR_LOG_PATH"`'
+[167] END
+[168] 
+[169] fi
+[170] 
+[171] 
+[172] if test -n "$DYNAMIC_MODULES"; then
+[173]     cat << END                                                >> $NGX_MAKEFILE
+[174] 
+[175] 	test -d '\$(DESTDIR)$NGX_MODULES_PATH' \\
+[176] 		|| mkdir -p '\$(DESTDIR)$NGX_MODULES_PATH'
+[177] END
+[178] 
+[179] fi
+[180] 
+[181] 
+[182] for ngx_module in $DYNAMIC_MODULES
+[183] do
+[184]     ngx_module=$ngx_module$ngx_modext
+[185] 
+[186]     cat << END                                                >> $NGX_MAKEFILE
+[187] 
+[188] 	test ! -f '\$(DESTDIR)$NGX_MODULES_PATH/$ngx_module' \\
+[189] 		|| mv '\$(DESTDIR)$NGX_MODULES_PATH/$ngx_module' \\
+[190] 			'\$(DESTDIR)$NGX_MODULES_PATH/$ngx_module.old'
+[191] 	cp $NGX_OBJS/$ngx_module '\$(DESTDIR)$NGX_MODULES_PATH/$ngx_module'
+[192] END
+[193] 
+[194] done
+[195] 
+[196] 
+[197] # create Makefile
+[198] 
+[199] cat << END >> Makefile
+[200] 
+[201] build:
+[202] 	\$(MAKE) -f $NGX_MAKEFILE
+[203] 
+[204] install:
+[205] 	\$(MAKE) -f $NGX_MAKEFILE install
+[206] 
+[207] modules:
+[208] 	\$(MAKE) -f $NGX_MAKEFILE modules
+[209] 
+[210] upgrade:
+[211] 	$NGX_SBIN_PATH -t
+[212] 
+[213] 	kill -USR2 \`cat $NGX_PID_PATH\`
+[214] 	sleep 1
+[215] 	test -f $NGX_PID_PATH.oldbin
+[216] 
+[217] 	kill -QUIT \`cat $NGX_PID_PATH.oldbin\`
+[218] 
+[219] .PHONY:	build install modules upgrade
+[220] END

@@ -1,62 +1,62 @@
-
-# Copyright (C) Igor Sysoev
-# Copyright (C) Nginx, Inc.
-
-
-    ngx_feature="Google perftools"
-    ngx_feature_name=
-    ngx_feature_run=no
-    ngx_feature_incs=
-    ngx_feature_path=
-    ngx_feature_libs="-lprofiler"
-    ngx_feature_test="void ProfilerStop(void);
-                      ProfilerStop()"
-    . auto/feature
-
-
-if [ $ngx_found = no ]; then
-
-    # FreeBSD port
-
-    ngx_feature="Google perftools in /usr/local/"
-
-    if [ $NGX_RPATH = YES ]; then
-        ngx_feature_libs="-R/usr/local/lib -L/usr/local/lib -lprofiler"
-    else
-        ngx_feature_libs="-L/usr/local/lib -lprofiler"
-    fi
-
-    . auto/feature
-fi
-
-
-if [ $ngx_found = no ]; then
-
-    # MacPorts
-
-    ngx_feature="Google perftools in /opt/local/"
-
-    if [ $NGX_RPATH = YES ]; then
-        ngx_feature_libs="-R/opt/local/lib -L/opt/local/lib -lprofiler"
-    else
-        ngx_feature_libs="-L/opt/local/lib -lprofiler"
-    fi
-
-    . auto/feature
-fi
-
-
-if [ $ngx_found = yes ]; then
-    CORE_LIBS="$CORE_LIBS $ngx_feature_libs"
-
-else
-
-cat << END
-
-$0: error: the Google perftools module requires the Google perftools
-library. You can either do not enable the module or install the library.
-
-END
-
-    exit 1
-fi
+[1] 
+[2] # Copyright (C) Igor Sysoev
+[3] # Copyright (C) Nginx, Inc.
+[4] 
+[5] 
+[6]     ngx_feature="Google perftools"
+[7]     ngx_feature_name=
+[8]     ngx_feature_run=no
+[9]     ngx_feature_incs=
+[10]     ngx_feature_path=
+[11]     ngx_feature_libs="-lprofiler"
+[12]     ngx_feature_test="void ProfilerStop(void);
+[13]                       ProfilerStop()"
+[14]     . auto/feature
+[15] 
+[16] 
+[17] if [ $ngx_found = no ]; then
+[18] 
+[19]     # FreeBSD port
+[20] 
+[21]     ngx_feature="Google perftools in /usr/local/"
+[22] 
+[23]     if [ $NGX_RPATH = YES ]; then
+[24]         ngx_feature_libs="-R/usr/local/lib -L/usr/local/lib -lprofiler"
+[25]     else
+[26]         ngx_feature_libs="-L/usr/local/lib -lprofiler"
+[27]     fi
+[28] 
+[29]     . auto/feature
+[30] fi
+[31] 
+[32] 
+[33] if [ $ngx_found = no ]; then
+[34] 
+[35]     # MacPorts
+[36] 
+[37]     ngx_feature="Google perftools in /opt/local/"
+[38] 
+[39]     if [ $NGX_RPATH = YES ]; then
+[40]         ngx_feature_libs="-R/opt/local/lib -L/opt/local/lib -lprofiler"
+[41]     else
+[42]         ngx_feature_libs="-L/opt/local/lib -lprofiler"
+[43]     fi
+[44] 
+[45]     . auto/feature
+[46] fi
+[47] 
+[48] 
+[49] if [ $ngx_found = yes ]; then
+[50]     CORE_LIBS="$CORE_LIBS $ngx_feature_libs"
+[51] 
+[52] else
+[53] 
+[54] cat << END
+[55] 
+[56] $0: error: the Google perftools module requires the Google perftools
+[57] library. You can either do not enable the module or install the library.
+[58] 
+[59] END
+[60] 
+[61]     exit 1
+[62] fi

@@ -1,39 +1,39 @@
-
-# Copyright (C) Igor Sysoev
-# Copyright (C) Nginx, Inc.
-
-
-have=NGX_WIN32 . auto/have_headers
-
-CORE_INCS="$WIN32_INCS"
-CORE_DEPS="$WIN32_DEPS"
-CORE_SRCS="$WIN32_SRCS $IOCP_SRCS"
-OS_CONFIG="$WIN32_CONFIG"
-NGX_ICONS="$NGX_WIN32_ICONS"
-SELECT_SRCS=$WIN32_SELECT_SRCS
-POLL_SRCS=$WIN32_POLL_SRCS
-
-ngx_pic_opt=
-ngx_binext=".exe"
-
-case "$NGX_CC_NAME" in
-
-    gcc)
-        CORE_LIBS="$CORE_LIBS -ladvapi32 -lws2_32"
-        MAIN_LINK="$MAIN_LINK -Wl,--export-all-symbols"
-        MAIN_LINK="$MAIN_LINK -Wl,--out-implib=$NGX_OBJS/libnginx.a"
-        MODULE_LINK="-shared -L $NGX_OBJS -lnginx"
-    ;;
-
-    *)
-        CORE_LIBS="$CORE_LIBS advapi32.lib ws2_32.lib"
-    ;;
-
-esac
-
-EVENT_MODULES="$EVENT_MODULES $IOCP_MODULE"
-#EVENT_FOUND=YES
-
-have=NGX_HAVE_INET6 . auto/have
-
-have=NGX_HAVE_IOCP . auto/have
+[1] 
+[2] # Copyright (C) Igor Sysoev
+[3] # Copyright (C) Nginx, Inc.
+[4] 
+[5] 
+[6] have=NGX_WIN32 . auto/have_headers
+[7] 
+[8] CORE_INCS="$WIN32_INCS"
+[9] CORE_DEPS="$WIN32_DEPS"
+[10] CORE_SRCS="$WIN32_SRCS $IOCP_SRCS"
+[11] OS_CONFIG="$WIN32_CONFIG"
+[12] NGX_ICONS="$NGX_WIN32_ICONS"
+[13] SELECT_SRCS=$WIN32_SELECT_SRCS
+[14] POLL_SRCS=$WIN32_POLL_SRCS
+[15] 
+[16] ngx_pic_opt=
+[17] ngx_binext=".exe"
+[18] 
+[19] case "$NGX_CC_NAME" in
+[20] 
+[21]     gcc)
+[22]         CORE_LIBS="$CORE_LIBS -ladvapi32 -lws2_32"
+[23]         MAIN_LINK="$MAIN_LINK -Wl,--export-all-symbols"
+[24]         MAIN_LINK="$MAIN_LINK -Wl,--out-implib=$NGX_OBJS/libnginx.a"
+[25]         MODULE_LINK="-shared -L $NGX_OBJS -lnginx"
+[26]     ;;
+[27] 
+[28]     *)
+[29]         CORE_LIBS="$CORE_LIBS advapi32.lib ws2_32.lib"
+[30]     ;;
+[31] 
+[32] esac
+[33] 
+[34] EVENT_MODULES="$EVENT_MODULES $IOCP_MODULE"
+[35] #EVENT_FOUND=YES
+[36] 
+[37] have=NGX_HAVE_INET6 . auto/have
+[38] 
+[39] have=NGX_HAVE_IOCP . auto/have

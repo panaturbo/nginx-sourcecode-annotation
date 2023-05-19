@@ -1,117 +1,117 @@
-
-# Copyright (C) Igor Sysoev
-# Copyright (C) Nginx, Inc.
-
-
-# Intel C++ compiler 7.1, 8.0, 8.1, 9.0, 11.1
-
-NGX_ICC_VER=`$CC -V 2>&1 | grep 'Version' 2>&1 \
-                         | sed -e 's/^.* Version \([^ ]*\) *Build.*$/\1/'`
-
-echo " + icc version: $NGX_ICC_VER"
-
-have=NGX_COMPILER value="\"Intel C Compiler $NGX_ICC_VER\"" . auto/define
-
-
-# optimizations
-
-CFLAGS="$CFLAGS -O"
-
-CORE_LINK="$CORE_LINK -opt_report_file=$NGX_OBJS/opt_report_file"
-
-
-case $CPU in
-    pentium)
-        # optimize for Pentium and Athlon
-        CPU_OPT="-march=pentium"
-    ;;
-
-    pentiumpro)
-        # optimize for Pentium Pro, Pentium II and Pentium III
-        CPU_OPT="-mcpu=pentiumpro -march=pentiumpro"
-    ;;
-
-    pentium4)
-        # optimize for Pentium 4, default
-        CPU_OPT="-march=pentium4"
-    ;;
-esac
-
-CFLAGS="$CFLAGS $CPU_OPT"
-
-if [ ".$PCRE_OPT" = "." ]; then
-    PCRE_OPT="-O $CPU_OPT"
-fi
-
-if [ ".$ZLIB_OPT" = "." ]; then
-    ZLIB_OPT="-O $CPU_OPT"
-fi
-
-
-# warnings
-
-CFLAGS="$CFLAGS -w2"
-
-# disable some warnings
-
-# invalid type conversion: "int" to "char *"
-CFLAGS="$CFLAGS -wd171"
-# argument is incompatible with corresponding format string conversion
-CFLAGS="$CFLAGS -wd181"
-# zero used for undefined preprocessing identifier
-CFLAGS="$CFLAGS -wd193"
-# the format string ends before this argument
-CFLAGS="$CFLAGS -wd268"
-# invalid format string conversion
-CFLAGS="$CFLAGS -wd269"
-# conversion from "long long" to "size_t" may lose significant bits
-CFLAGS="$CFLAGS -wd810"
-# parameter was never referenced
-CFLAGS="$CFLAGS -wd869"
-# attribute "unused" is only allowed in a function definition, warning on pTHX_
-CFLAGS="$CFLAGS -wd1301"
-
-# STUB
-# enumerated type mixed with another type
-CFLAGS="$CFLAGS -wd188"
-# controlling expression is constant
-CFLAGS="$CFLAGS -wd279"
-# operands are evaluated in unspecified order
-CFLAGS="$CFLAGS -wd981"
-# external definition with no prior declaration
-CFLAGS="$CFLAGS -wd1418"
-# external declaration in primary source file
-CFLAGS="$CFLAGS -wd1419"
-
-case "$NGX_ICC_VER" in
-    9.*)
-        # "cc" clobber ignored, warnings for Linux's htonl()/htons()
-        CFLAGS="$CFLAGS -wd1469"
-        # explicit conversion of a 64-bit integral type to a smaller
-        # integral type
-        CFLAGS="$CFLAGS -wd1683"
-        # conversion from pointer to same-sized integral type,
-        # warning on offsetof()
-        CFLAGS="$CFLAGS -wd1684"
-        # floating-point equality and inequality comparisons are unreliable,
-        # warning on SvTRUE()
-        CFLAGS="$CFLAGS -wd1572"
-    ;;
-
-    8.*)
-        # "cc" clobber ignored, warnings for Linux's htonl()/htons()
-        CFLAGS="$CFLAGS -wd1469"
-        # floating-point equality and inequality comparisons are unreliable,
-        # warning on SvTRUE()
-        CFLAGS="$CFLAGS -wd1572"
-    ;;
-
-    *)
-    ;;
-esac
-
-# stop on warning
-CFLAGS="$CFLAGS -Werror"
-
-# debug
-CFLAGS="$CFLAGS -g"
+[1] 
+[2] # Copyright (C) Igor Sysoev
+[3] # Copyright (C) Nginx, Inc.
+[4] 
+[5] 
+[6] # Intel C++ compiler 7.1, 8.0, 8.1, 9.0, 11.1
+[7] 
+[8] NGX_ICC_VER=`$CC -V 2>&1 | grep 'Version' 2>&1 \
+[9]                          | sed -e 's/^.* Version \([^ ]*\) *Build.*$/\1/'`
+[10] 
+[11] echo " + icc version: $NGX_ICC_VER"
+[12] 
+[13] have=NGX_COMPILER value="\"Intel C Compiler $NGX_ICC_VER\"" . auto/define
+[14] 
+[15] 
+[16] # optimizations
+[17] 
+[18] CFLAGS="$CFLAGS -O"
+[19] 
+[20] CORE_LINK="$CORE_LINK -opt_report_file=$NGX_OBJS/opt_report_file"
+[21] 
+[22] 
+[23] case $CPU in
+[24]     pentium)
+[25]         # optimize for Pentium and Athlon
+[26]         CPU_OPT="-march=pentium"
+[27]     ;;
+[28] 
+[29]     pentiumpro)
+[30]         # optimize for Pentium Pro, Pentium II and Pentium III
+[31]         CPU_OPT="-mcpu=pentiumpro -march=pentiumpro"
+[32]     ;;
+[33] 
+[34]     pentium4)
+[35]         # optimize for Pentium 4, default
+[36]         CPU_OPT="-march=pentium4"
+[37]     ;;
+[38] esac
+[39] 
+[40] CFLAGS="$CFLAGS $CPU_OPT"
+[41] 
+[42] if [ ".$PCRE_OPT" = "." ]; then
+[43]     PCRE_OPT="-O $CPU_OPT"
+[44] fi
+[45] 
+[46] if [ ".$ZLIB_OPT" = "." ]; then
+[47]     ZLIB_OPT="-O $CPU_OPT"
+[48] fi
+[49] 
+[50] 
+[51] # warnings
+[52] 
+[53] CFLAGS="$CFLAGS -w2"
+[54] 
+[55] # disable some warnings
+[56] 
+[57] # invalid type conversion: "int" to "char *"
+[58] CFLAGS="$CFLAGS -wd171"
+[59] # argument is incompatible with corresponding format string conversion
+[60] CFLAGS="$CFLAGS -wd181"
+[61] # zero used for undefined preprocessing identifier
+[62] CFLAGS="$CFLAGS -wd193"
+[63] # the format string ends before this argument
+[64] CFLAGS="$CFLAGS -wd268"
+[65] # invalid format string conversion
+[66] CFLAGS="$CFLAGS -wd269"
+[67] # conversion from "long long" to "size_t" may lose significant bits
+[68] CFLAGS="$CFLAGS -wd810"
+[69] # parameter was never referenced
+[70] CFLAGS="$CFLAGS -wd869"
+[71] # attribute "unused" is only allowed in a function definition, warning on pTHX_
+[72] CFLAGS="$CFLAGS -wd1301"
+[73] 
+[74] # STUB
+[75] # enumerated type mixed with another type
+[76] CFLAGS="$CFLAGS -wd188"
+[77] # controlling expression is constant
+[78] CFLAGS="$CFLAGS -wd279"
+[79] # operands are evaluated in unspecified order
+[80] CFLAGS="$CFLAGS -wd981"
+[81] # external definition with no prior declaration
+[82] CFLAGS="$CFLAGS -wd1418"
+[83] # external declaration in primary source file
+[84] CFLAGS="$CFLAGS -wd1419"
+[85] 
+[86] case "$NGX_ICC_VER" in
+[87]     9.*)
+[88]         # "cc" clobber ignored, warnings for Linux's htonl()/htons()
+[89]         CFLAGS="$CFLAGS -wd1469"
+[90]         # explicit conversion of a 64-bit integral type to a smaller
+[91]         # integral type
+[92]         CFLAGS="$CFLAGS -wd1683"
+[93]         # conversion from pointer to same-sized integral type,
+[94]         # warning on offsetof()
+[95]         CFLAGS="$CFLAGS -wd1684"
+[96]         # floating-point equality and inequality comparisons are unreliable,
+[97]         # warning on SvTRUE()
+[98]         CFLAGS="$CFLAGS -wd1572"
+[99]     ;;
+[100] 
+[101]     8.*)
+[102]         # "cc" clobber ignored, warnings for Linux's htonl()/htons()
+[103]         CFLAGS="$CFLAGS -wd1469"
+[104]         # floating-point equality and inequality comparisons are unreliable,
+[105]         # warning on SvTRUE()
+[106]         CFLAGS="$CFLAGS -wd1572"
+[107]     ;;
+[108] 
+[109]     *)
+[110]     ;;
+[111] esac
+[112] 
+[113] # stop on warning
+[114] CFLAGS="$CFLAGS -Werror"
+[115] 
+[116] # debug
+[117] CFLAGS="$CFLAGS -g"

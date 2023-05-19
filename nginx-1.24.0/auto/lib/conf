@@ -1,54 +1,54 @@
-
-# Copyright (C) Igor Sysoev
-# Copyright (C) Nginx, Inc.
-
-
-if [ $USE_PCRE = YES -o $PCRE != NONE ]; then
-    . auto/lib/pcre/conf
-
-else
-    if [ $USE_PCRE = DISABLED -a $HTTP = YES -a $HTTP_REWRITE = YES ]; then
-
-cat << END
-
-$0: error: the HTTP rewrite module requires the PCRE library.
-You can either disable the module by using --without-http_rewrite_module
-option or you have to enable the PCRE support.
-
-END
-        exit 1
-    fi
-fi
-
-
-if [ $USE_OPENSSL = YES ]; then
-    . auto/lib/openssl/conf
-fi
-
-if [ $USE_ZLIB = YES ]; then
-    . auto/lib/zlib/conf
-fi
-
-if [ $USE_LIBXSLT != NO ]; then
-    . auto/lib/libxslt/conf
-fi
-
-if [ $USE_LIBGD != NO ]; then
-    . auto/lib/libgd/conf
-fi
-
-if [ $USE_PERL != NO ]; then
-    . auto/lib/perl/conf
-fi
-
-if [ $USE_GEOIP != NO ]; then
-    . auto/lib/geoip/conf
-fi
-
-if [ $NGX_GOOGLE_PERFTOOLS = YES ]; then
-    . auto/lib/google-perftools/conf
-fi
-
-if [ $NGX_LIBATOMIC != NO ]; then
-    . auto/lib/libatomic/conf
-fi
+[1] 
+[2] # Copyright (C) Igor Sysoev
+[3] # Copyright (C) Nginx, Inc.
+[4] 
+[5] 
+[6] if [ $USE_PCRE = YES -o $PCRE != NONE ]; then
+[7]     . auto/lib/pcre/conf
+[8] 
+[9] else
+[10]     if [ $USE_PCRE = DISABLED -a $HTTP = YES -a $HTTP_REWRITE = YES ]; then
+[11] 
+[12] cat << END
+[13] 
+[14] $0: error: the HTTP rewrite module requires the PCRE library.
+[15] You can either disable the module by using --without-http_rewrite_module
+[16] option or you have to enable the PCRE support.
+[17] 
+[18] END
+[19]         exit 1
+[20]     fi
+[21] fi
+[22] 
+[23] 
+[24] if [ $USE_OPENSSL = YES ]; then
+[25]     . auto/lib/openssl/conf
+[26] fi
+[27] 
+[28] if [ $USE_ZLIB = YES ]; then
+[29]     . auto/lib/zlib/conf
+[30] fi
+[31] 
+[32] if [ $USE_LIBXSLT != NO ]; then
+[33]     . auto/lib/libxslt/conf
+[34] fi
+[35] 
+[36] if [ $USE_LIBGD != NO ]; then
+[37]     . auto/lib/libgd/conf
+[38] fi
+[39] 
+[40] if [ $USE_PERL != NO ]; then
+[41]     . auto/lib/perl/conf
+[42] fi
+[43] 
+[44] if [ $USE_GEOIP != NO ]; then
+[45]     . auto/lib/geoip/conf
+[46] fi
+[47] 
+[48] if [ $NGX_GOOGLE_PERFTOOLS = YES ]; then
+[49]     . auto/lib/google-perftools/conf
+[50] fi
+[51] 
+[52] if [ $NGX_LIBATOMIC != NO ]; then
+[53]     . auto/lib/libatomic/conf
+[54] fi

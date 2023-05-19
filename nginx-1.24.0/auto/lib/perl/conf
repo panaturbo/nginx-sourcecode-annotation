@@ -1,83 +1,83 @@
-
-# Copyright (C) Igor Sysoev
-# Copyright (C) Nginx, Inc.
-
-
-echo "checking for perl"
-
-
-NGX_PERL_VER=`$NGX_PERL -v 2>&1 | grep '^This is perl' 2>&1 \
-                                | sed -e 's/^This is perl, \(.*\)/\1/'`
-
-if test -n "$NGX_PERL_VER"; then
-    echo " + perl version: $NGX_PERL_VER"
-
-    if [ "`$NGX_PERL -e 'use 5.008006; print "OK"'`" != "OK" ]; then
-        echo
-        echo "$0: error: perl 5.8.6 or higher is required"
-        echo
-
-        exit 1;
-    fi
-
-    if [ "`$NGX_PERL -MExtUtils::Embed -e 'print "OK"'`" != "OK" ]; then
-        echo
-        echo "$0: error: perl module ExtUtils::Embed is required"
-        echo
-
-        exit 1;
-    fi
-
-    NGX_PM_CFLAGS=`$NGX_PERL -MExtUtils::Embed -e ccopts`
-    NGX_PM_LDFLAGS=`$NGX_PERL -MConfig -e 'print $Config{lddlflags}'`
-
-    NGX_PERL_CFLAGS="$CFLAGS `$NGX_PERL -MExtUtils::Embed -e ccopts`"
-
-    # gcc 4.1/4.2 warn about unused values in pTHX_
-    NGX_PERL_CFLAGS=`echo $NGX_PERL_CFLAGS \
-                     | sed -e 's/-Wunused-value/-Wno-unused-value/'`
-    # icc8 warns 'declaration hides parameter "my_perl"' in ENTER and LEAVE
-    NGX_PERL_CFLAGS=`echo $NGX_PERL_CFLAGS \
-                     | sed -e 's/-wd171/-wd171 -wd1599/'`
-
-    ngx_perl_ldopts=`$NGX_PERL -MExtUtils::Embed -e ldopts`
-
-    ngx_perl_dlext=`$NGX_PERL -MConfig -e 'print $Config{dlext}'`
-    ngx_perl_libdir="src/http/modules/perl/blib/arch/auto"
-    ngx_perl_module="$ngx_perl_libdir/nginx/nginx.$ngx_perl_dlext"
-
-    if $NGX_PERL -V:usemultiplicity | grep define > /dev/null; then
-        have=NGX_HAVE_PERL_MULTIPLICITY . auto/have
-        echo " + perl interpreter multiplicity found"
-    fi
-
-    if $NGX_PERL -V:useithreads | grep undef > /dev/null; then
-        # FreeBSD port wants to link with -pthread non-threaded perl
-        ngx_perl_ldopts=`echo $ngx_perl_ldopts | sed 's/ -pthread//'`
-    fi
-
-    if [ "$NGX_SYSTEM" = "Darwin" ]; then
-        # OS X system perl wants to link universal binaries
-        ngx_perl_ldopts=`echo $ngx_perl_ldopts \
-                         | sed -e 's/-arch i386//' -e 's/-arch x86_64//'`
-    fi
-
-    if [ $USE_PERL = YES ]; then
-        CORE_LINK="$CORE_LINK $ngx_perl_ldopts"
-    fi
-
-    NGX_LIB_PERL="$ngx_perl_ldopts"
-
-    if test -n "$NGX_PERL_MODULES"; then
-        have=NGX_PERL_MODULES value="(u_char *) \"$NGX_PERL_MODULES\""
-        . auto/define
-        NGX_PERL_MODULES_MAN=$NGX_PERL_MODULES/man3
-    fi
-
-else
-    echo
-    echo "$0: error: perl 5.8.6 or higher is required"
-    echo
-
-    exit 1;
-fi
+[1] 
+[2] # Copyright (C) Igor Sysoev
+[3] # Copyright (C) Nginx, Inc.
+[4] 
+[5] 
+[6] echo "checking for perl"
+[7] 
+[8] 
+[9] NGX_PERL_VER=`$NGX_PERL -v 2>&1 | grep '^This is perl' 2>&1 \
+[10]                                 | sed -e 's/^This is perl, \(.*\)/\1/'`
+[11] 
+[12] if test -n "$NGX_PERL_VER"; then
+[13]     echo " + perl version: $NGX_PERL_VER"
+[14] 
+[15]     if [ "`$NGX_PERL -e 'use 5.008006; print "OK"'`" != "OK" ]; then
+[16]         echo
+[17]         echo "$0: error: perl 5.8.6 or higher is required"
+[18]         echo
+[19] 
+[20]         exit 1;
+[21]     fi
+[22] 
+[23]     if [ "`$NGX_PERL -MExtUtils::Embed -e 'print "OK"'`" != "OK" ]; then
+[24]         echo
+[25]         echo "$0: error: perl module ExtUtils::Embed is required"
+[26]         echo
+[27] 
+[28]         exit 1;
+[29]     fi
+[30] 
+[31]     NGX_PM_CFLAGS=`$NGX_PERL -MExtUtils::Embed -e ccopts`
+[32]     NGX_PM_LDFLAGS=`$NGX_PERL -MConfig -e 'print $Config{lddlflags}'`
+[33] 
+[34]     NGX_PERL_CFLAGS="$CFLAGS `$NGX_PERL -MExtUtils::Embed -e ccopts`"
+[35] 
+[36]     # gcc 4.1/4.2 warn about unused values in pTHX_
+[37]     NGX_PERL_CFLAGS=`echo $NGX_PERL_CFLAGS \
+[38]                      | sed -e 's/-Wunused-value/-Wno-unused-value/'`
+[39]     # icc8 warns 'declaration hides parameter "my_perl"' in ENTER and LEAVE
+[40]     NGX_PERL_CFLAGS=`echo $NGX_PERL_CFLAGS \
+[41]                      | sed -e 's/-wd171/-wd171 -wd1599/'`
+[42] 
+[43]     ngx_perl_ldopts=`$NGX_PERL -MExtUtils::Embed -e ldopts`
+[44] 
+[45]     ngx_perl_dlext=`$NGX_PERL -MConfig -e 'print $Config{dlext}'`
+[46]     ngx_perl_libdir="src/http/modules/perl/blib/arch/auto"
+[47]     ngx_perl_module="$ngx_perl_libdir/nginx/nginx.$ngx_perl_dlext"
+[48] 
+[49]     if $NGX_PERL -V:usemultiplicity | grep define > /dev/null; then
+[50]         have=NGX_HAVE_PERL_MULTIPLICITY . auto/have
+[51]         echo " + perl interpreter multiplicity found"
+[52]     fi
+[53] 
+[54]     if $NGX_PERL -V:useithreads | grep undef > /dev/null; then
+[55]         # FreeBSD port wants to link with -pthread non-threaded perl
+[56]         ngx_perl_ldopts=`echo $ngx_perl_ldopts | sed 's/ -pthread//'`
+[57]     fi
+[58] 
+[59]     if [ "$NGX_SYSTEM" = "Darwin" ]; then
+[60]         # OS X system perl wants to link universal binaries
+[61]         ngx_perl_ldopts=`echo $ngx_perl_ldopts \
+[62]                          | sed -e 's/-arch i386//' -e 's/-arch x86_64//'`
+[63]     fi
+[64] 
+[65]     if [ $USE_PERL = YES ]; then
+[66]         CORE_LINK="$CORE_LINK $ngx_perl_ldopts"
+[67]     fi
+[68] 
+[69]     NGX_LIB_PERL="$ngx_perl_ldopts"
+[70] 
+[71]     if test -n "$NGX_PERL_MODULES"; then
+[72]         have=NGX_PERL_MODULES value="(u_char *) \"$NGX_PERL_MODULES\""
+[73]         . auto/define
+[74]         NGX_PERL_MODULES_MAN=$NGX_PERL_MODULES/man3
+[75]     fi
+[76] 
+[77] else
+[78]     echo
+[79]     echo "$0: error: perl 5.8.6 or higher is required"
+[80]     echo
+[81] 
+[82]     exit 1;
+[83] fi

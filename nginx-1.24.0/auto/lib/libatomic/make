@@ -1,16 +1,16 @@
-
-# Copyright (C) Igor Sysoev
-# Copyright (C) Nginx, Inc.
-
-
-    cat << END                                            >> $NGX_MAKEFILE
-
-$NGX_LIBATOMIC/src/libatomic_ops.a:	$NGX_LIBATOMIC/Makefile
-	cd $NGX_LIBATOMIC && \$(MAKE)
-
-$NGX_LIBATOMIC/Makefile:	$NGX_MAKEFILE
-	cd $NGX_LIBATOMIC \\
-	&& if [ -f Makefile ]; then \$(MAKE) distclean; fi \\
-	&& ./configure
-
-END
+[1] 
+[2] # Copyright (C) Igor Sysoev
+[3] # Copyright (C) Nginx, Inc.
+[4] 
+[5] 
+[6]     cat << END                                            >> $NGX_MAKEFILE
+[7] 
+[8] $NGX_LIBATOMIC/src/libatomic_ops.a:	$NGX_LIBATOMIC/Makefile
+[9] 	cd $NGX_LIBATOMIC && \$(MAKE)
+[10] 
+[11] $NGX_LIBATOMIC/Makefile:	$NGX_MAKEFILE
+[12] 	cd $NGX_LIBATOMIC \\
+[13] 	&& if [ -f Makefile ]; then \$(MAKE) distclean; fi \\
+[14] 	&& ./configure
+[15] 
+[16] END

@@ -1,82 +1,82 @@
-
-# Copyright (C) Igor Sysoev
-# Copyright (C) Nginx, Inc.
-
-
-echo
-echo "Configuration summary"
-
-
-if [ $USE_THREADS = YES ]; then
-    echo "  + using threads"
-fi
-
-if [ $USE_PCRE = DISABLED ]; then
-    echo "  + PCRE library is disabled"
-
-else
-    case $PCRE in
-        YES)   echo "  + using system $PCRE_LIBRARY library" ;;
-        NONE)  echo "  + PCRE library is not used" ;;
-        *)     echo "  + using $PCRE_LIBRARY library: $PCRE" ;;
-    esac
-fi
-
-case $OPENSSL in
-    YES)   echo "  + using system OpenSSL library" ;;
-    NONE)  echo "  + OpenSSL library is not used" ;;
-    *)     echo "  + using OpenSSL library: $OPENSSL" ;;
-esac
-
-case $ZLIB in
-    YES)   echo "  + using system zlib library" ;;
-    NONE)  echo "  + zlib library is not used" ;;
-    *)     echo "  + using zlib library: $ZLIB" ;;
-esac
-
-case $NGX_LIBATOMIC in
-    YES)   echo "  + using system libatomic_ops library" ;;
-    NO)    ;; # not used
-    *)     echo "  + using libatomic_ops library: $NGX_LIBATOMIC" ;;
-esac
-
-echo
-
-
-cat << END
-  nginx path prefix: "$NGX_PREFIX"
-  nginx binary file: "$NGX_SBIN_PATH"
-  nginx modules path: "$NGX_MODULES_PATH"
-  nginx configuration prefix: "$NGX_CONF_PREFIX"
-  nginx configuration file: "$NGX_CONF_PATH"
-  nginx pid file: "$NGX_PID_PATH"
-END
-
-if test -n "$NGX_ERROR_LOG_PATH"; then
-    echo "  nginx error log file: \"$NGX_ERROR_LOG_PATH\""
-else
-    echo "  nginx logs errors to stderr"
-fi
-
-cat << END
-  nginx http access log file: "$NGX_HTTP_LOG_PATH"
-  nginx http client request body temporary files: "$NGX_HTTP_CLIENT_TEMP_PATH"
-END
-
-if [ $HTTP_PROXY = YES ]; then
-    echo "  nginx http proxy temporary files: \"$NGX_HTTP_PROXY_TEMP_PATH\""
-fi
-
-if [ $HTTP_FASTCGI = YES ]; then
-    echo "  nginx http fastcgi temporary files: \"$NGX_HTTP_FASTCGI_TEMP_PATH\""
-fi
-
-if [ $HTTP_UWSGI = YES ]; then
-    echo "  nginx http uwsgi temporary files: \"$NGX_HTTP_UWSGI_TEMP_PATH\""
-fi
-
-if [ $HTTP_SCGI = YES ]; then
-    echo "  nginx http scgi temporary files: \"$NGX_HTTP_SCGI_TEMP_PATH\""
-fi
-
-echo "$NGX_POST_CONF_MSG"
+[1] 
+[2] # Copyright (C) Igor Sysoev
+[3] # Copyright (C) Nginx, Inc.
+[4] 
+[5] 
+[6] echo
+[7] echo "Configuration summary"
+[8] 
+[9] 
+[10] if [ $USE_THREADS = YES ]; then
+[11]     echo "  + using threads"
+[12] fi
+[13] 
+[14] if [ $USE_PCRE = DISABLED ]; then
+[15]     echo "  + PCRE library is disabled"
+[16] 
+[17] else
+[18]     case $PCRE in
+[19]         YES)   echo "  + using system $PCRE_LIBRARY library" ;;
+[20]         NONE)  echo "  + PCRE library is not used" ;;
+[21]         *)     echo "  + using $PCRE_LIBRARY library: $PCRE" ;;
+[22]     esac
+[23] fi
+[24] 
+[25] case $OPENSSL in
+[26]     YES)   echo "  + using system OpenSSL library" ;;
+[27]     NONE)  echo "  + OpenSSL library is not used" ;;
+[28]     *)     echo "  + using OpenSSL library: $OPENSSL" ;;
+[29] esac
+[30] 
+[31] case $ZLIB in
+[32]     YES)   echo "  + using system zlib library" ;;
+[33]     NONE)  echo "  + zlib library is not used" ;;
+[34]     *)     echo "  + using zlib library: $ZLIB" ;;
+[35] esac
+[36] 
+[37] case $NGX_LIBATOMIC in
+[38]     YES)   echo "  + using system libatomic_ops library" ;;
+[39]     NO)    ;; # not used
+[40]     *)     echo "  + using libatomic_ops library: $NGX_LIBATOMIC" ;;
+[41] esac
+[42] 
+[43] echo
+[44] 
+[45] 
+[46] cat << END
+[47]   nginx path prefix: "$NGX_PREFIX"
+[48]   nginx binary file: "$NGX_SBIN_PATH"
+[49]   nginx modules path: "$NGX_MODULES_PATH"
+[50]   nginx configuration prefix: "$NGX_CONF_PREFIX"
+[51]   nginx configuration file: "$NGX_CONF_PATH"
+[52]   nginx pid file: "$NGX_PID_PATH"
+[53] END
+[54] 
+[55] if test -n "$NGX_ERROR_LOG_PATH"; then
+[56]     echo "  nginx error log file: \"$NGX_ERROR_LOG_PATH\""
+[57] else
+[58]     echo "  nginx logs errors to stderr"
+[59] fi
+[60] 
+[61] cat << END
+[62]   nginx http access log file: "$NGX_HTTP_LOG_PATH"
+[63]   nginx http client request body temporary files: "$NGX_HTTP_CLIENT_TEMP_PATH"
+[64] END
+[65] 
+[66] if [ $HTTP_PROXY = YES ]; then
+[67]     echo "  nginx http proxy temporary files: \"$NGX_HTTP_PROXY_TEMP_PATH\""
+[68] fi
+[69] 
+[70] if [ $HTTP_FASTCGI = YES ]; then
+[71]     echo "  nginx http fastcgi temporary files: \"$NGX_HTTP_FASTCGI_TEMP_PATH\""
+[72] fi
+[73] 
+[74] if [ $HTTP_UWSGI = YES ]; then
+[75]     echo "  nginx http uwsgi temporary files: \"$NGX_HTTP_UWSGI_TEMP_PATH\""
+[76] fi
+[77] 
+[78] if [ $HTTP_SCGI = YES ]; then
+[79]     echo "  nginx http scgi temporary files: \"$NGX_HTTP_SCGI_TEMP_PATH\""
+[80] fi
+[81] 
+[82] echo "$NGX_POST_CONF_MSG"

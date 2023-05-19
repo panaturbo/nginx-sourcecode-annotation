@@ -1,250 +1,250 @@
-
-# Copyright (C) Igor Sysoev
-# Copyright (C) Nginx, Inc.
-
-
-have=NGX_LINUX . auto/have_headers
-
-CORE_INCS="$UNIX_INCS"
-CORE_DEPS="$UNIX_DEPS $LINUX_DEPS"
-CORE_SRCS="$UNIX_SRCS $LINUX_SRCS"
-
-ngx_spacer='
-'
-
-cc_aux_flags="$CC_AUX_FLAGS"
-CC_AUX_FLAGS="$cc_aux_flags -D_GNU_SOURCE -D_FILE_OFFSET_BITS=64"
-
-
-# Linux kernel version
-
-version=$((`uname -r \
-    | sed -n -e 's/^\([0-9][0-9]*\)\.\([0-9][0-9]*\)\.\([0-9][0-9]*\).*/ \
-                                                 \1*256*256+\2*256+\3/p' \
-             -e 's/^\([0-9][0-9]*\)\.\([0-9][0-9]*\).*/\1*256*256+\2*256/p'`))
-
-version=${version:-0}
-
-
-# posix_fadvise64() had been implemented in 2.5.60
-
-if [ $version -lt 132412 ]; then
-    have=NGX_HAVE_POSIX_FADVISE . auto/nohave
-fi
-
-# epoll, EPOLLET version
-
-ngx_feature="epoll"
-ngx_feature_name="NGX_HAVE_EPOLL"
-ngx_feature_run=yes
-ngx_feature_incs="#include <sys/epoll.h>"
-ngx_feature_path=
-ngx_feature_libs=
-ngx_feature_test="int efd = 0;
-                  struct epoll_event ee;
-                  ee.events = EPOLLIN|EPOLLOUT|EPOLLET;
-                  ee.data.ptr = NULL;
-                  (void) ee;
-                  efd = epoll_create(100);
-                  if (efd == -1) return 1;"
-. auto/feature
-
-if [ $ngx_found = yes ]; then
-    have=NGX_HAVE_CLEAR_EVENT . auto/have
-    CORE_SRCS="$CORE_SRCS $EPOLL_SRCS"
-    EVENT_MODULES="$EVENT_MODULES $EPOLL_MODULE"
-    EVENT_FOUND=YES
-
-
-    # EPOLLRDHUP appeared in Linux 2.6.17, glibc 2.8
-
-    ngx_feature="EPOLLRDHUP"
-    ngx_feature_name="NGX_HAVE_EPOLLRDHUP"
-    ngx_feature_run=no
-    ngx_feature_incs="#include <sys/epoll.h>"
-    ngx_feature_path=
-    ngx_feature_libs=
-    ngx_feature_test="int efd = 0, fd = 0;
-                      struct epoll_event ee;
-                      ee.events = EPOLLIN|EPOLLRDHUP|EPOLLET;
-                      ee.data.ptr = NULL;
-                      epoll_ctl(efd, EPOLL_CTL_ADD, fd, &ee)"
-    . auto/feature
-
-
-    # EPOLLEXCLUSIVE appeared in Linux 4.5, glibc 2.24
-
-    ngx_feature="EPOLLEXCLUSIVE"
-    ngx_feature_name="NGX_HAVE_EPOLLEXCLUSIVE"
-    ngx_feature_run=no
-    ngx_feature_incs="#include <sys/epoll.h>"
-    ngx_feature_path=
-    ngx_feature_libs=
-    ngx_feature_test="int efd = 0, fd = 0;
-                      struct epoll_event ee;
-                      ee.events = EPOLLIN|EPOLLEXCLUSIVE;
-                      ee.data.ptr = NULL;
-                      epoll_ctl(efd, EPOLL_CTL_ADD, fd, &ee)"
-    . auto/feature
-
-
-    # eventfd()
-
-    ngx_feature="eventfd()"
-    ngx_feature_name="NGX_HAVE_EVENTFD"
-    ngx_feature_run=no
-    ngx_feature_incs="#include <sys/eventfd.h>"
-    ngx_feature_path=
-    ngx_feature_libs=
-    ngx_feature_test="(void) eventfd(0, 0)"
-    . auto/feature
-
-    if [ $ngx_found = yes ]; then
-        have=NGX_HAVE_SYS_EVENTFD_H . auto/have
-    fi
-
-
-    if [ $ngx_found = no ]; then
-
-        ngx_feature="eventfd() (SYS_eventfd)"
-        ngx_feature_incs="#include <sys/syscall.h>"
-        ngx_feature_test="(void) SYS_eventfd"
-        . auto/feature
-    fi
-fi
-
-
-# O_PATH and AT_EMPTY_PATH were introduced in 2.6.39, glibc 2.14
-
-ngx_feature="O_PATH"
-ngx_feature_name="NGX_HAVE_O_PATH"
-ngx_feature_run=no
-ngx_feature_incs="#include <sys/types.h>
-                  #include <sys/stat.h>
-                  #include <fcntl.h>"
-ngx_feature_path=
-ngx_feature_libs=
-ngx_feature_test="int fd; struct stat sb;
-                  fd = openat(AT_FDCWD, \".\", O_PATH|O_DIRECTORY|O_NOFOLLOW);
-                  if (fstatat(fd, \"\", &sb, AT_EMPTY_PATH) != 0) return 1"
-. auto/feature
-
-
-# sendfile()
-
-CC_AUX_FLAGS="$cc_aux_flags -D_GNU_SOURCE"
-ngx_feature="sendfile()"
-ngx_feature_name="NGX_HAVE_SENDFILE"
-ngx_feature_run=yes
-ngx_feature_incs="#include <sys/sendfile.h>
-                  #include <errno.h>"
-ngx_feature_path=
-ngx_feature_libs=
-ngx_feature_test="int s = 0, fd = 1;
-                  ssize_t n; off_t off = 0;
-                  n = sendfile(s, fd, &off, 1);
-                  if (n == -1 && errno == ENOSYS) return 1"
-. auto/feature
-
-if [ $ngx_found = yes ]; then
-    CORE_SRCS="$CORE_SRCS $LINUX_SENDFILE_SRCS"
-fi
-
-
-# sendfile64()
-
-CC_AUX_FLAGS="$cc_aux_flags -D_GNU_SOURCE -D_FILE_OFFSET_BITS=64"
-ngx_feature="sendfile64()"
-ngx_feature_name="NGX_HAVE_SENDFILE64"
-ngx_feature_run=yes
-ngx_feature_incs="#include <sys/sendfile.h>
-                  #include <errno.h>"
-ngx_feature_path=
-ngx_feature_libs=
-ngx_feature_test="int s = 0, fd = 1;
-                  ssize_t n; off_t off = 0;
-                  n = sendfile(s, fd, &off, 1);
-                  if (n == -1 && errno == ENOSYS) return 1"
-. auto/feature
-
-
-ngx_include="sys/prctl.h"; . auto/include
-
-# prctl(PR_SET_DUMPABLE)
-
-ngx_feature="prctl(PR_SET_DUMPABLE)"
-ngx_feature_name="NGX_HAVE_PR_SET_DUMPABLE"
-ngx_feature_run=yes
-ngx_feature_incs="#include <sys/prctl.h>"
-ngx_feature_path=
-ngx_feature_libs=
-ngx_feature_test="if (prctl(PR_SET_DUMPABLE, 1, 0, 0, 0) == -1) return 1"
-. auto/feature
-
-
-# prctl(PR_SET_KEEPCAPS)
-
-ngx_feature="prctl(PR_SET_KEEPCAPS)"
-ngx_feature_name="NGX_HAVE_PR_SET_KEEPCAPS"
-ngx_feature_run=yes
-ngx_feature_incs="#include <sys/prctl.h>"
-ngx_feature_path=
-ngx_feature_libs=
-ngx_feature_test="if (prctl(PR_SET_KEEPCAPS, 1, 0, 0, 0) == -1) return 1"
-. auto/feature
-
-
-# capabilities
-
-ngx_feature="capabilities"
-ngx_feature_name="NGX_HAVE_CAPABILITIES"
-ngx_feature_run=no
-ngx_feature_incs="#include <linux/capability.h>
-                  #include <sys/syscall.h>"
-ngx_feature_path=
-ngx_feature_libs=
-ngx_feature_test="struct __user_cap_data_struct    data;
-                  struct __user_cap_header_struct  header;
-
-                  header.version = _LINUX_CAPABILITY_VERSION_1;
-                  data.effective = CAP_TO_MASK(CAP_NET_RAW);
-                  data.permitted = 0;
-
-                  (void) header;
-                  (void) data;
-                  (void) SYS_capset"
-. auto/feature
-
-
-# crypt_r()
-
-ngx_feature="crypt_r()"
-ngx_feature_name="NGX_HAVE_GNU_CRYPT_R"
-ngx_feature_run=no
-ngx_feature_incs="#include <crypt.h>"
-ngx_feature_path=
-ngx_feature_libs=-lcrypt
-ngx_feature_test="struct crypt_data  cd;
-                  crypt_r(\"key\", \"salt\", &cd);"
-. auto/feature
-
-
-ngx_include="sys/vfs.h";     . auto/include
-
-
-# UDP segmentation offloading
-
-ngx_feature="UDP_SEGMENT"
-ngx_feature_name="NGX_HAVE_UDP_SEGMENT"
-ngx_feature_run=no
-ngx_feature_incs="#include <sys/socket.h>
-                  #include <netinet/udp.h>"
-ngx_feature_path=
-ngx_feature_libs=
-ngx_feature_test="socklen_t optlen = sizeof(int);
-                  int val;
-                  getsockopt(0, SOL_UDP, UDP_SEGMENT, &val, &optlen)"
-. auto/feature
-
-
-CC_AUX_FLAGS="$cc_aux_flags -D_GNU_SOURCE -D_FILE_OFFSET_BITS=64"
+[1] 
+[2] # Copyright (C) Igor Sysoev
+[3] # Copyright (C) Nginx, Inc.
+[4] 
+[5] 
+[6] have=NGX_LINUX . auto/have_headers
+[7] 
+[8] CORE_INCS="$UNIX_INCS"
+[9] CORE_DEPS="$UNIX_DEPS $LINUX_DEPS"
+[10] CORE_SRCS="$UNIX_SRCS $LINUX_SRCS"
+[11] 
+[12] ngx_spacer='
+[13] '
+[14] 
+[15] cc_aux_flags="$CC_AUX_FLAGS"
+[16] CC_AUX_FLAGS="$cc_aux_flags -D_GNU_SOURCE -D_FILE_OFFSET_BITS=64"
+[17] 
+[18] 
+[19] # Linux kernel version
+[20] 
+[21] version=$((`uname -r \
+[22]     | sed -n -e 's/^\([0-9][0-9]*\)\.\([0-9][0-9]*\)\.\([0-9][0-9]*\).*/ \
+[23]                                                  \1*256*256+\2*256+\3/p' \
+[24]              -e 's/^\([0-9][0-9]*\)\.\([0-9][0-9]*\).*/\1*256*256+\2*256/p'`))
+[25] 
+[26] version=${version:-0}
+[27] 
+[28] 
+[29] # posix_fadvise64() had been implemented in 2.5.60
+[30] 
+[31] if [ $version -lt 132412 ]; then
+[32]     have=NGX_HAVE_POSIX_FADVISE . auto/nohave
+[33] fi
+[34] 
+[35] # epoll, EPOLLET version
+[36] 
+[37] ngx_feature="epoll"
+[38] ngx_feature_name="NGX_HAVE_EPOLL"
+[39] ngx_feature_run=yes
+[40] ngx_feature_incs="#include <sys/epoll.h>"
+[41] ngx_feature_path=
+[42] ngx_feature_libs=
+[43] ngx_feature_test="int efd = 0;
+[44]                   struct epoll_event ee;
+[45]                   ee.events = EPOLLIN|EPOLLOUT|EPOLLET;
+[46]                   ee.data.ptr = NULL;
+[47]                   (void) ee;
+[48]                   efd = epoll_create(100);
+[49]                   if (efd == -1) return 1;"
+[50] . auto/feature
+[51] 
+[52] if [ $ngx_found = yes ]; then
+[53]     have=NGX_HAVE_CLEAR_EVENT . auto/have
+[54]     CORE_SRCS="$CORE_SRCS $EPOLL_SRCS"
+[55]     EVENT_MODULES="$EVENT_MODULES $EPOLL_MODULE"
+[56]     EVENT_FOUND=YES
+[57] 
+[58] 
+[59]     # EPOLLRDHUP appeared in Linux 2.6.17, glibc 2.8
+[60] 
+[61]     ngx_feature="EPOLLRDHUP"
+[62]     ngx_feature_name="NGX_HAVE_EPOLLRDHUP"
+[63]     ngx_feature_run=no
+[64]     ngx_feature_incs="#include <sys/epoll.h>"
+[65]     ngx_feature_path=
+[66]     ngx_feature_libs=
+[67]     ngx_feature_test="int efd = 0, fd = 0;
+[68]                       struct epoll_event ee;
+[69]                       ee.events = EPOLLIN|EPOLLRDHUP|EPOLLET;
+[70]                       ee.data.ptr = NULL;
+[71]                       epoll_ctl(efd, EPOLL_CTL_ADD, fd, &ee)"
+[72]     . auto/feature
+[73] 
+[74] 
+[75]     # EPOLLEXCLUSIVE appeared in Linux 4.5, glibc 2.24
+[76] 
+[77]     ngx_feature="EPOLLEXCLUSIVE"
+[78]     ngx_feature_name="NGX_HAVE_EPOLLEXCLUSIVE"
+[79]     ngx_feature_run=no
+[80]     ngx_feature_incs="#include <sys/epoll.h>"
+[81]     ngx_feature_path=
+[82]     ngx_feature_libs=
+[83]     ngx_feature_test="int efd = 0, fd = 0;
+[84]                       struct epoll_event ee;
+[85]                       ee.events = EPOLLIN|EPOLLEXCLUSIVE;
+[86]                       ee.data.ptr = NULL;
+[87]                       epoll_ctl(efd, EPOLL_CTL_ADD, fd, &ee)"
+[88]     . auto/feature
+[89] 
+[90] 
+[91]     # eventfd()
+[92] 
+[93]     ngx_feature="eventfd()"
+[94]     ngx_feature_name="NGX_HAVE_EVENTFD"
+[95]     ngx_feature_run=no
+[96]     ngx_feature_incs="#include <sys/eventfd.h>"
+[97]     ngx_feature_path=
+[98]     ngx_feature_libs=
+[99]     ngx_feature_test="(void) eventfd(0, 0)"
+[100]     . auto/feature
+[101] 
+[102]     if [ $ngx_found = yes ]; then
+[103]         have=NGX_HAVE_SYS_EVENTFD_H . auto/have
+[104]     fi
+[105] 
+[106] 
+[107]     if [ $ngx_found = no ]; then
+[108] 
+[109]         ngx_feature="eventfd() (SYS_eventfd)"
+[110]         ngx_feature_incs="#include <sys/syscall.h>"
+[111]         ngx_feature_test="(void) SYS_eventfd"
+[112]         . auto/feature
+[113]     fi
+[114] fi
+[115] 
+[116] 
+[117] # O_PATH and AT_EMPTY_PATH were introduced in 2.6.39, glibc 2.14
+[118] 
+[119] ngx_feature="O_PATH"
+[120] ngx_feature_name="NGX_HAVE_O_PATH"
+[121] ngx_feature_run=no
+[122] ngx_feature_incs="#include <sys/types.h>
+[123]                   #include <sys/stat.h>
+[124]                   #include <fcntl.h>"
+[125] ngx_feature_path=
+[126] ngx_feature_libs=
+[127] ngx_feature_test="int fd; struct stat sb;
+[128]                   fd = openat(AT_FDCWD, \".\", O_PATH|O_DIRECTORY|O_NOFOLLOW);
+[129]                   if (fstatat(fd, \"\", &sb, AT_EMPTY_PATH) != 0) return 1"
+[130] . auto/feature
+[131] 
+[132] 
+[133] # sendfile()
+[134] 
+[135] CC_AUX_FLAGS="$cc_aux_flags -D_GNU_SOURCE"
+[136] ngx_feature="sendfile()"
+[137] ngx_feature_name="NGX_HAVE_SENDFILE"
+[138] ngx_feature_run=yes
+[139] ngx_feature_incs="#include <sys/sendfile.h>
+[140]                   #include <errno.h>"
+[141] ngx_feature_path=
+[142] ngx_feature_libs=
+[143] ngx_feature_test="int s = 0, fd = 1;
+[144]                   ssize_t n; off_t off = 0;
+[145]                   n = sendfile(s, fd, &off, 1);
+[146]                   if (n == -1 && errno == ENOSYS) return 1"
+[147] . auto/feature
+[148] 
+[149] if [ $ngx_found = yes ]; then
+[150]     CORE_SRCS="$CORE_SRCS $LINUX_SENDFILE_SRCS"
+[151] fi
+[152] 
+[153] 
+[154] # sendfile64()
+[155] 
+[156] CC_AUX_FLAGS="$cc_aux_flags -D_GNU_SOURCE -D_FILE_OFFSET_BITS=64"
+[157] ngx_feature="sendfile64()"
+[158] ngx_feature_name="NGX_HAVE_SENDFILE64"
+[159] ngx_feature_run=yes
+[160] ngx_feature_incs="#include <sys/sendfile.h>
+[161]                   #include <errno.h>"
+[162] ngx_feature_path=
+[163] ngx_feature_libs=
+[164] ngx_feature_test="int s = 0, fd = 1;
+[165]                   ssize_t n; off_t off = 0;
+[166]                   n = sendfile(s, fd, &off, 1);
+[167]                   if (n == -1 && errno == ENOSYS) return 1"
+[168] . auto/feature
+[169] 
+[170] 
+[171] ngx_include="sys/prctl.h"; . auto/include
+[172] 
+[173] # prctl(PR_SET_DUMPABLE)
+[174] 
+[175] ngx_feature="prctl(PR_SET_DUMPABLE)"
+[176] ngx_feature_name="NGX_HAVE_PR_SET_DUMPABLE"
+[177] ngx_feature_run=yes
+[178] ngx_feature_incs="#include <sys/prctl.h>"
+[179] ngx_feature_path=
+[180] ngx_feature_libs=
+[181] ngx_feature_test="if (prctl(PR_SET_DUMPABLE, 1, 0, 0, 0) == -1) return 1"
+[182] . auto/feature
+[183] 
+[184] 
+[185] # prctl(PR_SET_KEEPCAPS)
+[186] 
+[187] ngx_feature="prctl(PR_SET_KEEPCAPS)"
+[188] ngx_feature_name="NGX_HAVE_PR_SET_KEEPCAPS"
+[189] ngx_feature_run=yes
+[190] ngx_feature_incs="#include <sys/prctl.h>"
+[191] ngx_feature_path=
+[192] ngx_feature_libs=
+[193] ngx_feature_test="if (prctl(PR_SET_KEEPCAPS, 1, 0, 0, 0) == -1) return 1"
+[194] . auto/feature
+[195] 
+[196] 
+[197] # capabilities
+[198] 
+[199] ngx_feature="capabilities"
+[200] ngx_feature_name="NGX_HAVE_CAPABILITIES"
+[201] ngx_feature_run=no
+[202] ngx_feature_incs="#include <linux/capability.h>
+[203]                   #include <sys/syscall.h>"
+[204] ngx_feature_path=
+[205] ngx_feature_libs=
+[206] ngx_feature_test="struct __user_cap_data_struct    data;
+[207]                   struct __user_cap_header_struct  header;
+[208] 
+[209]                   header.version = _LINUX_CAPABILITY_VERSION_1;
+[210]                   data.effective = CAP_TO_MASK(CAP_NET_RAW);
+[211]                   data.permitted = 0;
+[212] 
+[213]                   (void) header;
+[214]                   (void) data;
+[215]                   (void) SYS_capset"
+[216] . auto/feature
+[217] 
+[218] 
+[219] # crypt_r()
+[220] 
+[221] ngx_feature="crypt_r()"
+[222] ngx_feature_name="NGX_HAVE_GNU_CRYPT_R"
+[223] ngx_feature_run=no
+[224] ngx_feature_incs="#include <crypt.h>"
+[225] ngx_feature_path=
+[226] ngx_feature_libs=-lcrypt
+[227] ngx_feature_test="struct crypt_data  cd;
+[228]                   crypt_r(\"key\", \"salt\", &cd);"
+[229] . auto/feature
+[230] 
+[231] 
+[232] ngx_include="sys/vfs.h";     . auto/include
+[233] 
+[234] 
+[235] # UDP segmentation offloading
+[236] 
+[237] ngx_feature="UDP_SEGMENT"
+[238] ngx_feature_name="NGX_HAVE_UDP_SEGMENT"
+[239] ngx_feature_run=no
+[240] ngx_feature_incs="#include <sys/socket.h>
+[241]                   #include <netinet/udp.h>"
+[242] ngx_feature_path=
+[243] ngx_feature_libs=
+[244] ngx_feature_test="socklen_t optlen = sizeof(int);
+[245]                   int val;
+[246]                   getsockopt(0, SOL_UDP, UDP_SEGMENT, &val, &optlen)"
+[247] . auto/feature
+[248] 
+[249] 
+[250] CC_AUX_FLAGS="$cc_aux_flags -D_GNU_SOURCE -D_FILE_OFFSET_BITS=64"

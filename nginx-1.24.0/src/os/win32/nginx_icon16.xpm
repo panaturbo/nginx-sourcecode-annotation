@@ -1,24 +1,24 @@
-/* XPM */
-static char * nginx_xpm[] = {
-"16 16 2 2",
-/* colors */
-"   c none",
-"GG c #009900",
-/* pixels */
-"                                ",
-"        GGGGGGGGGGGGGGGG        ",
-"        GGGGGGGGGGGGGGGG        ",
-"      GGGGGGGGGGGGGGGGGGGG      ",
-"      GGGGGG        GGGGGG      ",
-"    GGGGGG            GGGGGG    ",
-"    GGGGGG                      ",
-"  GGGGGG      GGGGGGGGGGGGGGGG  ",
-"  GGGGGG    GGGGGGGGGGGGGGGGGG  ",
-"    GGGGGG    GGGGGGGGGGGGGG    ",
-"    GGGGGG            GGGGGG    ",
-"      GGGGGG        GGGGGG      ",
-"      GGGGGGGGGGGGGGGGGGGG      ",
-"        GGGGGGGGGGGGGGGG        ",
-"        GGGGGGGGGGGGGGGG        ",
-"                                "
-};
+[1] /* XPM */
+[2] static char * nginx_xpm[] = {
+[3] "16 16 2 2",
+[4] /* colors */
+[5] "   c none",
+[6] "GG c #009900",
+[7] /* pixels */
+[8] "                                ",
+[9] "        GGGGGGGGGGGGGGGG        ",
+[10] "        GGGGGGGGGGGGGGGG        ",
+[11] "      GGGGGGGGGGGGGGGGGGGG      ",
+[12] "      GGGGGG        GGGGGG      ",
+[13] "    GGGGGG            GGGGGG    ",
+[14] "    GGGGGG                      ",
+[15] "  GGGGGG      GGGGGGGGGGGGGGGG  ",
+[16] "  GGGGGG    GGGGGGGGGGGGGGGGGG  ",
+[17] "    GGGGGG    GGGGGGGGGGGGGG    ",
+[18] "    GGGGGG            GGGGGG    ",
+[19] "      GGGGGG        GGGGGG      ",
+[20] "      GGGGGGGGGGGGGGGGGGGG      ",
+[21] "        GGGGGGGGGGGGGGGG        ",
+[22] "        GGGGGGGGGGGGGGGG        ",
+[23] "                                "
+[24] };

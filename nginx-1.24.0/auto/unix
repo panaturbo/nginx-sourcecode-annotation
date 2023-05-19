@@ -1,1004 +1,1004 @@
-
-# Copyright (C) Igor Sysoev
-# Copyright (C) Nginx, Inc.
-
-
-NGX_USER=${NGX_USER:-nobody}
-
-if [ -z "$NGX_GROUP" ]; then
-    if [ $NGX_USER = nobody ]; then
-        if grep nobody /etc/group 2>&1 >/dev/null; then
-            echo "checking for nobody group ... found"
-            NGX_GROUP=nobody
-        else
-            echo "checking for nobody group ... not found"
-
-            if grep nogroup /etc/group 2>&1 >/dev/null; then
-                echo "checking for nogroup group ... found"
-                NGX_GROUP=nogroup
-            else
-                echo "checking for nogroup group ... not found"
-                NGX_GROUP=nobody
-            fi
-        fi
-    else
-        NGX_GROUP=$NGX_USER
-    fi
-fi
-
-
-ngx_feature="poll()"
-ngx_feature_name=
-ngx_feature_run=no
-ngx_feature_incs="#include <poll.h>"
-ngx_feature_path=
-ngx_feature_libs=
-ngx_feature_test="int  n; struct pollfd  pl;
-                  pl.fd = 0;
-                  pl.events = 0;
-                  pl.revents = 0;
-                  n = poll(&pl, 1, 0);
-                  if (n == -1) return 1"
-. auto/feature
-
-if [ $ngx_found = no ]; then
-    EVENT_POLL=NONE
-fi
-
-
-ngx_feature="/dev/poll"
-ngx_feature_name="NGX_HAVE_DEVPOLL"
-ngx_feature_run=no
-ngx_feature_incs="#include <sys/devpoll.h>"
-ngx_feature_path=
-ngx_feature_libs=
-ngx_feature_test="int  n, dp; struct dvpoll  dvp;
-                  dp = 0;
-                  dvp.dp_fds = NULL;
-                  dvp.dp_nfds = 0;
-                  dvp.dp_timeout = 0;
-                  n = ioctl(dp, DP_POLL, &dvp);
-                  if (n == -1) return 1"
-. auto/feature
-
-if [ $ngx_found = yes ]; then
-    CORE_SRCS="$CORE_SRCS $DEVPOLL_SRCS"
-    EVENT_MODULES="$EVENT_MODULES $DEVPOLL_MODULE"
-    EVENT_FOUND=YES
-fi
-
-
-if test -z "$NGX_KQUEUE_CHECKED"; then
-    ngx_feature="kqueue"
-    ngx_feature_name="NGX_HAVE_KQUEUE"
-    ngx_feature_run=no
-    ngx_feature_incs="#include <sys/event.h>"
-    ngx_feature_path=
-    ngx_feature_libs=
-    ngx_feature_test="(void) kqueue()"
-    . auto/feature
-
-    if [ $ngx_found = yes ]; then
-
-        have=NGX_HAVE_CLEAR_EVENT . auto/have
-        EVENT_MODULES="$EVENT_MODULES $KQUEUE_MODULE"
-        CORE_SRCS="$CORE_SRCS $KQUEUE_SRCS"
-        EVENT_FOUND=YES
-
-        ngx_feature="kqueue's NOTE_LOWAT"
-        ngx_feature_name="NGX_HAVE_LOWAT_EVENT"
-        ngx_feature_run=no
-        ngx_feature_incs="#include <sys/event.h>"
-        ngx_feature_path=
-        ngx_feature_libs=
-        ngx_feature_test="struct kevent  kev;
-                          kev.fflags = NOTE_LOWAT;
-                          (void) kev"
-        . auto/feature
-
-
-        ngx_feature="kqueue's EVFILT_TIMER"
-        ngx_feature_name="NGX_HAVE_TIMER_EVENT"
-        ngx_feature_run=yes
-        ngx_feature_incs="#include <sys/event.h>
-                          #include <sys/time.h>"
-        ngx_feature_path=
-        ngx_feature_libs=
-        ngx_feature_test="int      kq;
-                  struct kevent    kev;
-                  struct timespec  ts;
-
-                  if ((kq = kqueue()) == -1) return 1;
-
-                  kev.ident = 0;
-                  kev.filter = EVFILT_TIMER;
-                  kev.flags = EV_ADD|EV_ENABLE;
-                  kev.fflags = 0;
-                  kev.data = 1000;
-                  kev.udata = 0;
-
-                  ts.tv_sec = 0;
-                  ts.tv_nsec = 0;
-
-                  if (kevent(kq, &kev, 1, &kev, 1, &ts) == -1) return 1;
-
-                  if (kev.flags & EV_ERROR) return 1;"
-
-        . auto/feature
-    fi
-fi
-
-
-if [ "$NGX_SYSTEM" = "NetBSD" ]; then
-
-    # NetBSD 2.0 incompatibly defines kevent.udata as "intptr_t"
-
-    cat << END >> $NGX_AUTO_CONFIG_H
-
-#define NGX_KQUEUE_UDATA_T
-
-END
-
-else
-    cat << END >> $NGX_AUTO_CONFIG_H
-
-#define NGX_KQUEUE_UDATA_T  (void *)
-
-END
-
-fi
-
-
-ngx_feature="crypt()"
-ngx_feature_name=
-ngx_feature_run=no
-ngx_feature_incs=
-ngx_feature_path=
-ngx_feature_libs=
-ngx_feature_test="crypt(\"test\", \"salt\");"
-. auto/feature
-
-
-if [ $ngx_found = no ]; then
-
-    ngx_feature="crypt() in libcrypt"
-    ngx_feature_name=
-    ngx_feature_run=no
-    ngx_feature_incs=
-    ngx_feature_path=
-    ngx_feature_libs=-lcrypt
-    . auto/feature
-
-    if [ $ngx_found = yes ]; then
-        CRYPT_LIB="-lcrypt"
-    fi
-fi
-
-
-ngx_feature="F_READAHEAD"
-ngx_feature_name="NGX_HAVE_F_READAHEAD"
-ngx_feature_run=no
-ngx_feature_incs="#include <fcntl.h>"
-ngx_feature_path=
-ngx_feature_libs=
-ngx_feature_test="fcntl(0, F_READAHEAD, 1);"
-. auto/feature
-
-
-ngx_feature="posix_fadvise()"
-ngx_feature_name="NGX_HAVE_POSIX_FADVISE"
-ngx_feature_run=no
-ngx_feature_incs="#include <fcntl.h>"
-ngx_feature_path=
-ngx_feature_libs=
-ngx_feature_test="posix_fadvise(0, 0, 0, POSIX_FADV_SEQUENTIAL);"
-. auto/feature
-
-
-ngx_feature="O_DIRECT"
-ngx_feature_name="NGX_HAVE_O_DIRECT"
-ngx_feature_run=no
-ngx_feature_incs="#include <fcntl.h>"
-ngx_feature_path=
-ngx_feature_libs=
-ngx_feature_test="fcntl(0, F_SETFL, O_DIRECT);"
-. auto/feature
-
-
-if [ $ngx_found = yes -a "$NGX_SYSTEM" = "Linux" ]; then
-    have=NGX_HAVE_ALIGNED_DIRECTIO . auto/have
-fi
-
-ngx_feature="F_NOCACHE"
-ngx_feature_name="NGX_HAVE_F_NOCACHE"
-ngx_feature_run=no
-ngx_feature_incs="#include <fcntl.h>"
-ngx_feature_path=
-ngx_feature_libs=
-ngx_feature_test="fcntl(0, F_NOCACHE, 1);"
-. auto/feature
-
-
-ngx_feature="directio()"
-ngx_feature_name="NGX_HAVE_DIRECTIO"
-ngx_feature_run=no
-ngx_feature_incs="#include <sys/types.h>
-                  #include <sys/fcntl.h>"
-ngx_feature_path=
-ngx_feature_libs=
-ngx_feature_test="directio(0, DIRECTIO_ON);"
-. auto/feature
-
-
-ngx_feature="statfs()"
-ngx_feature_name="NGX_HAVE_STATFS"
-ngx_feature_run=no
-ngx_feature_incs="$NGX_INCLUDE_SYS_PARAM_H
-                  $NGX_INCLUDE_SYS_MOUNT_H
-                  $NGX_INCLUDE_SYS_VFS_H"
-ngx_feature_path=
-ngx_feature_libs=
-ngx_feature_test="struct statfs  fs;
-                  statfs(\".\", &fs);"
-. auto/feature
-
-
-ngx_feature="statvfs()"
-ngx_feature_name="NGX_HAVE_STATVFS"
-ngx_feature_run=no
-ngx_feature_incs="#include <sys/types.h>
-                  #include <sys/statvfs.h>"
-ngx_feature_path=
-ngx_feature_libs=
-ngx_feature_test="struct statvfs  fs;
-                  statvfs(\".\", &fs);"
-. auto/feature
-
-
-ngx_feature="dlopen()"
-ngx_feature_name="NGX_HAVE_DLOPEN"
-ngx_feature_run=no
-ngx_feature_incs="#include <dlfcn.h>"
-ngx_feature_path=
-ngx_feature_libs=
-ngx_feature_test="dlopen(NULL, RTLD_NOW | RTLD_GLOBAL); dlsym(NULL, \"\")"
-. auto/feature
-
-
-if [ $ngx_found = no ]; then
-
-    ngx_feature="dlopen() in libdl"
-    ngx_feature_libs="-ldl"
-    . auto/feature
-
-    if [ $ngx_found = yes ]; then
-        CORE_LIBS="$CORE_LIBS -ldl"
-        NGX_LIBDL="-ldl"
-    fi
-fi
-
-
-ngx_feature="sched_yield()"
-ngx_feature_name="NGX_HAVE_SCHED_YIELD"
-ngx_feature_run=no
-ngx_feature_incs="#include <sched.h>"
-ngx_feature_path=
-ngx_feature_libs=
-ngx_feature_test="sched_yield()"
-. auto/feature
-
-
-if [ $ngx_found = no ]; then
-
-    ngx_feature="sched_yield() in librt"
-    ngx_feature_libs="-lrt"
-    . auto/feature
-
-    if [ $ngx_found = yes ]; then
-        CORE_LIBS="$CORE_LIBS -lrt"
-    fi
-fi
-
-
-ngx_feature="sched_setaffinity()"
-ngx_feature_name="NGX_HAVE_SCHED_SETAFFINITY"
-ngx_feature_run=no
-ngx_feature_incs="#include <sched.h>"
-ngx_feature_path=
-ngx_feature_libs=
-ngx_feature_test="cpu_set_t mask;
-                  CPU_ZERO(&mask);
-                  sched_setaffinity(0, sizeof(cpu_set_t), &mask)"
-. auto/feature
-
-
-ngx_feature="SO_SETFIB"
-ngx_feature_name="NGX_HAVE_SETFIB"
-ngx_feature_run=no
-ngx_feature_incs="#include <sys/socket.h>"
-ngx_feature_path=
-ngx_feature_libs=
-ngx_feature_test="setsockopt(0, SOL_SOCKET, SO_SETFIB, NULL, 0)"
-. auto/feature
-
-
-ngx_feature="SO_REUSEPORT"
-ngx_feature_name="NGX_HAVE_REUSEPORT"
-ngx_feature_run=no
-ngx_feature_incs="#include <sys/socket.h>"
-ngx_feature_path=
-ngx_feature_libs=
-ngx_feature_test="setsockopt(0, SOL_SOCKET, SO_REUSEPORT, NULL, 0)"
-. auto/feature
-
-
-ngx_feature="SO_ACCEPTFILTER"
-ngx_feature_name="NGX_HAVE_DEFERRED_ACCEPT"
-ngx_feature_run=no
-ngx_feature_incs="#include <sys/socket.h>"
-ngx_feature_path=
-ngx_feature_libs=
-ngx_feature_test="setsockopt(0, SOL_SOCKET, SO_ACCEPTFILTER, NULL, 0)"
-. auto/feature
-
-
-# OpenBSD bind to any address for transparent proxying
-
-ngx_feature="SO_BINDANY"
-ngx_feature_name="NGX_HAVE_TRANSPARENT_PROXY"
-ngx_feature_run=no
-ngx_feature_incs="#include <sys/socket.h>"
-ngx_feature_path=
-ngx_feature_libs=
-ngx_feature_test="setsockopt(0, SOL_SOCKET, SO_BINDANY, NULL, 0)"
-. auto/feature
-
-
-# Linux transparent proxying
-
-ngx_feature="IP_TRANSPARENT"
-ngx_feature_name="NGX_HAVE_TRANSPARENT_PROXY"
-ngx_feature_run=no
-ngx_feature_incs="#include <sys/socket.h>
-                  #include <netinet/in.h>"
-ngx_feature_path=
-ngx_feature_libs=
-ngx_feature_test="setsockopt(0, IPPROTO_IP, IP_TRANSPARENT, NULL, 0)"
-. auto/feature
-
-
-# FreeBSD bind to any address for transparent proxying
-
-ngx_feature="IP_BINDANY"
-ngx_feature_name="NGX_HAVE_TRANSPARENT_PROXY"
-ngx_feature_run=no
-ngx_feature_incs="#include <sys/socket.h>
-                  #include <netinet/in.h>"
-ngx_feature_path=
-ngx_feature_libs=
-ngx_feature_test="setsockopt(0, IPPROTO_IP, IP_BINDANY, NULL, 0)"
-. auto/feature
-
-
-# Linux IP_BIND_ADDRESS_NO_PORT
-
-ngx_feature="IP_BIND_ADDRESS_NO_PORT"
-ngx_feature_name="NGX_HAVE_IP_BIND_ADDRESS_NO_PORT"
-ngx_feature_run=no
-ngx_feature_incs="#include <sys/socket.h>
-                  #include <netinet/in.h>"
-ngx_feature_path=
-ngx_feature_libs=
-ngx_feature_test="setsockopt(0, IPPROTO_IP, IP_BIND_ADDRESS_NO_PORT, NULL, 0)"
-. auto/feature
-
-
-# BSD way to get IPv4 datagram destination address
-
-ngx_feature="IP_RECVDSTADDR"
-ngx_feature_name="NGX_HAVE_IP_RECVDSTADDR"
-ngx_feature_run=no
-ngx_feature_incs="#include <sys/socket.h>
-                  #include <netinet/in.h>"
-ngx_feature_path=
-ngx_feature_libs=
-ngx_feature_test="setsockopt(0, IPPROTO_IP, IP_RECVDSTADDR, NULL, 0)"
-. auto/feature
-
-
-# BSD way to set IPv4 datagram source address
-
-ngx_feature="IP_SENDSRCADDR"
-ngx_feature_name="NGX_HAVE_IP_SENDSRCADDR"
-ngx_feature_run=no
-ngx_feature_incs="#include <sys/socket.h>
-                  #include <netinet/in.h>"
-ngx_feature_path=
-ngx_feature_libs=
-ngx_feature_test="setsockopt(0, IPPROTO_IP, IP_SENDSRCADDR, NULL, 0)"
-. auto/feature
-
-
-# Linux way to get IPv4 datagram destination address
-
-ngx_feature="IP_PKTINFO"
-ngx_feature_name="NGX_HAVE_IP_PKTINFO"
-ngx_feature_run=no
-ngx_feature_incs="#include <sys/socket.h>
-                  #include <netinet/in.h>"
-ngx_feature_path=
-ngx_feature_libs=
-ngx_feature_test="struct in_pktinfo  pkt;
-                  pkt.ipi_spec_dst.s_addr = INADDR_ANY;
-                  (void) pkt;
-                  setsockopt(0, IPPROTO_IP, IP_PKTINFO, NULL, 0)"
-. auto/feature
-
-
-# RFC 3542 way to get IPv6 datagram destination address
-
-ngx_feature="IPV6_RECVPKTINFO"
-ngx_feature_name="NGX_HAVE_IPV6_RECVPKTINFO"
-ngx_feature_run=no
-ngx_feature_incs="#include <sys/socket.h>
-                  #include <netinet/in.h>"
-ngx_feature_path=
-ngx_feature_libs=
-ngx_feature_test="setsockopt(0, IPPROTO_IPV6, IPV6_RECVPKTINFO, NULL, 0)"
-. auto/feature
-
-
-ngx_feature="TCP_DEFER_ACCEPT"
-ngx_feature_name="NGX_HAVE_DEFERRED_ACCEPT"
-ngx_feature_run=no
-ngx_feature_incs="#include <sys/socket.h>
-                  #include <netinet/in.h>
-                  #include <netinet/tcp.h>"
-ngx_feature_path=
-ngx_feature_libs=
-ngx_feature_test="setsockopt(0, IPPROTO_TCP, TCP_DEFER_ACCEPT, NULL, 0)"
-. auto/feature
-
-
-ngx_feature="TCP_KEEPIDLE"
-ngx_feature_name="NGX_HAVE_KEEPALIVE_TUNABLE"
-ngx_feature_run=no
-ngx_feature_incs="#include <sys/socket.h>
-                  #include <netinet/in.h>
-                  #include <netinet/tcp.h>"
-ngx_feature_path=
-ngx_feature_libs=
-ngx_feature_test="setsockopt(0, IPPROTO_TCP, TCP_KEEPIDLE, NULL, 0);
-                  setsockopt(0, IPPROTO_TCP, TCP_KEEPINTVL, NULL, 0);
-                  setsockopt(0, IPPROTO_TCP, TCP_KEEPCNT, NULL, 0)"
-. auto/feature
-
-
-ngx_feature="TCP_FASTOPEN"
-ngx_feature_name="NGX_HAVE_TCP_FASTOPEN"
-ngx_feature_run=no
-ngx_feature_incs="#include <sys/socket.h>
-                  #include <netinet/in.h>
-                  #include <netinet/tcp.h>"
-ngx_feature_path=
-ngx_feature_libs=
-ngx_feature_test="setsockopt(0, IPPROTO_TCP, TCP_FASTOPEN, NULL, 0)"
-. auto/feature
-
-
-ngx_feature="TCP_INFO"
-ngx_feature_name="NGX_HAVE_TCP_INFO"
-ngx_feature_run=no
-ngx_feature_incs="#include <sys/socket.h>
-                  #include <netinet/in.h>
-                  #include <netinet/tcp.h>"
-ngx_feature_path=
-ngx_feature_libs=
-ngx_feature_test="socklen_t optlen = sizeof(struct tcp_info);
-                  struct tcp_info ti;
-                  ti.tcpi_rtt = 0;
-                  ti.tcpi_rttvar = 0;
-                  ti.tcpi_snd_cwnd = 0;
-                  ti.tcpi_rcv_space = 0;
-                  getsockopt(0, IPPROTO_TCP, TCP_INFO, &ti, &optlen)"
-. auto/feature
-
-
-ngx_feature="accept4()"
-ngx_feature_name="NGX_HAVE_ACCEPT4"
-ngx_feature_run=no
-ngx_feature_incs="#include <sys/socket.h>"
-ngx_feature_path=
-ngx_feature_libs=
-ngx_feature_test="accept4(0, NULL, NULL, SOCK_NONBLOCK)"
-. auto/feature
-
-if [ $NGX_FILE_AIO = YES ]; then
-
-    ngx_feature="kqueue AIO support"
-    ngx_feature_name="NGX_HAVE_FILE_AIO"
-    ngx_feature_run=no
-    ngx_feature_incs="#include <aio.h>"
-    ngx_feature_path=
-    ngx_feature_libs=
-    ngx_feature_test="struct aiocb  iocb;
-                      iocb.aio_sigevent.sigev_notify = SIGEV_KEVENT;
-                      (void) aio_read(&iocb)"
-    . auto/feature
-
-    if [ $ngx_found = yes ]; then
-        CORE_SRCS="$CORE_SRCS $FILE_AIO_SRCS"
-    fi
-
-    if [ $ngx_found = no ]; then
-
-        ngx_feature="Linux AIO support"
-        ngx_feature_name="NGX_HAVE_FILE_AIO"
-        ngx_feature_run=no
-        ngx_feature_incs="#include <linux/aio_abi.h>
-                          #include <sys/eventfd.h>"
-        ngx_feature_path=
-        ngx_feature_libs=
-        ngx_feature_test="struct iocb  iocb;
-                          iocb.aio_lio_opcode = IOCB_CMD_PREAD;
-                          iocb.aio_flags = IOCB_FLAG_RESFD;
-                          iocb.aio_resfd = -1;
-                          (void) iocb;
-                          (void) eventfd(0, 0)"
-        . auto/feature
-
-        if [ $ngx_found = yes ]; then
-            have=NGX_HAVE_EVENTFD . auto/have
-            have=NGX_HAVE_SYS_EVENTFD_H . auto/have
-            CORE_SRCS="$CORE_SRCS $LINUX_AIO_SRCS"
-        fi
-    fi
-
-    if [ $ngx_found = no ]; then
-
-        ngx_feature="Linux AIO support (SYS_eventfd)"
-        ngx_feature_incs="#include <linux/aio_abi.h>
-                          #include <sys/syscall.h>"
-        ngx_feature_test="struct iocb  iocb;
-                          iocb.aio_lio_opcode = IOCB_CMD_PREAD;
-                          iocb.aio_flags = IOCB_FLAG_RESFD;
-                          iocb.aio_resfd = -1;
-                          (void) iocb;
-                          (void) SYS_eventfd"
-        . auto/feature
-
-        if [ $ngx_found = yes ]; then
-            have=NGX_HAVE_EVENTFD . auto/have
-            CORE_SRCS="$CORE_SRCS $LINUX_AIO_SRCS"
-        fi
-    fi
-
-    if [ $ngx_found = no ]; then
-        cat << END
-
-$0: no supported file AIO was found
-Currently file AIO is supported on FreeBSD 4.3+ and Linux 2.6.22+ only
-
-END
-        exit 1
-    fi
-fi
-
-
-have=NGX_HAVE_UNIX_DOMAIN . auto/have
-
-ngx_feature_libs=
-
-
-# C types
-
-ngx_type="int"; . auto/types/sizeof
-
-ngx_type="long"; . auto/types/sizeof
-
-ngx_type="long long"; . auto/types/sizeof
-
-ngx_type="void *"; . auto/types/sizeof; ngx_ptr_size=$ngx_size
-ngx_param=NGX_PTR_SIZE; ngx_value=$ngx_size; . auto/types/value
-
-
-# POSIX types
-
-NGX_INCLUDE_AUTO_CONFIG_H="#include \"ngx_auto_config.h\""
-
-ngx_type="uint32_t"; ngx_types="u_int32_t"; . auto/types/typedef
-ngx_type="uint64_t"; ngx_types="u_int64_t"; . auto/types/typedef
-
-ngx_type="sig_atomic_t"; ngx_types="int"; . auto/types/typedef
-. auto/types/sizeof
-ngx_param=NGX_SIG_ATOMIC_T_SIZE; ngx_value=$ngx_size; . auto/types/value
-
-ngx_type="socklen_t"; ngx_types="int"; . auto/types/typedef
-
-ngx_type="in_addr_t"; ngx_types="uint32_t u_int32_t"; . auto/types/typedef
-
-ngx_type="in_port_t"; ngx_types="u_short"; . auto/types/typedef
-
-ngx_type="rlim_t"; ngx_types="int"; . auto/types/typedef
-
-. auto/types/uintptr_t
-
-. auto/endianness
-
-ngx_type="size_t"; . auto/types/sizeof
-ngx_param=NGX_MAX_SIZE_T_VALUE; ngx_value=$ngx_max_value; . auto/types/value
-ngx_param=NGX_SIZE_T_LEN; ngx_value=$ngx_max_len; . auto/types/value
-
-ngx_type="off_t"; . auto/types/sizeof
-ngx_param=NGX_MAX_OFF_T_VALUE; ngx_value=$ngx_max_value; . auto/types/value
-ngx_param=NGX_OFF_T_LEN; ngx_value=$ngx_max_len; . auto/types/value
-
-ngx_type="time_t"; . auto/types/sizeof
-ngx_param=NGX_TIME_T_SIZE; ngx_value=$ngx_size; . auto/types/value
-ngx_param=NGX_TIME_T_LEN; ngx_value=$ngx_max_len; . auto/types/value
-ngx_param=NGX_MAX_TIME_T_VALUE; ngx_value=$ngx_max_value; . auto/types/value
-
-
-# syscalls, libc calls and some features
-
-
-ngx_feature="AF_INET6"
-ngx_feature_name="NGX_HAVE_INET6"
-ngx_feature_run=no
-ngx_feature_incs="#include <sys/socket.h>
-                  #include <netinet/in.h>
-                  #include <arpa/inet.h>"
-ngx_feature_path=
-ngx_feature_libs=
-ngx_feature_test="struct sockaddr_in6  sin6;
-                  sin6.sin6_family = AF_INET6;
-                  (void) sin6"
-. auto/feature
-
-
-ngx_feature="setproctitle()"
-ngx_feature_name="NGX_HAVE_SETPROCTITLE"
-ngx_feature_run=no
-ngx_feature_incs="#include <stdlib.h>"
-ngx_feature_path=
-ngx_feature_libs=$NGX_SETPROCTITLE_LIB
-ngx_feature_test="setproctitle(\"test\");"
-. auto/feature
-
-
-ngx_feature="pread()"
-ngx_feature_name="NGX_HAVE_PREAD"
-ngx_feature_run=no
-ngx_feature_incs=
-ngx_feature_path=
-ngx_feature_libs=
-ngx_feature_test="char buf[1]; ssize_t n; n = pread(0, buf, 1, 0);
-                  if (n == -1) return 1"
-. auto/feature
-
-
-ngx_feature="pwrite()"
-ngx_feature_name="NGX_HAVE_PWRITE"
-ngx_feature_run=no
-ngx_feature_incs=
-ngx_feature_path=
-ngx_feature_libs=
-ngx_feature_test="char buf[1]; ssize_t n; n = pwrite(1, buf, 1, 0);
-                  if (n == -1) return 1"
-. auto/feature
-
-
-# pwritev() was introduced in FreeBSD 6 and Linux 2.6.30, glibc 2.10
-
-ngx_feature="pwritev()"
-ngx_feature_name="NGX_HAVE_PWRITEV"
-ngx_feature_run=no
-ngx_feature_incs='#include <sys/uio.h>'
-ngx_feature_path=
-ngx_feature_libs=
-ngx_feature_test="char buf[1]; struct iovec vec[1]; ssize_t n;
-                  vec[0].iov_base = buf;
-                  vec[0].iov_len = 1;
-                  n = pwritev(1, vec, 1, 0);
-                  if (n == -1) return 1"
-. auto/feature
-
-
-# strerrordesc_np(), introduced in glibc 2.32
-
-ngx_feature="strerrordesc_np()"
-ngx_feature_name="NGX_HAVE_STRERRORDESC_NP"
-ngx_feature_run=no
-ngx_feature_incs='#include <string.h>'
-ngx_feature_path=
-ngx_feature_libs=
-ngx_feature_test="char *p; p = strerrordesc_np(0);
-                  if (p == NULL) return 1"
-. auto/feature
-
-
-if [ $ngx_found = no ]; then
-
-    ngx_feature="sys_nerr"
-    ngx_feature_name="NGX_SYS_NERR"
-    ngx_feature_run=value
-    ngx_feature_incs='#include <errno.h>
-                      #include <stdio.h>'
-    ngx_feature_path=
-    ngx_feature_libs=
-    ngx_feature_test='printf("%d", sys_nerr);'
-    . auto/feature
-fi
-
-
-if [ $ngx_found = no ]; then
-
-    # Cygiwn defines _sys_nerr
-    ngx_feature="_sys_nerr"
-    ngx_feature_name="NGX_SYS_NERR"
-    ngx_feature_run=value
-    ngx_feature_incs='#include <errno.h>
-                      #include <stdio.h>'
-    ngx_feature_path=
-    ngx_feature_libs=
-    ngx_feature_test='printf("%d", _sys_nerr);'
-    . auto/feature
-fi
-
-
-ngx_feature="localtime_r()"
-ngx_feature_name="NGX_HAVE_LOCALTIME_R"
-ngx_feature_run=no
-ngx_feature_incs="#include <time.h>"
-ngx_feature_path=
-ngx_feature_libs=
-ngx_feature_test="struct tm t; time_t c=0; localtime_r(&c, &t)"
-. auto/feature
-
-
-ngx_feature="clock_gettime(CLOCK_MONOTONIC)"
-ngx_feature_name="NGX_HAVE_CLOCK_MONOTONIC"
-ngx_feature_run=no
-ngx_feature_incs="#include <time.h>"
-ngx_feature_path=
-ngx_feature_libs=
-ngx_feature_test="struct timespec ts; clock_gettime(CLOCK_MONOTONIC, &ts)"
-. auto/feature
-
-
-if [ $ngx_found = no ]; then
-
-    # Linux before glibc 2.17, notably CentOS 6
-
-    ngx_feature="clock_gettime(CLOCK_MONOTONIC) in librt"
-    ngx_feature_libs="-lrt"
-    . auto/feature
-
-    if [ $ngx_found = yes ]; then
-        CORE_LIBS="$CORE_LIBS -lrt"
-    fi
-fi
-
-
-ngx_feature="posix_memalign()"
-ngx_feature_name="NGX_HAVE_POSIX_MEMALIGN"
-ngx_feature_run=no
-ngx_feature_incs="#include <stdlib.h>"
-ngx_feature_path=
-ngx_feature_libs=
-ngx_feature_test="void *p; int n; n = posix_memalign(&p, 4096, 4096);
-                  if (n != 0) return 1"
-. auto/feature
-
-
-ngx_feature="memalign()"
-ngx_feature_name="NGX_HAVE_MEMALIGN"
-ngx_feature_run=no
-ngx_feature_incs="#include <stdlib.h>
-                  #include <malloc.h>"
-ngx_feature_path=
-ngx_feature_libs=
-ngx_feature_test="void *p; p = memalign(4096, 4096);
-                  if (p == NULL) return 1"
-. auto/feature
-
-
-ngx_feature="mmap(MAP_ANON|MAP_SHARED)"
-ngx_feature_name="NGX_HAVE_MAP_ANON"
-ngx_feature_run=yes
-ngx_feature_incs="#include <sys/mman.h>"
-ngx_feature_path=
-ngx_feature_libs=
-ngx_feature_test="void *p;
-                  p = mmap(NULL, 4096, PROT_READ|PROT_WRITE,
-                           MAP_ANON|MAP_SHARED, -1, 0);
-                  if (p == MAP_FAILED) return 1;"
-. auto/feature
-
-
-ngx_feature='mmap("/dev/zero", MAP_SHARED)'
-ngx_feature_name="NGX_HAVE_MAP_DEVZERO"
-ngx_feature_run=yes
-ngx_feature_incs="#include <sys/mman.h>
-                  #include <sys/stat.h>
-                  #include <fcntl.h>"
-ngx_feature_path=
-ngx_feature_libs=
-ngx_feature_test='void *p; int  fd;
-                  fd = open("/dev/zero", O_RDWR);
-                  p = mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_SHARED, fd, 0);
-                  if (p == MAP_FAILED) return 1;'
-. auto/feature
-
-
-ngx_feature="System V shared memory"
-ngx_feature_name="NGX_HAVE_SYSVSHM"
-ngx_feature_run=yes
-ngx_feature_incs="#include <sys/ipc.h>
-                  #include <sys/shm.h>"
-ngx_feature_path=
-ngx_feature_libs=
-ngx_feature_test="int  id;
-                  id = shmget(IPC_PRIVATE, 4096, (SHM_R|SHM_W|IPC_CREAT));
-                  if (id == -1) return 1;
-                  shmctl(id, IPC_RMID, NULL);"
-. auto/feature
-
-
-ngx_feature="POSIX semaphores"
-ngx_feature_name="NGX_HAVE_POSIX_SEM"
-ngx_feature_run=yes
-ngx_feature_incs="#include <semaphore.h>"
-ngx_feature_path=
-ngx_feature_libs=
-ngx_feature_test="sem_t  sem;
-                  if (sem_init(&sem, 1, 0) == -1) return 1;
-                  sem_destroy(&sem);"
-. auto/feature
-
-
-if [ $ngx_found = no ]; then
-
-    # Linux has POSIX semaphores in libpthread
-    ngx_feature="POSIX semaphores in libpthread"
-    ngx_feature_libs=-lpthread
-    . auto/feature
-
-    if [ $ngx_found = yes ]; then
-        CORE_LIBS="$CORE_LIBS -lpthread"
-        NGX_LIBPTHREAD="-lpthread"
-    fi
-fi
-
-
-if [ $ngx_found = no ]; then
-
-    # Solaris has POSIX semaphores in librt
-    ngx_feature="POSIX semaphores in librt"
-    ngx_feature_libs=-lrt
-    . auto/feature
-
-    if [ $ngx_found = yes ]; then
-        CORE_LIBS="$CORE_LIBS -lrt"
-    fi
-fi
-
-
-ngx_feature="struct msghdr.msg_control"
-ngx_feature_name="NGX_HAVE_MSGHDR_MSG_CONTROL"
-ngx_feature_run=no
-ngx_feature_incs="#include <sys/socket.h>
-                  #include <stdio.h>"
-ngx_feature_path=
-ngx_feature_libs=
-ngx_feature_test="struct msghdr  msg;
-                  printf(\"%d\", (int) sizeof(msg.msg_control))"
-. auto/feature
-
-
-ngx_feature="ioctl(FIONBIO)"
-ngx_feature_name="NGX_HAVE_FIONBIO"
-ngx_feature_run=no
-ngx_feature_incs="#include <sys/ioctl.h>
-                  #include <stdio.h>
-                  $NGX_INCLUDE_SYS_FILIO_H"
-ngx_feature_path=
-ngx_feature_libs=
-ngx_feature_test="int i = FIONBIO; printf(\"%d\", i)"
-. auto/feature
-
-
-ngx_feature="ioctl(FIONREAD)"
-ngx_feature_name="NGX_HAVE_FIONREAD"
-ngx_feature_run=no
-ngx_feature_incs="#include <sys/ioctl.h>
-                  #include <stdio.h>
-                  $NGX_INCLUDE_SYS_FILIO_H"
-ngx_feature_path=
-ngx_feature_libs=
-ngx_feature_test="int i = FIONREAD; printf(\"%d\", i)"
-. auto/feature
-
-
-ngx_feature="struct tm.tm_gmtoff"
-ngx_feature_name="NGX_HAVE_GMTOFF"
-ngx_feature_run=no
-ngx_feature_incs="#include <time.h>
-                  #include <stdio.h>"
-ngx_feature_path=
-ngx_feature_libs=
-ngx_feature_test="struct tm  tm; tm.tm_gmtoff = 0;
-                  printf(\"%d\", (int) tm.tm_gmtoff)"
-. auto/feature
-
-
-ngx_feature="struct dirent.d_namlen"
-ngx_feature_name="NGX_HAVE_D_NAMLEN"
-ngx_feature_run=no
-ngx_feature_incs="#include <dirent.h>
-                  #include <stdio.h>"
-ngx_feature_path=
-ngx_feature_libs=
-ngx_feature_test="struct dirent  dir; dir.d_namlen = 0;
-                  printf(\"%d\", (int) dir.d_namlen)"
-. auto/feature
-
-
-ngx_feature="struct dirent.d_type"
-ngx_feature_name="NGX_HAVE_D_TYPE"
-ngx_feature_run=no
-ngx_feature_incs="#include <dirent.h>
-                  #include <stdio.h>"
-ngx_feature_path=
-ngx_feature_libs=
-ngx_feature_test="struct dirent  dir; dir.d_type = DT_REG;
-                  printf(\"%d\", (int) dir.d_type)"
-. auto/feature
-
-
-ngx_feature="sysconf(_SC_NPROCESSORS_ONLN)"
-ngx_feature_name="NGX_HAVE_SC_NPROCESSORS_ONLN"
-ngx_feature_run=no
-ngx_feature_incs=
-ngx_feature_path=
-ngx_feature_libs=
-ngx_feature_test="sysconf(_SC_NPROCESSORS_ONLN)"
-. auto/feature
-
-
-ngx_feature="sysconf(_SC_LEVEL1_DCACHE_LINESIZE)"
-ngx_feature_name="NGX_HAVE_LEVEL1_DCACHE_LINESIZE"
-ngx_feature_run=no
-ngx_feature_incs=
-ngx_feature_path=
-ngx_feature_libs=
-ngx_feature_test="sysconf(_SC_LEVEL1_DCACHE_LINESIZE)"
-. auto/feature
-
-
-ngx_feature="openat(), fstatat()"
-ngx_feature_name="NGX_HAVE_OPENAT"
-ngx_feature_run=no
-ngx_feature_incs="#include <sys/types.h>
-                  #include <sys/stat.h>
-                  #include <fcntl.h>"
-ngx_feature_path=
-ngx_feature_libs=
-ngx_feature_test="struct stat sb;
-                  openat(AT_FDCWD, \".\", O_RDONLY|O_NOFOLLOW);
-                  fstatat(AT_FDCWD, \".\", &sb, AT_SYMLINK_NOFOLLOW);"
-. auto/feature
-
-
-ngx_feature="getaddrinfo()"
-ngx_feature_name="NGX_HAVE_GETADDRINFO"
-ngx_feature_run=no
-ngx_feature_incs="#include <sys/types.h>
-                  #include <sys/socket.h>
-                  #include <netdb.h>"
-ngx_feature_path=
-ngx_feature_libs=
-ngx_feature_test='struct addrinfo *res;
-                  if (getaddrinfo("localhost", NULL, NULL, &res) != 0) return 1;
-                  freeaddrinfo(res)'
-. auto/feature
+[1] 
+[2] # Copyright (C) Igor Sysoev
+[3] # Copyright (C) Nginx, Inc.
+[4] 
+[5] 
+[6] NGX_USER=${NGX_USER:-nobody}
+[7] 
+[8] if [ -z "$NGX_GROUP" ]; then
+[9]     if [ $NGX_USER = nobody ]; then
+[10]         if grep nobody /etc/group 2>&1 >/dev/null; then
+[11]             echo "checking for nobody group ... found"
+[12]             NGX_GROUP=nobody
+[13]         else
+[14]             echo "checking for nobody group ... not found"
+[15] 
+[16]             if grep nogroup /etc/group 2>&1 >/dev/null; then
+[17]                 echo "checking for nogroup group ... found"
+[18]                 NGX_GROUP=nogroup
+[19]             else
+[20]                 echo "checking for nogroup group ... not found"
+[21]                 NGX_GROUP=nobody
+[22]             fi
+[23]         fi
+[24]     else
+[25]         NGX_GROUP=$NGX_USER
+[26]     fi
+[27] fi
+[28] 
+[29] 
+[30] ngx_feature="poll()"
+[31] ngx_feature_name=
+[32] ngx_feature_run=no
+[33] ngx_feature_incs="#include <poll.h>"
+[34] ngx_feature_path=
+[35] ngx_feature_libs=
+[36] ngx_feature_test="int  n; struct pollfd  pl;
+[37]                   pl.fd = 0;
+[38]                   pl.events = 0;
+[39]                   pl.revents = 0;
+[40]                   n = poll(&pl, 1, 0);
+[41]                   if (n == -1) return 1"
+[42] . auto/feature
+[43] 
+[44] if [ $ngx_found = no ]; then
+[45]     EVENT_POLL=NONE
+[46] fi
+[47] 
+[48] 
+[49] ngx_feature="/dev/poll"
+[50] ngx_feature_name="NGX_HAVE_DEVPOLL"
+[51] ngx_feature_run=no
+[52] ngx_feature_incs="#include <sys/devpoll.h>"
+[53] ngx_feature_path=
+[54] ngx_feature_libs=
+[55] ngx_feature_test="int  n, dp; struct dvpoll  dvp;
+[56]                   dp = 0;
+[57]                   dvp.dp_fds = NULL;
+[58]                   dvp.dp_nfds = 0;
+[59]                   dvp.dp_timeout = 0;
+[60]                   n = ioctl(dp, DP_POLL, &dvp);
+[61]                   if (n == -1) return 1"
+[62] . auto/feature
+[63] 
+[64] if [ $ngx_found = yes ]; then
+[65]     CORE_SRCS="$CORE_SRCS $DEVPOLL_SRCS"
+[66]     EVENT_MODULES="$EVENT_MODULES $DEVPOLL_MODULE"
+[67]     EVENT_FOUND=YES
+[68] fi
+[69] 
+[70] 
+[71] if test -z "$NGX_KQUEUE_CHECKED"; then
+[72]     ngx_feature="kqueue"
+[73]     ngx_feature_name="NGX_HAVE_KQUEUE"
+[74]     ngx_feature_run=no
+[75]     ngx_feature_incs="#include <sys/event.h>"
+[76]     ngx_feature_path=
+[77]     ngx_feature_libs=
+[78]     ngx_feature_test="(void) kqueue()"
+[79]     . auto/feature
+[80] 
+[81]     if [ $ngx_found = yes ]; then
+[82] 
+[83]         have=NGX_HAVE_CLEAR_EVENT . auto/have
+[84]         EVENT_MODULES="$EVENT_MODULES $KQUEUE_MODULE"
+[85]         CORE_SRCS="$CORE_SRCS $KQUEUE_SRCS"
+[86]         EVENT_FOUND=YES
+[87] 
+[88]         ngx_feature="kqueue's NOTE_LOWAT"
+[89]         ngx_feature_name="NGX_HAVE_LOWAT_EVENT"
+[90]         ngx_feature_run=no
+[91]         ngx_feature_incs="#include <sys/event.h>"
+[92]         ngx_feature_path=
+[93]         ngx_feature_libs=
+[94]         ngx_feature_test="struct kevent  kev;
+[95]                           kev.fflags = NOTE_LOWAT;
+[96]                           (void) kev"
+[97]         . auto/feature
+[98] 
+[99] 
+[100]         ngx_feature="kqueue's EVFILT_TIMER"
+[101]         ngx_feature_name="NGX_HAVE_TIMER_EVENT"
+[102]         ngx_feature_run=yes
+[103]         ngx_feature_incs="#include <sys/event.h>
+[104]                           #include <sys/time.h>"
+[105]         ngx_feature_path=
+[106]         ngx_feature_libs=
+[107]         ngx_feature_test="int      kq;
+[108]                   struct kevent    kev;
+[109]                   struct timespec  ts;
+[110] 
+[111]                   if ((kq = kqueue()) == -1) return 1;
+[112] 
+[113]                   kev.ident = 0;
+[114]                   kev.filter = EVFILT_TIMER;
+[115]                   kev.flags = EV_ADD|EV_ENABLE;
+[116]                   kev.fflags = 0;
+[117]                   kev.data = 1000;
+[118]                   kev.udata = 0;
+[119] 
+[120]                   ts.tv_sec = 0;
+[121]                   ts.tv_nsec = 0;
+[122] 
+[123]                   if (kevent(kq, &kev, 1, &kev, 1, &ts) == -1) return 1;
+[124] 
+[125]                   if (kev.flags & EV_ERROR) return 1;"
+[126] 
+[127]         . auto/feature
+[128]     fi
+[129] fi
+[130] 
+[131] 
+[132] if [ "$NGX_SYSTEM" = "NetBSD" ]; then
+[133] 
+[134]     # NetBSD 2.0 incompatibly defines kevent.udata as "intptr_t"
+[135] 
+[136]     cat << END >> $NGX_AUTO_CONFIG_H
+[137] 
+[138] #define NGX_KQUEUE_UDATA_T
+[139] 
+[140] END
+[141] 
+[142] else
+[143]     cat << END >> $NGX_AUTO_CONFIG_H
+[144] 
+[145] #define NGX_KQUEUE_UDATA_T  (void *)
+[146] 
+[147] END
+[148] 
+[149] fi
+[150] 
+[151] 
+[152] ngx_feature="crypt()"
+[153] ngx_feature_name=
+[154] ngx_feature_run=no
+[155] ngx_feature_incs=
+[156] ngx_feature_path=
+[157] ngx_feature_libs=
+[158] ngx_feature_test="crypt(\"test\", \"salt\");"
+[159] . auto/feature
+[160] 
+[161] 
+[162] if [ $ngx_found = no ]; then
+[163] 
+[164]     ngx_feature="crypt() in libcrypt"
+[165]     ngx_feature_name=
+[166]     ngx_feature_run=no
+[167]     ngx_feature_incs=
+[168]     ngx_feature_path=
+[169]     ngx_feature_libs=-lcrypt
+[170]     . auto/feature
+[171] 
+[172]     if [ $ngx_found = yes ]; then
+[173]         CRYPT_LIB="-lcrypt"
+[174]     fi
+[175] fi
+[176] 
+[177] 
+[178] ngx_feature="F_READAHEAD"
+[179] ngx_feature_name="NGX_HAVE_F_READAHEAD"
+[180] ngx_feature_run=no
+[181] ngx_feature_incs="#include <fcntl.h>"
+[182] ngx_feature_path=
+[183] ngx_feature_libs=
+[184] ngx_feature_test="fcntl(0, F_READAHEAD, 1);"
+[185] . auto/feature
+[186] 
+[187] 
+[188] ngx_feature="posix_fadvise()"
+[189] ngx_feature_name="NGX_HAVE_POSIX_FADVISE"
+[190] ngx_feature_run=no
+[191] ngx_feature_incs="#include <fcntl.h>"
+[192] ngx_feature_path=
+[193] ngx_feature_libs=
+[194] ngx_feature_test="posix_fadvise(0, 0, 0, POSIX_FADV_SEQUENTIAL);"
+[195] . auto/feature
+[196] 
+[197] 
+[198] ngx_feature="O_DIRECT"
+[199] ngx_feature_name="NGX_HAVE_O_DIRECT"
+[200] ngx_feature_run=no
+[201] ngx_feature_incs="#include <fcntl.h>"
+[202] ngx_feature_path=
+[203] ngx_feature_libs=
+[204] ngx_feature_test="fcntl(0, F_SETFL, O_DIRECT);"
+[205] . auto/feature
+[206] 
+[207] 
+[208] if [ $ngx_found = yes -a "$NGX_SYSTEM" = "Linux" ]; then
+[209]     have=NGX_HAVE_ALIGNED_DIRECTIO . auto/have
+[210] fi
+[211] 
+[212] ngx_feature="F_NOCACHE"
+[213] ngx_feature_name="NGX_HAVE_F_NOCACHE"
+[214] ngx_feature_run=no
+[215] ngx_feature_incs="#include <fcntl.h>"
+[216] ngx_feature_path=
+[217] ngx_feature_libs=
+[218] ngx_feature_test="fcntl(0, F_NOCACHE, 1);"
+[219] . auto/feature
+[220] 
+[221] 
+[222] ngx_feature="directio()"
+[223] ngx_feature_name="NGX_HAVE_DIRECTIO"
+[224] ngx_feature_run=no
+[225] ngx_feature_incs="#include <sys/types.h>
+[226]                   #include <sys/fcntl.h>"
+[227] ngx_feature_path=
+[228] ngx_feature_libs=
+[229] ngx_feature_test="directio(0, DIRECTIO_ON);"
+[230] . auto/feature
+[231] 
+[232] 
+[233] ngx_feature="statfs()"
+[234] ngx_feature_name="NGX_HAVE_STATFS"
+[235] ngx_feature_run=no
+[236] ngx_feature_incs="$NGX_INCLUDE_SYS_PARAM_H
+[237]                   $NGX_INCLUDE_SYS_MOUNT_H
+[238]                   $NGX_INCLUDE_SYS_VFS_H"
+[239] ngx_feature_path=
+[240] ngx_feature_libs=
+[241] ngx_feature_test="struct statfs  fs;
+[242]                   statfs(\".\", &fs);"
+[243] . auto/feature
+[244] 
+[245] 
+[246] ngx_feature="statvfs()"
+[247] ngx_feature_name="NGX_HAVE_STATVFS"
+[248] ngx_feature_run=no
+[249] ngx_feature_incs="#include <sys/types.h>
+[250]                   #include <sys/statvfs.h>"
+[251] ngx_feature_path=
+[252] ngx_feature_libs=
+[253] ngx_feature_test="struct statvfs  fs;
+[254]                   statvfs(\".\", &fs);"
+[255] . auto/feature
+[256] 
+[257] 
+[258] ngx_feature="dlopen()"
+[259] ngx_feature_name="NGX_HAVE_DLOPEN"
+[260] ngx_feature_run=no
+[261] ngx_feature_incs="#include <dlfcn.h>"
+[262] ngx_feature_path=
+[263] ngx_feature_libs=
+[264] ngx_feature_test="dlopen(NULL, RTLD_NOW | RTLD_GLOBAL); dlsym(NULL, \"\")"
+[265] . auto/feature
+[266] 
+[267] 
+[268] if [ $ngx_found = no ]; then
+[269] 
+[270]     ngx_feature="dlopen() in libdl"
+[271]     ngx_feature_libs="-ldl"
+[272]     . auto/feature
+[273] 
+[274]     if [ $ngx_found = yes ]; then
+[275]         CORE_LIBS="$CORE_LIBS -ldl"
+[276]         NGX_LIBDL="-ldl"
+[277]     fi
+[278] fi
+[279] 
+[280] 
+[281] ngx_feature="sched_yield()"
+[282] ngx_feature_name="NGX_HAVE_SCHED_YIELD"
+[283] ngx_feature_run=no
+[284] ngx_feature_incs="#include <sched.h>"
+[285] ngx_feature_path=
+[286] ngx_feature_libs=
+[287] ngx_feature_test="sched_yield()"
+[288] . auto/feature
+[289] 
+[290] 
+[291] if [ $ngx_found = no ]; then
+[292] 
+[293]     ngx_feature="sched_yield() in librt"
+[294]     ngx_feature_libs="-lrt"
+[295]     . auto/feature
+[296] 
+[297]     if [ $ngx_found = yes ]; then
+[298]         CORE_LIBS="$CORE_LIBS -lrt"
+[299]     fi
+[300] fi
+[301] 
+[302] 
+[303] ngx_feature="sched_setaffinity()"
+[304] ngx_feature_name="NGX_HAVE_SCHED_SETAFFINITY"
+[305] ngx_feature_run=no
+[306] ngx_feature_incs="#include <sched.h>"
+[307] ngx_feature_path=
+[308] ngx_feature_libs=
+[309] ngx_feature_test="cpu_set_t mask;
+[310]                   CPU_ZERO(&mask);
+[311]                   sched_setaffinity(0, sizeof(cpu_set_t), &mask)"
+[312] . auto/feature
+[313] 
+[314] 
+[315] ngx_feature="SO_SETFIB"
+[316] ngx_feature_name="NGX_HAVE_SETFIB"
+[317] ngx_feature_run=no
+[318] ngx_feature_incs="#include <sys/socket.h>"
+[319] ngx_feature_path=
+[320] ngx_feature_libs=
+[321] ngx_feature_test="setsockopt(0, SOL_SOCKET, SO_SETFIB, NULL, 0)"
+[322] . auto/feature
+[323] 
+[324] 
+[325] ngx_feature="SO_REUSEPORT"
+[326] ngx_feature_name="NGX_HAVE_REUSEPORT"
+[327] ngx_feature_run=no
+[328] ngx_feature_incs="#include <sys/socket.h>"
+[329] ngx_feature_path=
+[330] ngx_feature_libs=
+[331] ngx_feature_test="setsockopt(0, SOL_SOCKET, SO_REUSEPORT, NULL, 0)"
+[332] . auto/feature
+[333] 
+[334] 
+[335] ngx_feature="SO_ACCEPTFILTER"
+[336] ngx_feature_name="NGX_HAVE_DEFERRED_ACCEPT"
+[337] ngx_feature_run=no
+[338] ngx_feature_incs="#include <sys/socket.h>"
+[339] ngx_feature_path=
+[340] ngx_feature_libs=
+[341] ngx_feature_test="setsockopt(0, SOL_SOCKET, SO_ACCEPTFILTER, NULL, 0)"
+[342] . auto/feature
+[343] 
+[344] 
+[345] # OpenBSD bind to any address for transparent proxying
+[346] 
+[347] ngx_feature="SO_BINDANY"
+[348] ngx_feature_name="NGX_HAVE_TRANSPARENT_PROXY"
+[349] ngx_feature_run=no
+[350] ngx_feature_incs="#include <sys/socket.h>"
+[351] ngx_feature_path=
+[352] ngx_feature_libs=
+[353] ngx_feature_test="setsockopt(0, SOL_SOCKET, SO_BINDANY, NULL, 0)"
+[354] . auto/feature
+[355] 
+[356] 
+[357] # Linux transparent proxying
+[358] 
+[359] ngx_feature="IP_TRANSPARENT"
+[360] ngx_feature_name="NGX_HAVE_TRANSPARENT_PROXY"
+[361] ngx_feature_run=no
+[362] ngx_feature_incs="#include <sys/socket.h>
+[363]                   #include <netinet/in.h>"
+[364] ngx_feature_path=
+[365] ngx_feature_libs=
+[366] ngx_feature_test="setsockopt(0, IPPROTO_IP, IP_TRANSPARENT, NULL, 0)"
+[367] . auto/feature
+[368] 
+[369] 
+[370] # FreeBSD bind to any address for transparent proxying
+[371] 
+[372] ngx_feature="IP_BINDANY"
+[373] ngx_feature_name="NGX_HAVE_TRANSPARENT_PROXY"
+[374] ngx_feature_run=no
+[375] ngx_feature_incs="#include <sys/socket.h>
+[376]                   #include <netinet/in.h>"
+[377] ngx_feature_path=
+[378] ngx_feature_libs=
+[379] ngx_feature_test="setsockopt(0, IPPROTO_IP, IP_BINDANY, NULL, 0)"
+[380] . auto/feature
+[381] 
+[382] 
+[383] # Linux IP_BIND_ADDRESS_NO_PORT
+[384] 
+[385] ngx_feature="IP_BIND_ADDRESS_NO_PORT"
+[386] ngx_feature_name="NGX_HAVE_IP_BIND_ADDRESS_NO_PORT"
+[387] ngx_feature_run=no
+[388] ngx_feature_incs="#include <sys/socket.h>
+[389]                   #include <netinet/in.h>"
+[390] ngx_feature_path=
+[391] ngx_feature_libs=
+[392] ngx_feature_test="setsockopt(0, IPPROTO_IP, IP_BIND_ADDRESS_NO_PORT, NULL, 0)"
+[393] . auto/feature
+[394] 
+[395] 
+[396] # BSD way to get IPv4 datagram destination address
+[397] 
+[398] ngx_feature="IP_RECVDSTADDR"
+[399] ngx_feature_name="NGX_HAVE_IP_RECVDSTADDR"
+[400] ngx_feature_run=no
+[401] ngx_feature_incs="#include <sys/socket.h>
+[402]                   #include <netinet/in.h>"
+[403] ngx_feature_path=
+[404] ngx_feature_libs=
+[405] ngx_feature_test="setsockopt(0, IPPROTO_IP, IP_RECVDSTADDR, NULL, 0)"
+[406] . auto/feature
+[407] 
+[408] 
+[409] # BSD way to set IPv4 datagram source address
+[410] 
+[411] ngx_feature="IP_SENDSRCADDR"
+[412] ngx_feature_name="NGX_HAVE_IP_SENDSRCADDR"
+[413] ngx_feature_run=no
+[414] ngx_feature_incs="#include <sys/socket.h>
+[415]                   #include <netinet/in.h>"
+[416] ngx_feature_path=
+[417] ngx_feature_libs=
+[418] ngx_feature_test="setsockopt(0, IPPROTO_IP, IP_SENDSRCADDR, NULL, 0)"
+[419] . auto/feature
+[420] 
+[421] 
+[422] # Linux way to get IPv4 datagram destination address
+[423] 
+[424] ngx_feature="IP_PKTINFO"
+[425] ngx_feature_name="NGX_HAVE_IP_PKTINFO"
+[426] ngx_feature_run=no
+[427] ngx_feature_incs="#include <sys/socket.h>
+[428]                   #include <netinet/in.h>"
+[429] ngx_feature_path=
+[430] ngx_feature_libs=
+[431] ngx_feature_test="struct in_pktinfo  pkt;
+[432]                   pkt.ipi_spec_dst.s_addr = INADDR_ANY;
+[433]                   (void) pkt;
+[434]                   setsockopt(0, IPPROTO_IP, IP_PKTINFO, NULL, 0)"
+[435] . auto/feature
+[436] 
+[437] 
+[438] # RFC 3542 way to get IPv6 datagram destination address
+[439] 
+[440] ngx_feature="IPV6_RECVPKTINFO"
+[441] ngx_feature_name="NGX_HAVE_IPV6_RECVPKTINFO"
+[442] ngx_feature_run=no
+[443] ngx_feature_incs="#include <sys/socket.h>
+[444]                   #include <netinet/in.h>"
+[445] ngx_feature_path=
+[446] ngx_feature_libs=
+[447] ngx_feature_test="setsockopt(0, IPPROTO_IPV6, IPV6_RECVPKTINFO, NULL, 0)"
+[448] . auto/feature
+[449] 
+[450] 
+[451] ngx_feature="TCP_DEFER_ACCEPT"
+[452] ngx_feature_name="NGX_HAVE_DEFERRED_ACCEPT"
+[453] ngx_feature_run=no
+[454] ngx_feature_incs="#include <sys/socket.h>
+[455]                   #include <netinet/in.h>
+[456]                   #include <netinet/tcp.h>"
+[457] ngx_feature_path=
+[458] ngx_feature_libs=
+[459] ngx_feature_test="setsockopt(0, IPPROTO_TCP, TCP_DEFER_ACCEPT, NULL, 0)"
+[460] . auto/feature
+[461] 
+[462] 
+[463] ngx_feature="TCP_KEEPIDLE"
+[464] ngx_feature_name="NGX_HAVE_KEEPALIVE_TUNABLE"
+[465] ngx_feature_run=no
+[466] ngx_feature_incs="#include <sys/socket.h>
+[467]                   #include <netinet/in.h>
+[468]                   #include <netinet/tcp.h>"
+[469] ngx_feature_path=
+[470] ngx_feature_libs=
+[471] ngx_feature_test="setsockopt(0, IPPROTO_TCP, TCP_KEEPIDLE, NULL, 0);
+[472]                   setsockopt(0, IPPROTO_TCP, TCP_KEEPINTVL, NULL, 0);
+[473]                   setsockopt(0, IPPROTO_TCP, TCP_KEEPCNT, NULL, 0)"
+[474] . auto/feature
+[475] 
+[476] 
+[477] ngx_feature="TCP_FASTOPEN"
+[478] ngx_feature_name="NGX_HAVE_TCP_FASTOPEN"
+[479] ngx_feature_run=no
+[480] ngx_feature_incs="#include <sys/socket.h>
+[481]                   #include <netinet/in.h>
+[482]                   #include <netinet/tcp.h>"
+[483] ngx_feature_path=
+[484] ngx_feature_libs=
+[485] ngx_feature_test="setsockopt(0, IPPROTO_TCP, TCP_FASTOPEN, NULL, 0)"
+[486] . auto/feature
+[487] 
+[488] 
+[489] ngx_feature="TCP_INFO"
+[490] ngx_feature_name="NGX_HAVE_TCP_INFO"
+[491] ngx_feature_run=no
+[492] ngx_feature_incs="#include <sys/socket.h>
+[493]                   #include <netinet/in.h>
+[494]                   #include <netinet/tcp.h>"
+[495] ngx_feature_path=
+[496] ngx_feature_libs=
+[497] ngx_feature_test="socklen_t optlen = sizeof(struct tcp_info);
+[498]                   struct tcp_info ti;
+[499]                   ti.tcpi_rtt = 0;
+[500]                   ti.tcpi_rttvar = 0;
+[501]                   ti.tcpi_snd_cwnd = 0;
+[502]                   ti.tcpi_rcv_space = 0;
+[503]                   getsockopt(0, IPPROTO_TCP, TCP_INFO, &ti, &optlen)"
+[504] . auto/feature
+[505] 
+[506] 
+[507] ngx_feature="accept4()"
+[508] ngx_feature_name="NGX_HAVE_ACCEPT4"
+[509] ngx_feature_run=no
+[510] ngx_feature_incs="#include <sys/socket.h>"
+[511] ngx_feature_path=
+[512] ngx_feature_libs=
+[513] ngx_feature_test="accept4(0, NULL, NULL, SOCK_NONBLOCK)"
+[514] . auto/feature
+[515] 
+[516] if [ $NGX_FILE_AIO = YES ]; then
+[517] 
+[518]     ngx_feature="kqueue AIO support"
+[519]     ngx_feature_name="NGX_HAVE_FILE_AIO"
+[520]     ngx_feature_run=no
+[521]     ngx_feature_incs="#include <aio.h>"
+[522]     ngx_feature_path=
+[523]     ngx_feature_libs=
+[524]     ngx_feature_test="struct aiocb  iocb;
+[525]                       iocb.aio_sigevent.sigev_notify = SIGEV_KEVENT;
+[526]                       (void) aio_read(&iocb)"
+[527]     . auto/feature
+[528] 
+[529]     if [ $ngx_found = yes ]; then
+[530]         CORE_SRCS="$CORE_SRCS $FILE_AIO_SRCS"
+[531]     fi
+[532] 
+[533]     if [ $ngx_found = no ]; then
+[534] 
+[535]         ngx_feature="Linux AIO support"
+[536]         ngx_feature_name="NGX_HAVE_FILE_AIO"
+[537]         ngx_feature_run=no
+[538]         ngx_feature_incs="#include <linux/aio_abi.h>
+[539]                           #include <sys/eventfd.h>"
+[540]         ngx_feature_path=
+[541]         ngx_feature_libs=
+[542]         ngx_feature_test="struct iocb  iocb;
+[543]                           iocb.aio_lio_opcode = IOCB_CMD_PREAD;
+[544]                           iocb.aio_flags = IOCB_FLAG_RESFD;
+[545]                           iocb.aio_resfd = -1;
+[546]                           (void) iocb;
+[547]                           (void) eventfd(0, 0)"
+[548]         . auto/feature
+[549] 
+[550]         if [ $ngx_found = yes ]; then
+[551]             have=NGX_HAVE_EVENTFD . auto/have
+[552]             have=NGX_HAVE_SYS_EVENTFD_H . auto/have
+[553]             CORE_SRCS="$CORE_SRCS $LINUX_AIO_SRCS"
+[554]         fi
+[555]     fi
+[556] 
+[557]     if [ $ngx_found = no ]; then
+[558] 
+[559]         ngx_feature="Linux AIO support (SYS_eventfd)"
+[560]         ngx_feature_incs="#include <linux/aio_abi.h>
+[561]                           #include <sys/syscall.h>"
+[562]         ngx_feature_test="struct iocb  iocb;
+[563]                           iocb.aio_lio_opcode = IOCB_CMD_PREAD;
+[564]                           iocb.aio_flags = IOCB_FLAG_RESFD;
+[565]                           iocb.aio_resfd = -1;
+[566]                           (void) iocb;
+[567]                           (void) SYS_eventfd"
+[568]         . auto/feature
+[569] 
+[570]         if [ $ngx_found = yes ]; then
+[571]             have=NGX_HAVE_EVENTFD . auto/have
+[572]             CORE_SRCS="$CORE_SRCS $LINUX_AIO_SRCS"
+[573]         fi
+[574]     fi
+[575] 
+[576]     if [ $ngx_found = no ]; then
+[577]         cat << END
+[578] 
+[579] $0: no supported file AIO was found
+[580] Currently file AIO is supported on FreeBSD 4.3+ and Linux 2.6.22+ only
+[581] 
+[582] END
+[583]         exit 1
+[584]     fi
+[585] fi
+[586] 
+[587] 
+[588] have=NGX_HAVE_UNIX_DOMAIN . auto/have
+[589] 
+[590] ngx_feature_libs=
+[591] 
+[592] 
+[593] # C types
+[594] 
+[595] ngx_type="int"; . auto/types/sizeof
+[596] 
+[597] ngx_type="long"; . auto/types/sizeof
+[598] 
+[599] ngx_type="long long"; . auto/types/sizeof
+[600] 
+[601] ngx_type="void *"; . auto/types/sizeof; ngx_ptr_size=$ngx_size
+[602] ngx_param=NGX_PTR_SIZE; ngx_value=$ngx_size; . auto/types/value
+[603] 
+[604] 
+[605] # POSIX types
+[606] 
+[607] NGX_INCLUDE_AUTO_CONFIG_H="#include \"ngx_auto_config.h\""
+[608] 
+[609] ngx_type="uint32_t"; ngx_types="u_int32_t"; . auto/types/typedef
+[610] ngx_type="uint64_t"; ngx_types="u_int64_t"; . auto/types/typedef
+[611] 
+[612] ngx_type="sig_atomic_t"; ngx_types="int"; . auto/types/typedef
+[613] . auto/types/sizeof
+[614] ngx_param=NGX_SIG_ATOMIC_T_SIZE; ngx_value=$ngx_size; . auto/types/value
+[615] 
+[616] ngx_type="socklen_t"; ngx_types="int"; . auto/types/typedef
+[617] 
+[618] ngx_type="in_addr_t"; ngx_types="uint32_t u_int32_t"; . auto/types/typedef
+[619] 
+[620] ngx_type="in_port_t"; ngx_types="u_short"; . auto/types/typedef
+[621] 
+[622] ngx_type="rlim_t"; ngx_types="int"; . auto/types/typedef
+[623] 
+[624] . auto/types/uintptr_t
+[625] 
+[626] . auto/endianness
+[627] 
+[628] ngx_type="size_t"; . auto/types/sizeof
+[629] ngx_param=NGX_MAX_SIZE_T_VALUE; ngx_value=$ngx_max_value; . auto/types/value
+[630] ngx_param=NGX_SIZE_T_LEN; ngx_value=$ngx_max_len; . auto/types/value
+[631] 
+[632] ngx_type="off_t"; . auto/types/sizeof
+[633] ngx_param=NGX_MAX_OFF_T_VALUE; ngx_value=$ngx_max_value; . auto/types/value
+[634] ngx_param=NGX_OFF_T_LEN; ngx_value=$ngx_max_len; . auto/types/value
+[635] 
+[636] ngx_type="time_t"; . auto/types/sizeof
+[637] ngx_param=NGX_TIME_T_SIZE; ngx_value=$ngx_size; . auto/types/value
+[638] ngx_param=NGX_TIME_T_LEN; ngx_value=$ngx_max_len; . auto/types/value
+[639] ngx_param=NGX_MAX_TIME_T_VALUE; ngx_value=$ngx_max_value; . auto/types/value
+[640] 
+[641] 
+[642] # syscalls, libc calls and some features
+[643] 
+[644] 
+[645] ngx_feature="AF_INET6"
+[646] ngx_feature_name="NGX_HAVE_INET6"
+[647] ngx_feature_run=no
+[648] ngx_feature_incs="#include <sys/socket.h>
+[649]                   #include <netinet/in.h>
+[650]                   #include <arpa/inet.h>"
+[651] ngx_feature_path=
+[652] ngx_feature_libs=
+[653] ngx_feature_test="struct sockaddr_in6  sin6;
+[654]                   sin6.sin6_family = AF_INET6;
+[655]                   (void) sin6"
+[656] . auto/feature
+[657] 
+[658] 
+[659] ngx_feature="setproctitle()"
+[660] ngx_feature_name="NGX_HAVE_SETPROCTITLE"
+[661] ngx_feature_run=no
+[662] ngx_feature_incs="#include <stdlib.h>"
+[663] ngx_feature_path=
+[664] ngx_feature_libs=$NGX_SETPROCTITLE_LIB
+[665] ngx_feature_test="setproctitle(\"test\");"
+[666] . auto/feature
+[667] 
+[668] 
+[669] ngx_feature="pread()"
+[670] ngx_feature_name="NGX_HAVE_PREAD"
+[671] ngx_feature_run=no
+[672] ngx_feature_incs=
+[673] ngx_feature_path=
+[674] ngx_feature_libs=
+[675] ngx_feature_test="char buf[1]; ssize_t n; n = pread(0, buf, 1, 0);
+[676]                   if (n == -1) return 1"
+[677] . auto/feature
+[678] 
+[679] 
+[680] ngx_feature="pwrite()"
+[681] ngx_feature_name="NGX_HAVE_PWRITE"
+[682] ngx_feature_run=no
+[683] ngx_feature_incs=
+[684] ngx_feature_path=
+[685] ngx_feature_libs=
+[686] ngx_feature_test="char buf[1]; ssize_t n; n = pwrite(1, buf, 1, 0);
+[687]                   if (n == -1) return 1"
+[688] . auto/feature
+[689] 
+[690] 
+[691] # pwritev() was introduced in FreeBSD 6 and Linux 2.6.30, glibc 2.10
+[692] 
+[693] ngx_feature="pwritev()"
+[694] ngx_feature_name="NGX_HAVE_PWRITEV"
+[695] ngx_feature_run=no
+[696] ngx_feature_incs='#include <sys/uio.h>'
+[697] ngx_feature_path=
+[698] ngx_feature_libs=
+[699] ngx_feature_test="char buf[1]; struct iovec vec[1]; ssize_t n;
+[700]                   vec[0].iov_base = buf;
+[701]                   vec[0].iov_len = 1;
+[702]                   n = pwritev(1, vec, 1, 0);
+[703]                   if (n == -1) return 1"
+[704] . auto/feature
+[705] 
+[706] 
+[707] # strerrordesc_np(), introduced in glibc 2.32
+[708] 
+[709] ngx_feature="strerrordesc_np()"
+[710] ngx_feature_name="NGX_HAVE_STRERRORDESC_NP"
+[711] ngx_feature_run=no
+[712] ngx_feature_incs='#include <string.h>'
+[713] ngx_feature_path=
+[714] ngx_feature_libs=
+[715] ngx_feature_test="char *p; p = strerrordesc_np(0);
+[716]                   if (p == NULL) return 1"
+[717] . auto/feature
+[718] 
+[719] 
+[720] if [ $ngx_found = no ]; then
+[721] 
+[722]     ngx_feature="sys_nerr"
+[723]     ngx_feature_name="NGX_SYS_NERR"
+[724]     ngx_feature_run=value
+[725]     ngx_feature_incs='#include <errno.h>
+[726]                       #include <stdio.h>'
+[727]     ngx_feature_path=
+[728]     ngx_feature_libs=
+[729]     ngx_feature_test='printf("%d", sys_nerr);'
+[730]     . auto/feature
+[731] fi
+[732] 
+[733] 
+[734] if [ $ngx_found = no ]; then
+[735] 
+[736]     # Cygiwn defines _sys_nerr
+[737]     ngx_feature="_sys_nerr"
+[738]     ngx_feature_name="NGX_SYS_NERR"
+[739]     ngx_feature_run=value
+[740]     ngx_feature_incs='#include <errno.h>
+[741]                       #include <stdio.h>'
+[742]     ngx_feature_path=
+[743]     ngx_feature_libs=
+[744]     ngx_feature_test='printf("%d", _sys_nerr);'
+[745]     . auto/feature
+[746] fi
+[747] 
+[748] 
+[749] ngx_feature="localtime_r()"
+[750] ngx_feature_name="NGX_HAVE_LOCALTIME_R"
+[751] ngx_feature_run=no
+[752] ngx_feature_incs="#include <time.h>"
+[753] ngx_feature_path=
+[754] ngx_feature_libs=
+[755] ngx_feature_test="struct tm t; time_t c=0; localtime_r(&c, &t)"
+[756] . auto/feature
+[757] 
+[758] 
+[759] ngx_feature="clock_gettime(CLOCK_MONOTONIC)"
+[760] ngx_feature_name="NGX_HAVE_CLOCK_MONOTONIC"
+[761] ngx_feature_run=no
+[762] ngx_feature_incs="#include <time.h>"
+[763] ngx_feature_path=
+[764] ngx_feature_libs=
+[765] ngx_feature_test="struct timespec ts; clock_gettime(CLOCK_MONOTONIC, &ts)"
+[766] . auto/feature
+[767] 
+[768] 
+[769] if [ $ngx_found = no ]; then
+[770] 
+[771]     # Linux before glibc 2.17, notably CentOS 6
+[772] 
+[773]     ngx_feature="clock_gettime(CLOCK_MONOTONIC) in librt"
+[774]     ngx_feature_libs="-lrt"
+[775]     . auto/feature
+[776] 
+[777]     if [ $ngx_found = yes ]; then
+[778]         CORE_LIBS="$CORE_LIBS -lrt"
+[779]     fi
+[780] fi
+[781] 
+[782] 
+[783] ngx_feature="posix_memalign()"
+[784] ngx_feature_name="NGX_HAVE_POSIX_MEMALIGN"
+[785] ngx_feature_run=no
+[786] ngx_feature_incs="#include <stdlib.h>"
+[787] ngx_feature_path=
+[788] ngx_feature_libs=
+[789] ngx_feature_test="void *p; int n; n = posix_memalign(&p, 4096, 4096);
+[790]                   if (n != 0) return 1"
+[791] . auto/feature
+[792] 
+[793] 
+[794] ngx_feature="memalign()"
+[795] ngx_feature_name="NGX_HAVE_MEMALIGN"
+[796] ngx_feature_run=no
+[797] ngx_feature_incs="#include <stdlib.h>
+[798]                   #include <malloc.h>"
+[799] ngx_feature_path=
+[800] ngx_feature_libs=
+[801] ngx_feature_test="void *p; p = memalign(4096, 4096);
+[802]                   if (p == NULL) return 1"
+[803] . auto/feature
+[804] 
+[805] 
+[806] ngx_feature="mmap(MAP_ANON|MAP_SHARED)"
+[807] ngx_feature_name="NGX_HAVE_MAP_ANON"
+[808] ngx_feature_run=yes
+[809] ngx_feature_incs="#include <sys/mman.h>"
+[810] ngx_feature_path=
+[811] ngx_feature_libs=
+[812] ngx_feature_test="void *p;
+[813]                   p = mmap(NULL, 4096, PROT_READ|PROT_WRITE,
+[814]                            MAP_ANON|MAP_SHARED, -1, 0);
+[815]                   if (p == MAP_FAILED) return 1;"
+[816] . auto/feature
+[817] 
+[818] 
+[819] ngx_feature='mmap("/dev/zero", MAP_SHARED)'
+[820] ngx_feature_name="NGX_HAVE_MAP_DEVZERO"
+[821] ngx_feature_run=yes
+[822] ngx_feature_incs="#include <sys/mman.h>
+[823]                   #include <sys/stat.h>
+[824]                   #include <fcntl.h>"
+[825] ngx_feature_path=
+[826] ngx_feature_libs=
+[827] ngx_feature_test='void *p; int  fd;
+[828]                   fd = open("/dev/zero", O_RDWR);
+[829]                   p = mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_SHARED, fd, 0);
+[830]                   if (p == MAP_FAILED) return 1;'
+[831] . auto/feature
+[832] 
+[833] 
+[834] ngx_feature="System V shared memory"
+[835] ngx_feature_name="NGX_HAVE_SYSVSHM"
+[836] ngx_feature_run=yes
+[837] ngx_feature_incs="#include <sys/ipc.h>
+[838]                   #include <sys/shm.h>"
+[839] ngx_feature_path=
+[840] ngx_feature_libs=
+[841] ngx_feature_test="int  id;
+[842]                   id = shmget(IPC_PRIVATE, 4096, (SHM_R|SHM_W|IPC_CREAT));
+[843]                   if (id == -1) return 1;
+[844]                   shmctl(id, IPC_RMID, NULL);"
+[845] . auto/feature
+[846] 
+[847] 
+[848] ngx_feature="POSIX semaphores"
+[849] ngx_feature_name="NGX_HAVE_POSIX_SEM"
+[850] ngx_feature_run=yes
+[851] ngx_feature_incs="#include <semaphore.h>"
+[852] ngx_feature_path=
+[853] ngx_feature_libs=
+[854] ngx_feature_test="sem_t  sem;
+[855]                   if (sem_init(&sem, 1, 0) == -1) return 1;
+[856]                   sem_destroy(&sem);"
+[857] . auto/feature
+[858] 
+[859] 
+[860] if [ $ngx_found = no ]; then
+[861] 
+[862]     # Linux has POSIX semaphores in libpthread
+[863]     ngx_feature="POSIX semaphores in libpthread"
+[864]     ngx_feature_libs=-lpthread
+[865]     . auto/feature
+[866] 
+[867]     if [ $ngx_found = yes ]; then
+[868]         CORE_LIBS="$CORE_LIBS -lpthread"
+[869]         NGX_LIBPTHREAD="-lpthread"
+[870]     fi
+[871] fi
+[872] 
+[873] 
+[874] if [ $ngx_found = no ]; then
+[875] 
+[876]     # Solaris has POSIX semaphores in librt
+[877]     ngx_feature="POSIX semaphores in librt"
+[878]     ngx_feature_libs=-lrt
+[879]     . auto/feature
+[880] 
+[881]     if [ $ngx_found = yes ]; then
+[882]         CORE_LIBS="$CORE_LIBS -lrt"
+[883]     fi
+[884] fi
+[885] 
+[886] 
+[887] ngx_feature="struct msghdr.msg_control"
+[888] ngx_feature_name="NGX_HAVE_MSGHDR_MSG_CONTROL"
+[889] ngx_feature_run=no
+[890] ngx_feature_incs="#include <sys/socket.h>
+[891]                   #include <stdio.h>"
+[892] ngx_feature_path=
+[893] ngx_feature_libs=
+[894] ngx_feature_test="struct msghdr  msg;
+[895]                   printf(\"%d\", (int) sizeof(msg.msg_control))"
+[896] . auto/feature
+[897] 
+[898] 
+[899] ngx_feature="ioctl(FIONBIO)"
+[900] ngx_feature_name="NGX_HAVE_FIONBIO"
+[901] ngx_feature_run=no
+[902] ngx_feature_incs="#include <sys/ioctl.h>
+[903]                   #include <stdio.h>
+[904]                   $NGX_INCLUDE_SYS_FILIO_H"
+[905] ngx_feature_path=
+[906] ngx_feature_libs=
+[907] ngx_feature_test="int i = FIONBIO; printf(\"%d\", i)"
+[908] . auto/feature
+[909] 
+[910] 
+[911] ngx_feature="ioctl(FIONREAD)"
+[912] ngx_feature_name="NGX_HAVE_FIONREAD"
+[913] ngx_feature_run=no
+[914] ngx_feature_incs="#include <sys/ioctl.h>
+[915]                   #include <stdio.h>
+[916]                   $NGX_INCLUDE_SYS_FILIO_H"
+[917] ngx_feature_path=
+[918] ngx_feature_libs=
+[919] ngx_feature_test="int i = FIONREAD; printf(\"%d\", i)"
+[920] . auto/feature
+[921] 
+[922] 
+[923] ngx_feature="struct tm.tm_gmtoff"
+[924] ngx_feature_name="NGX_HAVE_GMTOFF"
+[925] ngx_feature_run=no
+[926] ngx_feature_incs="#include <time.h>
+[927]                   #include <stdio.h>"
+[928] ngx_feature_path=
+[929] ngx_feature_libs=
+[930] ngx_feature_test="struct tm  tm; tm.tm_gmtoff = 0;
+[931]                   printf(\"%d\", (int) tm.tm_gmtoff)"
+[932] . auto/feature
+[933] 
+[934] 
+[935] ngx_feature="struct dirent.d_namlen"
+[936] ngx_feature_name="NGX_HAVE_D_NAMLEN"
+[937] ngx_feature_run=no
+[938] ngx_feature_incs="#include <dirent.h>
+[939]                   #include <stdio.h>"
+[940] ngx_feature_path=
+[941] ngx_feature_libs=
+[942] ngx_feature_test="struct dirent  dir; dir.d_namlen = 0;
+[943]                   printf(\"%d\", (int) dir.d_namlen)"
+[944] . auto/feature
+[945] 
+[946] 
+[947] ngx_feature="struct dirent.d_type"
+[948] ngx_feature_name="NGX_HAVE_D_TYPE"
+[949] ngx_feature_run=no
+[950] ngx_feature_incs="#include <dirent.h>
+[951]                   #include <stdio.h>"
+[952] ngx_feature_path=
+[953] ngx_feature_libs=
+[954] ngx_feature_test="struct dirent  dir; dir.d_type = DT_REG;
+[955]                   printf(\"%d\", (int) dir.d_type)"
+[956] . auto/feature
+[957] 
+[958] 
+[959] ngx_feature="sysconf(_SC_NPROCESSORS_ONLN)"
+[960] ngx_feature_name="NGX_HAVE_SC_NPROCESSORS_ONLN"
+[961] ngx_feature_run=no
+[962] ngx_feature_incs=
+[963] ngx_feature_path=
+[964] ngx_feature_libs=
+[965] ngx_feature_test="sysconf(_SC_NPROCESSORS_ONLN)"
+[966] . auto/feature
+[967] 
+[968] 
+[969] ngx_feature="sysconf(_SC_LEVEL1_DCACHE_LINESIZE)"
+[970] ngx_feature_name="NGX_HAVE_LEVEL1_DCACHE_LINESIZE"
+[971] ngx_feature_run=no
+[972] ngx_feature_incs=
+[973] ngx_feature_path=
+[974] ngx_feature_libs=
+[975] ngx_feature_test="sysconf(_SC_LEVEL1_DCACHE_LINESIZE)"
+[976] . auto/feature
+[977] 
+[978] 
+[979] ngx_feature="openat(), fstatat()"
+[980] ngx_feature_name="NGX_HAVE_OPENAT"
+[981] ngx_feature_run=no
+[982] ngx_feature_incs="#include <sys/types.h>
+[983]                   #include <sys/stat.h>
+[984]                   #include <fcntl.h>"
+[985] ngx_feature_path=
+[986] ngx_feature_libs=
+[987] ngx_feature_test="struct stat sb;
+[988]                   openat(AT_FDCWD, \".\", O_RDONLY|O_NOFOLLOW);
+[989]                   fstatat(AT_FDCWD, \".\", &sb, AT_SYMLINK_NOFOLLOW);"
+[990] . auto/feature
+[991] 
+[992] 
+[993] ngx_feature="getaddrinfo()"
+[994] ngx_feature_name="NGX_HAVE_GETADDRINFO"
+[995] ngx_feature_run=no
+[996] ngx_feature_incs="#include <sys/types.h>
+[997]                   #include <sys/socket.h>
+[998]                   #include <netdb.h>"
+[999] ngx_feature_path=
+[1000] ngx_feature_libs=
+[1001] ngx_feature_test='struct addrinfo *res;
+[1002]                   if (getaddrinfo("localhost", NULL, NULL, &res) != 0) return 1;
+[1003]                   freeaddrinfo(res)'
+[1004] . auto/feature

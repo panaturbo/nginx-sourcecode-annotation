@@ -1,14 +1,14 @@
-
-# Copyright (C) Igor Sysoev
-# Copyright (C) Nginx, Inc.
-
-
-# aCC: HP ANSI C++ B3910B A.03.55.02
-
-# C89 mode
-
-CFLAGS="$CFLAGS -Ae"
-CC_TEST_FLAGS="-Ae"
-
-PCRE_OPT="$PCRE_OPT -Ae"
-ZLIB_OPT="$ZLIB_OPT -Ae"
+[1] 
+[2] # Copyright (C) Igor Sysoev
+[3] # Copyright (C) Nginx, Inc.
+[4] 
+[5] 
+[6] # aCC: HP ANSI C++ B3910B A.03.55.02
+[7] 
+[8] # C89 mode
+[9] 
+[10] CFLAGS="$CFLAGS -Ae"
+[11] CC_TEST_FLAGS="-Ae"
+[12] 
+[13] PCRE_OPT="$PCRE_OPT -Ae"
+[14] ZLIB_OPT="$ZLIB_OPT -Ae"

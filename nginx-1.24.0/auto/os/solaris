@@ -1,61 +1,61 @@
-
-# Copyright (C) Igor Sysoev
-# Copyright (C) Nginx, Inc.
-
-
-have=NGX_SOLARIS . auto/have_headers
-
-CORE_INCS="$UNIX_INCS"
-CORE_DEPS="$UNIX_DEPS $SOLARIS_DEPS"
-CORE_SRCS="$UNIX_SRCS $SOLARIS_SRCS "
-CORE_LIBS="$CORE_LIBS -lsocket -lnsl"
-
-NGX_RPATH=YES
-
-# Solaris's make does not support a blank line between target and rules
-ngx_spacer=
-
-CC_AUX_FLAGS="$CC_AUX_FLAGS -D_FILE_OFFSET_BITS=64 -lsocket -lnsl"
-
-
-if [ $ZLIB_ASM != NO ]; then
-    echo "$0: error: the --with-zlib-asm=CPU option is not supported"
-    echo "on that platform"
-    echo
-
-    exit 1
-fi
-
-
-ngx_feature="sendfilev()"
-ngx_feature_name="NGX_HAVE_SENDFILE"
-ngx_feature_run=no
-ngx_feature_incs="#include <sys/sendfile.h>"
-ngx_feature_path=
-ngx_feature_libs="-lsendfile"
-ngx_feature_test="int fd = 1; sendfilevec_t vec[1];
-                  size_t sent; ssize_t n;
-                  n = sendfilev(fd, vec, 1, &sent);
-                  if (n == -1) return 1"
-. auto/feature
-
-
-if [ $ngx_found = yes ]; then
-    CORE_SRCS="$CORE_SRCS $SOLARIS_SENDFILEV_SRCS"
-    CORE_LIBS="$CORE_LIBS -lsendfile"
-fi
-
-
-ngx_feature="event ports"
-ngx_feature_name="NGX_HAVE_EVENTPORT"
-ngx_feature_run=no
-ngx_feature_incs="#include <port.h>"
-ngx_feature_path=
-ngx_feature_libs=
-ngx_feature_test="(void) port_create()"
-. auto/feature
-
-if [ $ngx_found = yes ]; then
-    CORE_SRCS="$CORE_SRCS $EVENTPORT_SRCS"
-    EVENT_MODULES="$EVENT_MODULES $EVENTPORT_MODULE"
-fi
+[1] 
+[2] # Copyright (C) Igor Sysoev
+[3] # Copyright (C) Nginx, Inc.
+[4] 
+[5] 
+[6] have=NGX_SOLARIS . auto/have_headers
+[7] 
+[8] CORE_INCS="$UNIX_INCS"
+[9] CORE_DEPS="$UNIX_DEPS $SOLARIS_DEPS"
+[10] CORE_SRCS="$UNIX_SRCS $SOLARIS_SRCS "
+[11] CORE_LIBS="$CORE_LIBS -lsocket -lnsl"
+[12] 
+[13] NGX_RPATH=YES
+[14] 
+[15] # Solaris's make does not support a blank line between target and rules
+[16] ngx_spacer=
+[17] 
+[18] CC_AUX_FLAGS="$CC_AUX_FLAGS -D_FILE_OFFSET_BITS=64 -lsocket -lnsl"
+[19] 
+[20] 
+[21] if [ $ZLIB_ASM != NO ]; then
+[22]     echo "$0: error: the --with-zlib-asm=CPU option is not supported"
+[23]     echo "on that platform"
+[24]     echo
+[25] 
+[26]     exit 1
+[27] fi
+[28] 
+[29] 
+[30] ngx_feature="sendfilev()"
+[31] ngx_feature_name="NGX_HAVE_SENDFILE"
+[32] ngx_feature_run=no
+[33] ngx_feature_incs="#include <sys/sendfile.h>"
+[34] ngx_feature_path=
+[35] ngx_feature_libs="-lsendfile"
+[36] ngx_feature_test="int fd = 1; sendfilevec_t vec[1];
+[37]                   size_t sent; ssize_t n;
+[38]                   n = sendfilev(fd, vec, 1, &sent);
+[39]                   if (n == -1) return 1"
+[40] . auto/feature
+[41] 
+[42] 
+[43] if [ $ngx_found = yes ]; then
+[44]     CORE_SRCS="$CORE_SRCS $SOLARIS_SENDFILEV_SRCS"
+[45]     CORE_LIBS="$CORE_LIBS -lsendfile"
+[46] fi
+[47] 
+[48] 
+[49] ngx_feature="event ports"
+[50] ngx_feature_name="NGX_HAVE_EVENTPORT"
+[51] ngx_feature_run=no
+[52] ngx_feature_incs="#include <port.h>"
+[53] ngx_feature_path=
+[54] ngx_feature_libs=
+[55] ngx_feature_test="(void) port_create()"
+[56] . auto/feature
+[57] 
+[58] if [ $ngx_found = yes ]; then
+[59]     CORE_SRCS="$CORE_SRCS $EVENTPORT_SRCS"
+[60]     EVENT_MODULES="$EVENT_MODULES $EVENTPORT_MODULE"
+[61] fi

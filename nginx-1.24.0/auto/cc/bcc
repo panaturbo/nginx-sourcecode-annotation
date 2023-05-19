@@ -1,71 +1,71 @@
-
-# Copyright (C) Igor Sysoev
-# Copyright (C) Nginx, Inc.
-
-
-# Borland C++ 5.5
-
-# optimizations
-
-# maximize speed
-CFLAGS="$CFLAGS -O2"
-
-case $CPU in
-    pentium)
-        # optimize for Pentium and Athlon
-        CPU_OPT="-5"
-    ;;
-
-    pentiumpro)
-        # optimize for Pentium Pro, Pentium II and Pentium III
-        CPU_OPT="-6"
-    ;;
-esac
-
-# __stdcall
-#CPU_OPT="$CPU_OPT -ps"
-# __fastcall
-#CPU_OPT="$CPU_OPT -pr"
-
-CFLAGS="$CFLAGS $CPU_OPT"
-
-# multithreaded
-CFLAGS="$CFLAGS -tWM"
-
-# stop on warning
-CFLAGS="$CFLAGS -w!"
-
-# disable logo
-CFLAGS="$CFLAGS -q"
-
-
-# precompiled headers
-CORE_DEPS="$CORE_DEPS $NGX_OBJS/ngx_config.csm"
-NGX_PCH="$NGX_OBJS/ngx_config.csm"
-NGX_BUILD_PCH="-H=$NGX_OBJS/ngx_config.csm"
-NGX_USE_PCH="-Hu -H=$NGX_OBJS/ngx_config.csm"
-
-
-# Win32 GUI mode application
-#LINK="\$(CC) -laa"
-
-
-# the resource file
-NGX_RES="$NGX_OBJS/nginx.res"
-NGX_RCC="brcc32 -fo$NGX_OBJS/nginx.res \$(CORE_INCS) $NGX_WIN32_RC"
-# the pragma allows to link the resource file using bcc32 and
-# to avoid the direct ilink32 calling and the c0w32.obj's WinMain/main problem
-NGX_PRAGMA="#pragma resource \"$NGX_OBJS/nginx.res\""
-
-
-ngx_include_opt="-I"
-ngx_objout="-o"
-ngx_binout="-e"
-ngx_objext="obj"
-
-ngx_long_start='@&&|
-	'
-ngx_long_end='|'
-
-ngx_regex_dirsep='\\'
-ngx_dirsep="\\"
+[1] 
+[2] # Copyright (C) Igor Sysoev
+[3] # Copyright (C) Nginx, Inc.
+[4] 
+[5] 
+[6] # Borland C++ 5.5
+[7] 
+[8] # optimizations
+[9] 
+[10] # maximize speed
+[11] CFLAGS="$CFLAGS -O2"
+[12] 
+[13] case $CPU in
+[14]     pentium)
+[15]         # optimize for Pentium and Athlon
+[16]         CPU_OPT="-5"
+[17]     ;;
+[18] 
+[19]     pentiumpro)
+[20]         # optimize for Pentium Pro, Pentium II and Pentium III
+[21]         CPU_OPT="-6"
+[22]     ;;
+[23] esac
+[24] 
+[25] # __stdcall
+[26] #CPU_OPT="$CPU_OPT -ps"
+[27] # __fastcall
+[28] #CPU_OPT="$CPU_OPT -pr"
+[29] 
+[30] CFLAGS="$CFLAGS $CPU_OPT"
+[31] 
+[32] # multithreaded
+[33] CFLAGS="$CFLAGS -tWM"
+[34] 
+[35] # stop on warning
+[36] CFLAGS="$CFLAGS -w!"
+[37] 
+[38] # disable logo
+[39] CFLAGS="$CFLAGS -q"
+[40] 
+[41] 
+[42] # precompiled headers
+[43] CORE_DEPS="$CORE_DEPS $NGX_OBJS/ngx_config.csm"
+[44] NGX_PCH="$NGX_OBJS/ngx_config.csm"
+[45] NGX_BUILD_PCH="-H=$NGX_OBJS/ngx_config.csm"
+[46] NGX_USE_PCH="-Hu -H=$NGX_OBJS/ngx_config.csm"
+[47] 
+[48] 
+[49] # Win32 GUI mode application
+[50] #LINK="\$(CC) -laa"
+[51] 
+[52] 
+[53] # the resource file
+[54] NGX_RES="$NGX_OBJS/nginx.res"
+[55] NGX_RCC="brcc32 -fo$NGX_OBJS/nginx.res \$(CORE_INCS) $NGX_WIN32_RC"
+[56] # the pragma allows to link the resource file using bcc32 and
+[57] # to avoid the direct ilink32 calling and the c0w32.obj's WinMain/main problem
+[58] NGX_PRAGMA="#pragma resource \"$NGX_OBJS/nginx.res\""
+[59] 
+[60] 
+[61] ngx_include_opt="-I"
+[62] ngx_objout="-o"
+[63] ngx_binout="-e"
+[64] ngx_objext="obj"
+[65] 
+[66] ngx_long_start='@&&|
+[67] 	'
+[68] ngx_long_end='|'
+[69] 
+[70] ngx_regex_dirsep='\\'
+[71] ngx_dirsep="\\"

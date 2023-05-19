@@ -1,105 +1,105 @@
-
-# Copyright (C) Igor Sysoev
-# Copyright (C) Nginx, Inc.
-
-
-have=NGX_FREEBSD . auto/have_headers
-
-CORE_INCS="$UNIX_INCS"
-CORE_DEPS="$UNIX_DEPS $FREEBSD_DEPS"
-CORE_SRCS="$UNIX_SRCS $FREEBSD_SRCS"
-
-ngx_spacer='
-'
-
-
-# __FreeBSD_version and sysctl kern.osreldate are the best ways
-# to determine whether some capability exists and is safe to use.
-# __FreeBSD_version is used for the testing of the build environment.
-# sysctl kern.osreldate is used for the testing of the kernel capabilities.
-
-version=`grep "#define __FreeBSD_version" /usr/include/osreldate.h \
-         | sed -e 's/^.* \(.*\)$/\1/'`
-
-osreldate=`/sbin/sysctl -n kern.osreldate`
-
-
-# setproctitle() in libutil
-
-if [ \( $version -ge 500000 -a $version -lt 500012 \) \
-     -o $version -lt 410002 ]
-then
-    echo " + setproctitle() in libutil"
-
-    CORE_LIBS="$CORE_LIBS -lutil"
-    NGX_SETPROCTITLE_LIB="-lutil"
-fi
-
-# sendfile
-
-if [ $osreldate -gt 300007 ]; then
-    echo " + sendfile() found"
-
-    have=NGX_HAVE_SENDFILE . auto/have
-    CORE_SRCS="$CORE_SRCS $FREEBSD_SENDFILE_SRCS"
-fi
-
-if [ $osreldate -gt 1100093 ]; then
-    echo " + sendfile()'s SF_NODISKIO found"
-
-    have=NGX_HAVE_SENDFILE_NODISKIO . auto/have
-fi
-
-# POSIX semaphores
-# http://www.freebsd.org/cgi/query-pr.cgi?pr=kern/127545
-
-if [ $osreldate -ge 701106 ]; then
-    echo " + POSIX semaphores should work"
-else
-    have=NGX_HAVE_POSIX_SEM . auto/nohave
-fi
-
-
-# kqueue
-
-if [ \( $osreldate -lt 500000 -a $osreldate -ge 410000 \) \
-     -o $osreldate -ge 500011 ]
-then
-    echo " + kqueue found"
-
-    have=NGX_HAVE_KQUEUE . auto/have
-    have=NGX_HAVE_CLEAR_EVENT . auto/have
-    EVENT_MODULES="$EVENT_MODULES $KQUEUE_MODULE"
-    CORE_SRCS="$CORE_SRCS $KQUEUE_SRCS"
-    EVENT_FOUND=YES
-fi
-
-
-NGX_KQUEUE_CHECKED=YES
-
-
-# kqueue's NOTE_LOWAT
-
-if [ \( $version -lt 500000 -a $version -ge 430000 \) \
-     -o $version -ge 500018 ]
-then
-    echo " + kqueue's NOTE_LOWAT found"
-    have=NGX_HAVE_LOWAT_EVENT . auto/have
-fi
-
-# kqueue's EVFILT_TIMER
-
-if [ \( $version -lt 500000 -a $version -ge 440001 \) \
-     -o $version -ge 500023 ]
-then
-    echo " + kqueue's EVFILT_TIMER found"
-    have=NGX_HAVE_TIMER_EVENT . auto/have
-fi
-
-
-# cpuset_setaffinity()
-
-if [ $version -ge 701000 ]; then
-    echo " + cpuset_setaffinity() found"
-    have=NGX_HAVE_CPUSET_SETAFFINITY . auto/have
-fi
+[1] 
+[2] # Copyright (C) Igor Sysoev
+[3] # Copyright (C) Nginx, Inc.
+[4] 
+[5] 
+[6] have=NGX_FREEBSD . auto/have_headers
+[7] 
+[8] CORE_INCS="$UNIX_INCS"
+[9] CORE_DEPS="$UNIX_DEPS $FREEBSD_DEPS"
+[10] CORE_SRCS="$UNIX_SRCS $FREEBSD_SRCS"
+[11] 
+[12] ngx_spacer='
+[13] '
+[14] 
+[15] 
+[16] # __FreeBSD_version and sysctl kern.osreldate are the best ways
+[17] # to determine whether some capability exists and is safe to use.
+[18] # __FreeBSD_version is used for the testing of the build environment.
+[19] # sysctl kern.osreldate is used for the testing of the kernel capabilities.
+[20] 
+[21] version=`grep "#define __FreeBSD_version" /usr/include/osreldate.h \
+[22]          | sed -e 's/^.* \(.*\)$/\1/'`
+[23] 
+[24] osreldate=`/sbin/sysctl -n kern.osreldate`
+[25] 
+[26] 
+[27] # setproctitle() in libutil
+[28] 
+[29] if [ \( $version -ge 500000 -a $version -lt 500012 \) \
+[30]      -o $version -lt 410002 ]
+[31] then
+[32]     echo " + setproctitle() in libutil"
+[33] 
+[34]     CORE_LIBS="$CORE_LIBS -lutil"
+[35]     NGX_SETPROCTITLE_LIB="-lutil"
+[36] fi
+[37] 
+[38] # sendfile
+[39] 
+[40] if [ $osreldate -gt 300007 ]; then
+[41]     echo " + sendfile() found"
+[42] 
+[43]     have=NGX_HAVE_SENDFILE . auto/have
+[44]     CORE_SRCS="$CORE_SRCS $FREEBSD_SENDFILE_SRCS"
+[45] fi
+[46] 
+[47] if [ $osreldate -gt 1100093 ]; then
+[48]     echo " + sendfile()'s SF_NODISKIO found"
+[49] 
+[50]     have=NGX_HAVE_SENDFILE_NODISKIO . auto/have
+[51] fi
+[52] 
+[53] # POSIX semaphores
+[54] # http://www.freebsd.org/cgi/query-pr.cgi?pr=kern/127545
+[55] 
+[56] if [ $osreldate -ge 701106 ]; then
+[57]     echo " + POSIX semaphores should work"
+[58] else
+[59]     have=NGX_HAVE_POSIX_SEM . auto/nohave
+[60] fi
+[61] 
+[62] 
+[63] # kqueue
+[64] 
+[65] if [ \( $osreldate -lt 500000 -a $osreldate -ge 410000 \) \
+[66]      -o $osreldate -ge 500011 ]
+[67] then
+[68]     echo " + kqueue found"
+[69] 
+[70]     have=NGX_HAVE_KQUEUE . auto/have
+[71]     have=NGX_HAVE_CLEAR_EVENT . auto/have
+[72]     EVENT_MODULES="$EVENT_MODULES $KQUEUE_MODULE"
+[73]     CORE_SRCS="$CORE_SRCS $KQUEUE_SRCS"
+[74]     EVENT_FOUND=YES
+[75] fi
+[76] 
+[77] 
+[78] NGX_KQUEUE_CHECKED=YES
+[79] 
+[80] 
+[81] # kqueue's NOTE_LOWAT
+[82] 
+[83] if [ \( $version -lt 500000 -a $version -ge 430000 \) \
+[84]      -o $version -ge 500018 ]
+[85] then
+[86]     echo " + kqueue's NOTE_LOWAT found"
+[87]     have=NGX_HAVE_LOWAT_EVENT . auto/have
+[88] fi
+[89] 
+[90] # kqueue's EVFILT_TIMER
+[91] 
+[92] if [ \( $version -lt 500000 -a $version -ge 440001 \) \
+[93]      -o $version -ge 500023 ]
+[94] then
+[95]     echo " + kqueue's EVFILT_TIMER found"
+[96]     have=NGX_HAVE_TIMER_EVENT . auto/have
+[97] fi
+[98] 
+[99] 
+[100] # cpuset_setaffinity()
+[101] 
+[102] if [ $version -ge 701000 ]; then
+[103]     echo " + cpuset_setaffinity() found"
+[104]     have=NGX_HAVE_CPUSET_SETAFFINITY . auto/have
+[105] fi

@@ -1,163 +1,163 @@
-
-# Copyright (C) Igor Sysoev
-# Copyright (C) Nginx, Inc.
-
-
-# Sun C 5.7 Patch 117837-04 2005/05/11    Sun Studio 10
-# Sun C 5.8 2005/10/13                    Sun Studio 11
-# Sun C 5.9 SunOS_i386 2007/05/03         Sun Studio 12
-# Sun C 5.9 SunOS_sparc 2007/05/03
-# Sun C 5.10 SunOS_i386 2009/06/03        Sun Studio 12.1
-# Sun C 5.11 SunOS_i386 2010/08/13        Oracle Solaris Studio 12.2
-# Sun C 5.12 SunOS_i386 2011/11/16        Oracle Solaris Studio 12.3
-# Sun C 5.13 SunOS_i386 2014/10/20        Oracle Solaris Studio 12.4
-# Sun C 5.14 SunOS_i386 2016/05/31        Oracle Developer Studio 12.5
-
-NGX_SUNC_VER=`$CC -V 2>&1 | grep 'Sun C' 2>&1 \
-                          | sed -e 's/^.* Sun C \(.*\)/\1/'`
-
-echo " + Sun C version: $NGX_SUNC_VER"
-
-have=NGX_COMPILER value="\"Sun C $NGX_SUNC_VER\"" . auto/define
-
-
-cat << END > $NGX_AUTOTEST.c
-
-int main(void) {
-    printf("%d", __SUNPRO_C);
-    return 0;
-}
-
-END
-
-eval "$CC -o $NGX_AUTOTEST $NGX_AUTOTEST.c >> $NGX_ERR 2>&1"
-
-if [ -x $NGX_AUTOTEST ]; then
-    ngx_sunc_ver=`$NGX_AUTOTEST`
-fi
-
-rm -rf $NGX_AUTOTEST*
-
-# 1424 == 0x590, Sun Studio 12
-
-if [ "$ngx_sunc_ver" -ge 1424 ]; then
-    ngx_sparc32="-m32"
-    ngx_sparc64="-m64"
-    ngx_amd64="-m64"
-
-else
-    ngx_sparc32="-xarch=v8plus"
-    ngx_sparc64="-xarch=v9"
-    ngx_amd64="-xarch=amd64"
-fi
-
-case "$NGX_MACHINE" in
-
-    i86pc)
-        NGX_AUX=" src/os/unix/ngx_sunpro_x86.il"
-    ;;
-
-    sun4u | sun4v)
-        NGX_AUX=" src/os/unix/ngx_sunpro_sparc64.il"
-    ;;
-
-esac
-
-MAIN_LINK=
-MODULE_LINK="-G"
-
-
-# optimizations
-
-# 20736 == 0x5100, Sun Studio 12.1
-
-if [ "$ngx_sunc_ver" -ge 20736 ]; then
-    ngx_fast="-fast"
-
-else
-    # older versions had problems with bit-fields
-    ngx_fast="-fast -xalias_level=any"
-fi
-
-IPO=-xipo
-CFLAGS="$CFLAGS $ngx_fast $IPO"
-CORE_LINK="$CORE_LINK $ngx_fast $IPO"
-
-
-case $CPU in
-    pentium)
-        # optimize for Pentium and Athlon
-        CPU_OPT="-xchip=pentium"
-    ;;
-
-    pentiumpro)
-        # optimize for Pentium Pro, Pentium II
-        CPU_OPT="-xchip=pentium_pro"
-    ;;
-
-    pentium3)
-        # optimize for Pentium III
-        CPU_OPT="-xchip=pentium3"
-        #CPU_OPT="$CPU_OPT -xarch=sse"
-        CPU_OPT="$CPU_OPT -xcache=16/32/4:256/32/4"
-    ;;
-
-    pentium4)
-        # optimize for Pentium 4
-        CPU_OPT="-xchip=pentium4"
-        #CPU_OPT="$CPU_OPT -xarch=sse2"
-        CPU_OPT="$CPU_OPT -xcache=8/64/4:256/128/8"
-    ;;
-
-    opteron)
-        # optimize for Opteron
-        CPU_OPT="-xchip=opteron"
-        #CPU_OPT="$CPU_OPT -xarch=sse2"
-        CPU_OPT="$CPU_OPT -xcache=64/64/2:1024/64/16"
-    ;;
-
-    sparc32)
-        # build 32-bit UltraSparc binary
-        CPU_OPT="$ngx_sparc32"
-        CORE_LINK="$CORE_LINK $ngx_sparc32"
-        CC_AUX_FLAGS="$CC_AUX_FLAGS $ngx_sparc32"
-        NGX_CPU_CACHE_LINE=64
-    ;;
-
-    sparc64)
-        # build 64-bit UltraSparc binary
-        CPU_OPT="$ngx_sparc64"
-        CORE_LINK="$CORE_LINK $ngx_sparc64"
-        CC_AUX_FLAGS="$CC_AUX_FLAGS $ngx_sparc64"
-        NGX_CPU_CACHE_LINE=64
-    ;;
-
-    amd64)
-        # build 64-bit amd64 binary
-        CPU_OPT="$ngx_amd64"
-        CORE_LINK="$CORE_LINK $ngx_amd64"
-        CC_AUX_FLAGS="$CC_AUX_FLAGS $ngx_amd64"
-        NGX_AUX=" src/os/unix/ngx_sunpro_amd64.il"
-        NGX_CPU_CACHE_LINE=64
-    ;;
-
-esac
-
-
-CFLAGS="$CFLAGS $CPU_OPT"
-
-
-if [ ".$PCRE_OPT" = "." ]; then
-    PCRE_OPT="$ngx_fast $IPO $CPU_OPT"
-fi
-
-if [ ".$ZLIB_OPT" = "." ]; then
-    ZLIB_OPT="$ngx_fast $IPO $CPU_OPT"
-fi
-
-
-# stop on warning
-CFLAGS="$CFLAGS -errwarn=%all"
-
-# debug
-CFLAGS="$CFLAGS -g"
+[1] 
+[2] # Copyright (C) Igor Sysoev
+[3] # Copyright (C) Nginx, Inc.
+[4] 
+[5] 
+[6] # Sun C 5.7 Patch 117837-04 2005/05/11    Sun Studio 10
+[7] # Sun C 5.8 2005/10/13                    Sun Studio 11
+[8] # Sun C 5.9 SunOS_i386 2007/05/03         Sun Studio 12
+[9] # Sun C 5.9 SunOS_sparc 2007/05/03
+[10] # Sun C 5.10 SunOS_i386 2009/06/03        Sun Studio 12.1
+[11] # Sun C 5.11 SunOS_i386 2010/08/13        Oracle Solaris Studio 12.2
+[12] # Sun C 5.12 SunOS_i386 2011/11/16        Oracle Solaris Studio 12.3
+[13] # Sun C 5.13 SunOS_i386 2014/10/20        Oracle Solaris Studio 12.4
+[14] # Sun C 5.14 SunOS_i386 2016/05/31        Oracle Developer Studio 12.5
+[15] 
+[16] NGX_SUNC_VER=`$CC -V 2>&1 | grep 'Sun C' 2>&1 \
+[17]                           | sed -e 's/^.* Sun C \(.*\)/\1/'`
+[18] 
+[19] echo " + Sun C version: $NGX_SUNC_VER"
+[20] 
+[21] have=NGX_COMPILER value="\"Sun C $NGX_SUNC_VER\"" . auto/define
+[22] 
+[23] 
+[24] cat << END > $NGX_AUTOTEST.c
+[25] 
+[26] int main(void) {
+[27]     printf("%d", __SUNPRO_C);
+[28]     return 0;
+[29] }
+[30] 
+[31] END
+[32] 
+[33] eval "$CC -o $NGX_AUTOTEST $NGX_AUTOTEST.c >> $NGX_ERR 2>&1"
+[34] 
+[35] if [ -x $NGX_AUTOTEST ]; then
+[36]     ngx_sunc_ver=`$NGX_AUTOTEST`
+[37] fi
+[38] 
+[39] rm -rf $NGX_AUTOTEST*
+[40] 
+[41] # 1424 == 0x590, Sun Studio 12
+[42] 
+[43] if [ "$ngx_sunc_ver" -ge 1424 ]; then
+[44]     ngx_sparc32="-m32"
+[45]     ngx_sparc64="-m64"
+[46]     ngx_amd64="-m64"
+[47] 
+[48] else
+[49]     ngx_sparc32="-xarch=v8plus"
+[50]     ngx_sparc64="-xarch=v9"
+[51]     ngx_amd64="-xarch=amd64"
+[52] fi
+[53] 
+[54] case "$NGX_MACHINE" in
+[55] 
+[56]     i86pc)
+[57]         NGX_AUX=" src/os/unix/ngx_sunpro_x86.il"
+[58]     ;;
+[59] 
+[60]     sun4u | sun4v)
+[61]         NGX_AUX=" src/os/unix/ngx_sunpro_sparc64.il"
+[62]     ;;
+[63] 
+[64] esac
+[65] 
+[66] MAIN_LINK=
+[67] MODULE_LINK="-G"
+[68] 
+[69] 
+[70] # optimizations
+[71] 
+[72] # 20736 == 0x5100, Sun Studio 12.1
+[73] 
+[74] if [ "$ngx_sunc_ver" -ge 20736 ]; then
+[75]     ngx_fast="-fast"
+[76] 
+[77] else
+[78]     # older versions had problems with bit-fields
+[79]     ngx_fast="-fast -xalias_level=any"
+[80] fi
+[81] 
+[82] IPO=-xipo
+[83] CFLAGS="$CFLAGS $ngx_fast $IPO"
+[84] CORE_LINK="$CORE_LINK $ngx_fast $IPO"
+[85] 
+[86] 
+[87] case $CPU in
+[88]     pentium)
+[89]         # optimize for Pentium and Athlon
+[90]         CPU_OPT="-xchip=pentium"
+[91]     ;;
+[92] 
+[93]     pentiumpro)
+[94]         # optimize for Pentium Pro, Pentium II
+[95]         CPU_OPT="-xchip=pentium_pro"
+[96]     ;;
+[97] 
+[98]     pentium3)
+[99]         # optimize for Pentium III
+[100]         CPU_OPT="-xchip=pentium3"
+[101]         #CPU_OPT="$CPU_OPT -xarch=sse"
+[102]         CPU_OPT="$CPU_OPT -xcache=16/32/4:256/32/4"
+[103]     ;;
+[104] 
+[105]     pentium4)
+[106]         # optimize for Pentium 4
+[107]         CPU_OPT="-xchip=pentium4"
+[108]         #CPU_OPT="$CPU_OPT -xarch=sse2"
+[109]         CPU_OPT="$CPU_OPT -xcache=8/64/4:256/128/8"
+[110]     ;;
+[111] 
+[112]     opteron)
+[113]         # optimize for Opteron
+[114]         CPU_OPT="-xchip=opteron"
+[115]         #CPU_OPT="$CPU_OPT -xarch=sse2"
+[116]         CPU_OPT="$CPU_OPT -xcache=64/64/2:1024/64/16"
+[117]     ;;
+[118] 
+[119]     sparc32)
+[120]         # build 32-bit UltraSparc binary
+[121]         CPU_OPT="$ngx_sparc32"
+[122]         CORE_LINK="$CORE_LINK $ngx_sparc32"
+[123]         CC_AUX_FLAGS="$CC_AUX_FLAGS $ngx_sparc32"
+[124]         NGX_CPU_CACHE_LINE=64
+[125]     ;;
+[126] 
+[127]     sparc64)
+[128]         # build 64-bit UltraSparc binary
+[129]         CPU_OPT="$ngx_sparc64"
+[130]         CORE_LINK="$CORE_LINK $ngx_sparc64"
+[131]         CC_AUX_FLAGS="$CC_AUX_FLAGS $ngx_sparc64"
+[132]         NGX_CPU_CACHE_LINE=64
+[133]     ;;
+[134] 
+[135]     amd64)
+[136]         # build 64-bit amd64 binary
+[137]         CPU_OPT="$ngx_amd64"
+[138]         CORE_LINK="$CORE_LINK $ngx_amd64"
+[139]         CC_AUX_FLAGS="$CC_AUX_FLAGS $ngx_amd64"
+[140]         NGX_AUX=" src/os/unix/ngx_sunpro_amd64.il"
+[141]         NGX_CPU_CACHE_LINE=64
+[142]     ;;
+[143] 
+[144] esac
+[145] 
+[146] 
+[147] CFLAGS="$CFLAGS $CPU_OPT"
+[148] 
+[149] 
+[150] if [ ".$PCRE_OPT" = "." ]; then
+[151]     PCRE_OPT="$ngx_fast $IPO $CPU_OPT"
+[152] fi
+[153] 
+[154] if [ ".$ZLIB_OPT" = "." ]; then
+[155]     ZLIB_OPT="$ngx_fast $IPO $CPU_OPT"
+[156] fi
+[157] 
+[158] 
+[159] # stop on warning
+[160] CFLAGS="$CFLAGS -errwarn=%all"
+[161] 
+[162] # debug
+[163] CFLAGS="$CFLAGS -g"

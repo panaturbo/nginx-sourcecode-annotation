@@ -1,129 +1,129 @@
-
-# Copyright (C) Igor Sysoev
-# Copyright (C) Nginx, Inc.
-
-
-echo "checking for $NGX_SYSTEM specific features"
-
-case "$NGX_PLATFORM" in
-
-    FreeBSD:*)
-        . auto/os/freebsd
-    ;;
-
-    Linux:*)
-        . auto/os/linux
-    ;;
-
-    SunOS:*)
-        . auto/os/solaris
-    ;;
-
-    Darwin:*)
-        . auto/os/darwin
-    ;;
-
-    win32)
-        . auto/os/win32
-    ;;
-
-    DragonFly:*)
-        have=NGX_FREEBSD . auto/have_headers
-        CORE_INCS="$UNIX_INCS"
-        CORE_DEPS="$UNIX_DEPS $FREEBSD_DEPS"
-        CORE_SRCS="$UNIX_SRCS $FREEBSD_SRCS"
-
-        echo " + sendfile() found"
-        have=NGX_HAVE_SENDFILE . auto/have
-        CORE_SRCS="$CORE_SRCS $FREEBSD_SENDFILE_SRCS"
-
-        ngx_spacer='
-'
-    ;;
-
-    NetBSD:*)
-        CORE_INCS="$UNIX_INCS"
-        CORE_DEPS="$UNIX_DEPS $POSIX_DEPS"
-        CORE_SRCS="$UNIX_SRCS"
-
-        NGX_RPATH=YES
-    ;;
-
-    HP-UX:*)
-        # HP/UX
-        have=NGX_HPUX . auto/have_headers
-        CORE_INCS="$UNIX_INCS"
-        CORE_DEPS="$UNIX_DEPS $POSIX_DEPS"
-        CORE_SRCS="$UNIX_SRCS"
-        CC_AUX_FLAGS="$CC_AUX_FLAGS -D_XOPEN_SOURCE -D_XOPEN_SOURCE_EXTENDED=1"
-        CC_AUX_FLAGS="$CC_AUX_FLAGS -D_HPUX_ALT_XOPEN_SOCKET_API"
-    ;;
-
-    OSF1:*)
-        # Tru64 UNIX
-        have=NGX_TRU64 . auto/have_headers
-        have=NGX_HAVE_STRERROR_R . auto/nohave
-        CORE_INCS="$UNIX_INCS"
-        CORE_DEPS="$UNIX_DEPS $POSIX_DEPS"
-        CORE_SRCS="$UNIX_SRCS"
-    ;;
-
-    GNU:*)
-        # GNU Hurd
-        have=NGX_GNU_HURD . auto/have_headers
-        CORE_INCS="$UNIX_INCS"
-        CORE_DEPS="$UNIX_DEPS $POSIX_DEPS"
-        CORE_SRCS="$UNIX_SRCS"
-        CC_AUX_FLAGS="$CC_AUX_FLAGS -D_GNU_SOURCE -D_FILE_OFFSET_BITS=64"
-    ;;
-
-    *)
-        CORE_INCS="$UNIX_INCS"
-        CORE_DEPS="$UNIX_DEPS $POSIX_DEPS"
-        CORE_SRCS="$UNIX_SRCS"
-    ;;
-
-esac
-
-
-case "$NGX_MACHINE" in
-
-    i386 | i686 | i86pc)
-        have=NGX_HAVE_NONALIGNED . auto/have
-        NGX_MACH_CACHE_LINE=32
-    ;;
-
-    amd64 | x86_64)
-        have=NGX_HAVE_NONALIGNED . auto/have
-        NGX_MACH_CACHE_LINE=64
-    ;;
-
-    sun4u | sun4v | sparc | sparc64)
-        have=NGX_ALIGNMENT value=16 . auto/define
-        # TODO
-        NGX_MACH_CACHE_LINE=64
-    ;;
-
-    ia64 )
-        have=NGX_ALIGNMENT value=16 . auto/define
-        # TODO
-        NGX_MACH_CACHE_LINE=64
-    ;;
-
-    aarch64 | arm64)
-        have=NGX_ALIGNMENT value=16 . auto/define
-        NGX_MACH_CACHE_LINE=64
-    ;;
-
-    *)
-        have=NGX_ALIGNMENT value=16 . auto/define
-        NGX_MACH_CACHE_LINE=32
-    ;;
-
-esac
-
-if test -z "$NGX_CPU_CACHE_LINE"; then
-    NGX_CPU_CACHE_LINE=$NGX_MACH_CACHE_LINE
-fi
-
-have=NGX_CPU_CACHE_LINE value=$NGX_CPU_CACHE_LINE . auto/define
+[1] 
+[2] # Copyright (C) Igor Sysoev
+[3] # Copyright (C) Nginx, Inc.
+[4] 
+[5] 
+[6] echo "checking for $NGX_SYSTEM specific features"
+[7] 
+[8] case "$NGX_PLATFORM" in
+[9] 
+[10]     FreeBSD:*)
+[11]         . auto/os/freebsd
+[12]     ;;
+[13] 
+[14]     Linux:*)
+[15]         . auto/os/linux
+[16]     ;;
+[17] 
+[18]     SunOS:*)
+[19]         . auto/os/solaris
+[20]     ;;
+[21] 
+[22]     Darwin:*)
+[23]         . auto/os/darwin
+[24]     ;;
+[25] 
+[26]     win32)
+[27]         . auto/os/win32
+[28]     ;;
+[29] 
+[30]     DragonFly:*)
+[31]         have=NGX_FREEBSD . auto/have_headers
+[32]         CORE_INCS="$UNIX_INCS"
+[33]         CORE_DEPS="$UNIX_DEPS $FREEBSD_DEPS"
+[34]         CORE_SRCS="$UNIX_SRCS $FREEBSD_SRCS"
+[35] 
+[36]         echo " + sendfile() found"
+[37]         have=NGX_HAVE_SENDFILE . auto/have
+[38]         CORE_SRCS="$CORE_SRCS $FREEBSD_SENDFILE_SRCS"
+[39] 
+[40]         ngx_spacer='
+[41] '
+[42]     ;;
+[43] 
+[44]     NetBSD:*)
+[45]         CORE_INCS="$UNIX_INCS"
+[46]         CORE_DEPS="$UNIX_DEPS $POSIX_DEPS"
+[47]         CORE_SRCS="$UNIX_SRCS"
+[48] 
+[49]         NGX_RPATH=YES
+[50]     ;;
+[51] 
+[52]     HP-UX:*)
+[53]         # HP/UX
+[54]         have=NGX_HPUX . auto/have_headers
+[55]         CORE_INCS="$UNIX_INCS"
+[56]         CORE_DEPS="$UNIX_DEPS $POSIX_DEPS"
+[57]         CORE_SRCS="$UNIX_SRCS"
+[58]         CC_AUX_FLAGS="$CC_AUX_FLAGS -D_XOPEN_SOURCE -D_XOPEN_SOURCE_EXTENDED=1"
+[59]         CC_AUX_FLAGS="$CC_AUX_FLAGS -D_HPUX_ALT_XOPEN_SOCKET_API"
+[60]     ;;
+[61] 
+[62]     OSF1:*)
+[63]         # Tru64 UNIX
+[64]         have=NGX_TRU64 . auto/have_headers
+[65]         have=NGX_HAVE_STRERROR_R . auto/nohave
+[66]         CORE_INCS="$UNIX_INCS"
+[67]         CORE_DEPS="$UNIX_DEPS $POSIX_DEPS"
+[68]         CORE_SRCS="$UNIX_SRCS"
+[69]     ;;
+[70] 
+[71]     GNU:*)
+[72]         # GNU Hurd
+[73]         have=NGX_GNU_HURD . auto/have_headers
+[74]         CORE_INCS="$UNIX_INCS"
+[75]         CORE_DEPS="$UNIX_DEPS $POSIX_DEPS"
+[76]         CORE_SRCS="$UNIX_SRCS"
+[77]         CC_AUX_FLAGS="$CC_AUX_FLAGS -D_GNU_SOURCE -D_FILE_OFFSET_BITS=64"
+[78]     ;;
+[79] 
+[80]     *)
+[81]         CORE_INCS="$UNIX_INCS"
+[82]         CORE_DEPS="$UNIX_DEPS $POSIX_DEPS"
+[83]         CORE_SRCS="$UNIX_SRCS"
+[84]     ;;
+[85] 
+[86] esac
+[87] 
+[88] 
+[89] case "$NGX_MACHINE" in
+[90] 
+[91]     i386 | i686 | i86pc)
+[92]         have=NGX_HAVE_NONALIGNED . auto/have
+[93]         NGX_MACH_CACHE_LINE=32
+[94]     ;;
+[95] 
+[96]     amd64 | x86_64)
+[97]         have=NGX_HAVE_NONALIGNED . auto/have
+[98]         NGX_MACH_CACHE_LINE=64
+[99]     ;;
+[100] 
+[101]     sun4u | sun4v | sparc | sparc64)
+[102]         have=NGX_ALIGNMENT value=16 . auto/define
+[103]         # TODO
+[104]         NGX_MACH_CACHE_LINE=64
+[105]     ;;
+[106] 
+[107]     ia64 )
+[108]         have=NGX_ALIGNMENT value=16 . auto/define
+[109]         # TODO
+[110]         NGX_MACH_CACHE_LINE=64
+[111]     ;;
+[112] 
+[113]     aarch64 | arm64)
+[114]         have=NGX_ALIGNMENT value=16 . auto/define
+[115]         NGX_MACH_CACHE_LINE=64
+[116]     ;;
+[117] 
+[118]     *)
+[119]         have=NGX_ALIGNMENT value=16 . auto/define
+[120]         NGX_MACH_CACHE_LINE=32
+[121]     ;;
+[122] 
+[123] esac
+[124] 
+[125] if test -z "$NGX_CPU_CACHE_LINE"; then
+[126]     NGX_CPU_CACHE_LINE=$NGX_MACH_CACHE_LINE
+[127] fi
+[128] 
+[129] have=NGX_CPU_CACHE_LINE value=$NGX_CPU_CACHE_LINE . auto/define

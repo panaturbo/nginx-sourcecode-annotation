@@ -1,126 +1,126 @@
-
-# This map is not a full windows-1251 <> utf8 map: it does not
-# contain Serbian and Macedonian letters.  If you need a full map,
-# use contrib/unicode2nginx/win-utf map instead.
-
-charset_map  windows-1251  utf-8 {
-
-    82  E2809A ; # single low-9 quotation mark
-
-    84  E2809E ; # double low-9 quotation mark
-    85  E280A6 ; # ellipsis
-    86  E280A0 ; # dagger
-    87  E280A1 ; # double dagger
-    88  E282AC ; # euro
-    89  E280B0 ; # per mille
-
-    91  E28098 ; # left single quotation mark
-    92  E28099 ; # right single quotation mark
-    93  E2809C ; # left double quotation mark
-    94  E2809D ; # right double quotation mark
-    95  E280A2 ; # bullet
-    96  E28093 ; # en dash
-    97  E28094 ; # em dash
-
-    99  E284A2 ; # trade mark sign
-
-    A0  C2A0 ;   # &nbsp;
-    A1  D18E ;   # capital Byelorussian short U
-    A2  D19E ;   # small Byelorussian short u
-
-    A4  C2A4 ;   # currency sign
-    A5  D290 ;   # capital Ukrainian soft G
-    A6  C2A6 ;   # borken bar
-    A7  C2A7 ;   # section sign
-    A8  D081 ;   # capital YO
-    A9  C2A9 ;   # (C)
-    AA  D084 ;   # capital Ukrainian YE
-    AB  C2AB ;   # left-pointing double angle quotation mark
-    AC  C2AC ;   # not sign
-    AD  C2AD ;   # soft hypen
-    AE  C2AE ;   # (R)
-    AF  D087 ;   # capital Ukrainian YI
-
-    B0  C2B0 ;   # &deg;
-    B1  C2B1 ;   # plus-minus sign
-    B2  D086 ;   # capital Ukrainian I
-    B3  D196 ;   # small Ukrainian i
-    B4  D291 ;   # small Ukrainian soft g
-    B5  C2B5 ;   # micro sign
-    B6  C2B6 ;   # pilcrow sign
-    B7  C2B7 ;   # &middot;
-    B8  D191 ;   # small yo
-    B9  E28496 ; # numero sign
-    BA  D194 ;   # small Ukrainian ye
-    BB  C2BB ;   # right-pointing double angle quotation mark
-
-    BF  D197 ;   # small Ukrainian yi
-
-    C0  D090 ;   # capital A
-    C1  D091 ;   # capital B
-    C2  D092 ;   # capital V
-    C3  D093 ;   # capital G
-    C4  D094 ;   # capital D
-    C5  D095 ;   # capital YE
-    C6  D096 ;   # capital ZH
-    C7  D097 ;   # capital Z
-    C8  D098 ;   # capital I
-    C9  D099 ;   # capital J
-    CA  D09A ;   # capital K
-    CB  D09B ;   # capital L
-    CC  D09C ;   # capital M
-    CD  D09D ;   # capital N
-    CE  D09E ;   # capital O
-    CF  D09F ;   # capital P
-
-    D0  D0A0 ;   # capital R
-    D1  D0A1 ;   # capital S
-    D2  D0A2 ;   # capital T
-    D3  D0A3 ;   # capital U
-    D4  D0A4 ;   # capital F
-    D5  D0A5 ;   # capital KH
-    D6  D0A6 ;   # capital TS
-    D7  D0A7 ;   # capital CH
-    D8  D0A8 ;   # capital SH
-    D9  D0A9 ;   # capital SHCH
-    DA  D0AA ;   # capital hard sign
-    DB  D0AB ;   # capital Y
-    DC  D0AC ;   # capital soft sign
-    DD  D0AD ;   # capital E
-    DE  D0AE ;   # capital YU
-    DF  D0AF ;   # capital YA
-
-    E0  D0B0 ;   # small a
-    E1  D0B1 ;   # small b
-    E2  D0B2 ;   # small v
-    E3  D0B3 ;   # small g
-    E4  D0B4 ;   # small d
-    E5  D0B5 ;   # small ye
-    E6  D0B6 ;   # small zh
-    E7  D0B7 ;   # small z
-    E8  D0B8 ;   # small i
-    E9  D0B9 ;   # small j
-    EA  D0BA ;   # small k
-    EB  D0BB ;   # small l
-    EC  D0BC ;   # small m
-    ED  D0BD ;   # small n
-    EE  D0BE ;   # small o
-    EF  D0BF ;   # small p
-
-    F0  D180 ;   # small r
-    F1  D181 ;   # small s
-    F2  D182 ;   # small t
-    F3  D183 ;   # small u
-    F4  D184 ;   # small f
-    F5  D185 ;   # small kh
-    F6  D186 ;   # small ts
-    F7  D187 ;   # small ch
-    F8  D188 ;   # small sh
-    F9  D189 ;   # small shch
-    FA  D18A ;   # small hard sign
-    FB  D18B ;   # small y
-    FC  D18C ;   # small soft sign
-    FD  D18D ;   # small e
-    FE  D18E ;   # small yu
-    FF  D18F ;   # small ya
-}
+[1] 
+[2] # This map is not a full windows-1251 <> utf8 map: it does not
+[3] # contain Serbian and Macedonian letters.  If you need a full map,
+[4] # use contrib/unicode2nginx/win-utf map instead.
+[5] 
+[6] charset_map  windows-1251  utf-8 {
+[7] 
+[8]     82  E2809A ; # single low-9 quotation mark
+[9] 
+[10]     84  E2809E ; # double low-9 quotation mark
+[11]     85  E280A6 ; # ellipsis
+[12]     86  E280A0 ; # dagger
+[13]     87  E280A1 ; # double dagger
+[14]     88  E282AC ; # euro
+[15]     89  E280B0 ; # per mille
+[16] 
+[17]     91  E28098 ; # left single quotation mark
+[18]     92  E28099 ; # right single quotation mark
+[19]     93  E2809C ; # left double quotation mark
+[20]     94  E2809D ; # right double quotation mark
+[21]     95  E280A2 ; # bullet
+[22]     96  E28093 ; # en dash
+[23]     97  E28094 ; # em dash
+[24] 
+[25]     99  E284A2 ; # trade mark sign
+[26] 
+[27]     A0  C2A0 ;   # &nbsp;
+[28]     A1  D18E ;   # capital Byelorussian short U
+[29]     A2  D19E ;   # small Byelorussian short u
+[30] 
+[31]     A4  C2A4 ;   # currency sign
+[32]     A5  D290 ;   # capital Ukrainian soft G
+[33]     A6  C2A6 ;   # borken bar
+[34]     A7  C2A7 ;   # section sign
+[35]     A8  D081 ;   # capital YO
+[36]     A9  C2A9 ;   # (C)
+[37]     AA  D084 ;   # capital Ukrainian YE
+[38]     AB  C2AB ;   # left-pointing double angle quotation mark
+[39]     AC  C2AC ;   # not sign
+[40]     AD  C2AD ;   # soft hypen
+[41]     AE  C2AE ;   # (R)
+[42]     AF  D087 ;   # capital Ukrainian YI
+[43] 
+[44]     B0  C2B0 ;   # &deg;
+[45]     B1  C2B1 ;   # plus-minus sign
+[46]     B2  D086 ;   # capital Ukrainian I
+[47]     B3  D196 ;   # small Ukrainian i
+[48]     B4  D291 ;   # small Ukrainian soft g
+[49]     B5  C2B5 ;   # micro sign
+[50]     B6  C2B6 ;   # pilcrow sign
+[51]     B7  C2B7 ;   # &middot;
+[52]     B8  D191 ;   # small yo
+[53]     B9  E28496 ; # numero sign
+[54]     BA  D194 ;   # small Ukrainian ye
+[55]     BB  C2BB ;   # right-pointing double angle quotation mark
+[56] 
+[57]     BF  D197 ;   # small Ukrainian yi
+[58] 
+[59]     C0  D090 ;   # capital A
+[60]     C1  D091 ;   # capital B
+[61]     C2  D092 ;   # capital V
+[62]     C3  D093 ;   # capital G
+[63]     C4  D094 ;   # capital D
+[64]     C5  D095 ;   # capital YE
+[65]     C6  D096 ;   # capital ZH
+[66]     C7  D097 ;   # capital Z
+[67]     C8  D098 ;   # capital I
+[68]     C9  D099 ;   # capital J
+[69]     CA  D09A ;   # capital K
+[70]     CB  D09B ;   # capital L
+[71]     CC  D09C ;   # capital M
+[72]     CD  D09D ;   # capital N
+[73]     CE  D09E ;   # capital O
+[74]     CF  D09F ;   # capital P
+[75] 
+[76]     D0  D0A0 ;   # capital R
+[77]     D1  D0A1 ;   # capital S
+[78]     D2  D0A2 ;   # capital T
+[79]     D3  D0A3 ;   # capital U
+[80]     D4  D0A4 ;   # capital F
+[81]     D5  D0A5 ;   # capital KH
+[82]     D6  D0A6 ;   # capital TS
+[83]     D7  D0A7 ;   # capital CH
+[84]     D8  D0A8 ;   # capital SH
+[85]     D9  D0A9 ;   # capital SHCH
+[86]     DA  D0AA ;   # capital hard sign
+[87]     DB  D0AB ;   # capital Y
+[88]     DC  D0AC ;   # capital soft sign
+[89]     DD  D0AD ;   # capital E
+[90]     DE  D0AE ;   # capital YU
+[91]     DF  D0AF ;   # capital YA
+[92] 
+[93]     E0  D0B0 ;   # small a
+[94]     E1  D0B1 ;   # small b
+[95]     E2  D0B2 ;   # small v
+[96]     E3  D0B3 ;   # small g
+[97]     E4  D0B4 ;   # small d
+[98]     E5  D0B5 ;   # small ye
+[99]     E6  D0B6 ;   # small zh
+[100]     E7  D0B7 ;   # small z
+[101]     E8  D0B8 ;   # small i
+[102]     E9  D0B9 ;   # small j
+[103]     EA  D0BA ;   # small k
+[104]     EB  D0BB ;   # small l
+[105]     EC  D0BC ;   # small m
+[106]     ED  D0BD ;   # small n
+[107]     EE  D0BE ;   # small o
+[108]     EF  D0BF ;   # small p
+[109] 
+[110]     F0  D180 ;   # small r
+[111]     F1  D181 ;   # small s
+[112]     F2  D182 ;   # small t
+[113]     F3  D183 ;   # small u
+[114]     F4  D184 ;   # small f
+[115]     F5  D185 ;   # small kh
+[116]     F6  D186 ;   # small ts
+[117]     F7  D187 ;   # small ch
+[118]     F8  D188 ;   # small sh
+[119]     F9  D189 ;   # small shch
+[120]     FA  D18A ;   # small hard sign
+[121]     FB  D18B ;   # small y
+[122]     FC  D18C ;   # small soft sign
+[123]     FD  D18D ;   # small e
+[124]     FE  D18E ;   # small yu
+[125]     FF  D18F ;   # small ya
+[126] }

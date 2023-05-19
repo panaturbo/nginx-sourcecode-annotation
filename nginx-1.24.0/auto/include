@@ -1,58 +1,58 @@
-
-# Copyright (C) Igor Sysoev
-# Copyright (C) Nginx, Inc.
-
-
-echo $ngx_n "checking for $ngx_include ...$ngx_c"
-
-cat << END >> $NGX_AUTOCONF_ERR
-
-----------------------------------------
-checking for $ngx_include
-
-END
-
-
-ngx_found=no
-
-cat << END > $NGX_AUTOTEST.c
-
-$NGX_INCLUDE_SYS_PARAM_H
-#include <$ngx_include>
-
-int main(void) {
-    return 0;
-}
-
-END
-
-
-ngx_test="$CC -o $NGX_AUTOTEST $NGX_AUTOTEST.c"
-
-eval "$ngx_test >> $NGX_AUTOCONF_ERR 2>&1"
-
-if [ -x $NGX_AUTOTEST ]; then
-
-    ngx_found=yes
-
-    echo " found"
-
-    ngx_name=`echo $ngx_include \
-              | tr abcdefghijklmnopqrstuvwxyz/. ABCDEFGHIJKLMNOPQRSTUVWXYZ__`
-
-
-    have=NGX_HAVE_$ngx_name . auto/have_headers
-
-    eval "NGX_INCLUDE_$ngx_name='#include <$ngx_include>'"
-
-else
-    echo " not found"
-
-    echo "----------"    >> $NGX_AUTOCONF_ERR
-    cat $NGX_AUTOTEST.c  >> $NGX_AUTOCONF_ERR
-    echo "----------"    >> $NGX_AUTOCONF_ERR
-    echo $ngx_test       >> $NGX_AUTOCONF_ERR
-    echo "----------"    >> $NGX_AUTOCONF_ERR
-fi
-
-rm -rf $NGX_AUTOTEST*
+[1] 
+[2] # Copyright (C) Igor Sysoev
+[3] # Copyright (C) Nginx, Inc.
+[4] 
+[5] 
+[6] echo $ngx_n "checking for $ngx_include ...$ngx_c"
+[7] 
+[8] cat << END >> $NGX_AUTOCONF_ERR
+[9] 
+[10] ----------------------------------------
+[11] checking for $ngx_include
+[12] 
+[13] END
+[14] 
+[15] 
+[16] ngx_found=no
+[17] 
+[18] cat << END > $NGX_AUTOTEST.c
+[19] 
+[20] $NGX_INCLUDE_SYS_PARAM_H
+[21] #include <$ngx_include>
+[22] 
+[23] int main(void) {
+[24]     return 0;
+[25] }
+[26] 
+[27] END
+[28] 
+[29] 
+[30] ngx_test="$CC -o $NGX_AUTOTEST $NGX_AUTOTEST.c"
+[31] 
+[32] eval "$ngx_test >> $NGX_AUTOCONF_ERR 2>&1"
+[33] 
+[34] if [ -x $NGX_AUTOTEST ]; then
+[35] 
+[36]     ngx_found=yes
+[37] 
+[38]     echo " found"
+[39] 
+[40]     ngx_name=`echo $ngx_include \
+[41]               | tr abcdefghijklmnopqrstuvwxyz/. ABCDEFGHIJKLMNOPQRSTUVWXYZ__`
+[42] 
+[43] 
+[44]     have=NGX_HAVE_$ngx_name . auto/have_headers
+[45] 
+[46]     eval "NGX_INCLUDE_$ngx_name='#include <$ngx_include>'"
+[47] 
+[48] else
+[49]     echo " not found"
+[50] 
+[51]     echo "----------"    >> $NGX_AUTOCONF_ERR
+[52]     cat $NGX_AUTOTEST.c  >> $NGX_AUTOCONF_ERR
+[53]     echo "----------"    >> $NGX_AUTOCONF_ERR
+[54]     echo $ngx_test       >> $NGX_AUTOCONF_ERR
+[55]     echo "----------"    >> $NGX_AUTOCONF_ERR
+[56] fi
+[57] 
+[58] rm -rf $NGX_AUTOTEST*

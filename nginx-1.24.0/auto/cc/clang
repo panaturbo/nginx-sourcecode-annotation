@@ -1,99 +1,99 @@
-
-# Copyright (C) Nginx, Inc.
-
-
-# clang
-
-
-NGX_CLANG_VER=`$CC -v 2>&1 | grep 'version' 2>&1 \
-                           | sed -n -e 's/^.*clang version \(.*\)/\1/p' \
-                                    -e 's/^.*LLVM version \(.*\)/\1/p'`
-
-echo " + clang version: $NGX_CLANG_VER"
-
-have=NGX_COMPILER value="\"clang $NGX_CLANG_VER\"" . auto/define
-
-
-CC_TEST_FLAGS="-pipe"
-
-
-# optimizations
-
-#NGX_CLANG_OPT="-O2"
-#NGX_CLANG_OPT="-Oz"
-NGX_CLANG_OPT="-O"
-
-case $CPU in
-    pentium)
-        # optimize for Pentium
-        CPU_OPT="-march=pentium"
-        NGX_CPU_CACHE_LINE=32
-    ;;
-
-    pentiumpro | pentium3)
-        # optimize for Pentium Pro, Pentium II and Pentium III
-        CPU_OPT="-march=pentiumpro"
-        NGX_CPU_CACHE_LINE=32
-    ;;
-
-    pentium4)
-        # optimize for Pentium 4
-        CPU_OPT="-march=pentium4"
-        NGX_CPU_CACHE_LINE=128
-    ;;
-
-    athlon)
-        # optimize for Athlon
-        CPU_OPT="-march=athlon"
-        NGX_CPU_CACHE_LINE=64
-    ;;
-
-    opteron)
-        # optimize for Opteron
-        CPU_OPT="-march=opteron"
-        NGX_CPU_CACHE_LINE=64
-    ;;
-
-esac
-
-CC_AUX_FLAGS="$CC_AUX_FLAGS $CPU_OPT"
-
-
-CFLAGS="$CFLAGS -pipe $CPU_OPT"
-
-if [ ".$PCRE_OPT" = "." ]; then
-    PCRE_OPT="-O2 -pipe $CPU_OPT"
-else
-    PCRE_OPT="$PCRE_OPT -pipe"
-fi
-
-if [ ".$ZLIB_OPT" = "." ]; then
-    ZLIB_OPT="-O2 -pipe $CPU_OPT"
-else
-    ZLIB_OPT="$ZLIB_OPT -pipe"
-fi
-
-
-# warnings
-
-CFLAGS="$CFLAGS $NGX_CLANG_OPT -Wall -Wextra -Wpointer-arith"
-CFLAGS="$CFLAGS -Wconditional-uninitialized"
-#CFLAGS="$CFLAGS -Wmissing-prototypes"
-
-# we have a lot of unused function arguments
-CFLAGS="$CFLAGS -Wno-unused-parameter"
-
-# deprecated system OpenSSL library on OS X
-if [ "$NGX_SYSTEM" = "Darwin" ]; then
-    CFLAGS="$CFLAGS -Wno-deprecated-declarations"
-fi
-
-# stop on warning
-CFLAGS="$CFLAGS -Werror"
-
-# debug
-CFLAGS="$CFLAGS -g"
-
-if [ ".$CPP" = "." ]; then
-    CPP="$CC -E"
-fi
+[1] 
+[2] # Copyright (C) Nginx, Inc.
+[3] 
+[4] 
+[5] # clang
+[6] 
+[7] 
+[8] NGX_CLANG_VER=`$CC -v 2>&1 | grep 'version' 2>&1 \
+[9]                            | sed -n -e 's/^.*clang version \(.*\)/\1/p' \
+[10]                                     -e 's/^.*LLVM version \(.*\)/\1/p'`
+[11] 
+[12] echo " + clang version: $NGX_CLANG_VER"
+[13] 
+[14] have=NGX_COMPILER value="\"clang $NGX_CLANG_VER\"" . auto/define
+[15] 
+[16] 
+[17] CC_TEST_FLAGS="-pipe"
+[18] 
+[19] 
+[20] # optimizations
+[21] 
+[22] #NGX_CLANG_OPT="-O2"
+[23] #NGX_CLANG_OPT="-Oz"
+[24] NGX_CLANG_OPT="-O"
+[25] 
+[26] case $CPU in
+[27]     pentium)
+[28]         # optimize for Pentium
+[29]         CPU_OPT="-march=pentium"
+[30]         NGX_CPU_CACHE_LINE=32
+[31]     ;;
+[32] 
+[33]     pentiumpro | pentium3)
+[34]         # optimize for Pentium Pro, Pentium II and Pentium III
+[35]         CPU_OPT="-march=pentiumpro"
+[36]         NGX_CPU_CACHE_LINE=32
+[37]     ;;
+[38] 
+[39]     pentium4)
+[40]         # optimize for Pentium 4
+[41]         CPU_OPT="-march=pentium4"
+[42]         NGX_CPU_CACHE_LINE=128
+[43]     ;;
+[44] 
+[45]     athlon)
+[46]         # optimize for Athlon
+[47]         CPU_OPT="-march=athlon"
+[48]         NGX_CPU_CACHE_LINE=64
+[49]     ;;
+[50] 
+[51]     opteron)
+[52]         # optimize for Opteron
+[53]         CPU_OPT="-march=opteron"
+[54]         NGX_CPU_CACHE_LINE=64
+[55]     ;;
+[56] 
+[57] esac
+[58] 
+[59] CC_AUX_FLAGS="$CC_AUX_FLAGS $CPU_OPT"
+[60] 
+[61] 
+[62] CFLAGS="$CFLAGS -pipe $CPU_OPT"
+[63] 
+[64] if [ ".$PCRE_OPT" = "." ]; then
+[65]     PCRE_OPT="-O2 -pipe $CPU_OPT"
+[66] else
+[67]     PCRE_OPT="$PCRE_OPT -pipe"
+[68] fi
+[69] 
+[70] if [ ".$ZLIB_OPT" = "." ]; then
+[71]     ZLIB_OPT="-O2 -pipe $CPU_OPT"
+[72] else
+[73]     ZLIB_OPT="$ZLIB_OPT -pipe"
+[74] fi
+[75] 
+[76] 
+[77] # warnings
+[78] 
+[79] CFLAGS="$CFLAGS $NGX_CLANG_OPT -Wall -Wextra -Wpointer-arith"
+[80] CFLAGS="$CFLAGS -Wconditional-uninitialized"
+[81] #CFLAGS="$CFLAGS -Wmissing-prototypes"
+[82] 
+[83] # we have a lot of unused function arguments
+[84] CFLAGS="$CFLAGS -Wno-unused-parameter"
+[85] 
+[86] # deprecated system OpenSSL library on OS X
+[87] if [ "$NGX_SYSTEM" = "Darwin" ]; then
+[88]     CFLAGS="$CFLAGS -Wno-deprecated-declarations"
+[89] fi
+[90] 
+[91] # stop on warning
+[92] CFLAGS="$CFLAGS -Werror"
+[93] 
+[94] # debug
+[95] CFLAGS="$CFLAGS -g"
+[96] 
+[97] if [ ".$CPP" = "." ]; then
+[98]     CPP="$CC -E"
+[99] fi

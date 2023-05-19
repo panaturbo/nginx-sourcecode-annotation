@@ -1,135 +1,135 @@
-
-# Copyright (C) Igor Sysoev
-# Copyright (C) Nginx, Inc.
-
-
-case "$NGX_CC_NAME" in
-
-    msvc)
-        ngx_makefile=makefile.msvc
-        ngx_opt="CPU_OPT=\"$CPU_OPT\" LIBC=$LIBC"
-        ngx_zlib="ZLIB=\"$ZLIB\""
-
-    ;;
-
-    owc)
-        ngx_makefile=makefile.owc
-        ngx_opt="CPU_OPT=\"$CPU_OPT\""
-        ngx_zlib=`echo ZLIB=\"$ZLIB\" | sed -e "s/\//$ngx_regex_dirsep/g"`
-    ;;
-
-    bcc)
-        ngx_makefile=makefile.bcc
-        ngx_opt="-DCPU_OPT=\"$CPU_OPT\""
-        ngx_zlib=`echo \-DZLIB=\"$ZLIB\" | sed -e "s/\//$ngx_regex_dirsep/g"`
-    ;;
-
-    *)
-        ngx_makefile=
-    ;;
-
-esac
-
-
-done=NO
-
-
-case "$NGX_PLATFORM" in
-
-    win32)
-
-        if [ -n "$ngx_makefile" ]; then
-            cat << END                                        >> $NGX_MAKEFILE
-
-`echo "$ZLIB/zlib.lib:	$NGX_MAKEFILE" | sed -e "s/\//$ngx_regex_dirsep/g"`
-	\$(MAKE) -f auto/lib/zlib/$ngx_makefile $ngx_opt $ngx_zlib
-
-END
-
-        else
-
-            cat << END                                        >> $NGX_MAKEFILE
-
-$ZLIB/libz.a:	$NGX_MAKEFILE
-	cd $ZLIB \\
-	&& \$(MAKE) distclean \\
-	&& \$(MAKE) -f win32/Makefile.gcc \\
-		CFLAGS="$ZLIB_OPT" CC="\$(CC)" \\
-		libz.a
-
-END
-
-        fi
-
-        done=YES
-    ;;
-
-    # FreeBSD: i386
-    # Linux: i686
-
-    *:i386 | *:i686)
-        case $ZLIB_ASM in
-            pentium)
-
-                cat << END                                    >> $NGX_MAKEFILE
-
-$ZLIB/libz.a:	$NGX_MAKEFILE
-	cd $ZLIB \\
-	&& \$(MAKE) distclean \\
-	&& cp contrib/asm586/match.S . \\
-	&& CFLAGS="$ZLIB_OPT -DASMV" CC="\$(CC)" \\
-		./configure \\
-	&& \$(MAKE) OBJA=match.o libz.a
-
-END
-
-                done=YES
-            ;;
-
-            pentiumpro)
-
-                cat << END                                    >> $NGX_MAKEFILE
-
-$ZLIB/libz.a:	$NGX_MAKEFILE
-	cd $ZLIB \\
-	&& \$(MAKE) distclean \\
-	&& cp contrib/asm686/match.S . \\
-	&& CFLAGS="$ZLIB_OPT -DASMV" CC="\$(CC)" \\
-		./configure \\
-	&& \$(MAKE) OBJA=match.o libz.a
-
-END
-
-                done=YES
-            ;;
-
-            NO)
-            ;;
-
-            *)
-                echo "$0: error: invalid --with-zlib-asm=$ZLIB_ASM option."
-                echo "The valid values are \"pentium\" and \"pentiumpro\" only".
-                echo
-
-                exit 1;
-            ;;
-        esac
-    ;;
-
-esac
-
-
-if [ $done = NO ]; then
-
-    cat << END                                                >> $NGX_MAKEFILE
-
-$ZLIB/libz.a:	$NGX_MAKEFILE
-	cd $ZLIB \\
-	&& \$(MAKE) distclean \\
-	&& CFLAGS="$ZLIB_OPT" CC="\$(CC)" \\
-		./configure \\
-	&& \$(MAKE) libz.a
-
-END
-
-fi
+[1] 
+[2] # Copyright (C) Igor Sysoev
+[3] # Copyright (C) Nginx, Inc.
+[4] 
+[5] 
+[6] case "$NGX_CC_NAME" in
+[7] 
+[8]     msvc)
+[9]         ngx_makefile=makefile.msvc
+[10]         ngx_opt="CPU_OPT=\"$CPU_OPT\" LIBC=$LIBC"
+[11]         ngx_zlib="ZLIB=\"$ZLIB\""
+[12] 
+[13]     ;;
+[14] 
+[15]     owc)
+[16]         ngx_makefile=makefile.owc
+[17]         ngx_opt="CPU_OPT=\"$CPU_OPT\""
+[18]         ngx_zlib=`echo ZLIB=\"$ZLIB\" | sed -e "s/\//$ngx_regex_dirsep/g"`
+[19]     ;;
+[20] 
+[21]     bcc)
+[22]         ngx_makefile=makefile.bcc
+[23]         ngx_opt="-DCPU_OPT=\"$CPU_OPT\""
+[24]         ngx_zlib=`echo \-DZLIB=\"$ZLIB\" | sed -e "s/\//$ngx_regex_dirsep/g"`
+[25]     ;;
+[26] 
+[27]     *)
+[28]         ngx_makefile=
+[29]     ;;
+[30] 
+[31] esac
+[32] 
+[33] 
+[34] done=NO
+[35] 
+[36] 
+[37] case "$NGX_PLATFORM" in
+[38] 
+[39]     win32)
+[40] 
+[41]         if [ -n "$ngx_makefile" ]; then
+[42]             cat << END                                        >> $NGX_MAKEFILE
+[43] 
+[44] `echo "$ZLIB/zlib.lib:	$NGX_MAKEFILE" | sed -e "s/\//$ngx_regex_dirsep/g"`
+[45] 	\$(MAKE) -f auto/lib/zlib/$ngx_makefile $ngx_opt $ngx_zlib
+[46] 
+[47] END
+[48] 
+[49]         else
+[50] 
+[51]             cat << END                                        >> $NGX_MAKEFILE
+[52] 
+[53] $ZLIB/libz.a:	$NGX_MAKEFILE
+[54] 	cd $ZLIB \\
+[55] 	&& \$(MAKE) distclean \\
+[56] 	&& \$(MAKE) -f win32/Makefile.gcc \\
+[57] 		CFLAGS="$ZLIB_OPT" CC="\$(CC)" \\
+[58] 		libz.a
+[59] 
+[60] END
+[61] 
+[62]         fi
+[63] 
+[64]         done=YES
+[65]     ;;
+[66] 
+[67]     # FreeBSD: i386
+[68]     # Linux: i686
+[69] 
+[70]     *:i386 | *:i686)
+[71]         case $ZLIB_ASM in
+[72]             pentium)
+[73] 
+[74]                 cat << END                                    >> $NGX_MAKEFILE
+[75] 
+[76] $ZLIB/libz.a:	$NGX_MAKEFILE
+[77] 	cd $ZLIB \\
+[78] 	&& \$(MAKE) distclean \\
+[79] 	&& cp contrib/asm586/match.S . \\
+[80] 	&& CFLAGS="$ZLIB_OPT -DASMV" CC="\$(CC)" \\
+[81] 		./configure \\
+[82] 	&& \$(MAKE) OBJA=match.o libz.a
+[83] 
+[84] END
+[85] 
+[86]                 done=YES
+[87]             ;;
+[88] 
+[89]             pentiumpro)
+[90] 
+[91]                 cat << END                                    >> $NGX_MAKEFILE
+[92] 
+[93] $ZLIB/libz.a:	$NGX_MAKEFILE
+[94] 	cd $ZLIB \\
+[95] 	&& \$(MAKE) distclean \\
+[96] 	&& cp contrib/asm686/match.S . \\
+[97] 	&& CFLAGS="$ZLIB_OPT -DASMV" CC="\$(CC)" \\
+[98] 		./configure \\
+[99] 	&& \$(MAKE) OBJA=match.o libz.a
+[100] 
+[101] END
+[102] 
+[103]                 done=YES
+[104]             ;;
+[105] 
+[106]             NO)
+[107]             ;;
+[108] 
+[109]             *)
+[110]                 echo "$0: error: invalid --with-zlib-asm=$ZLIB_ASM option."
+[111]                 echo "The valid values are \"pentium\" and \"pentiumpro\" only".
+[112]                 echo
+[113] 
+[114]                 exit 1;
+[115]             ;;
+[116]         esac
+[117]     ;;
+[118] 
+[119] esac
+[120] 
+[121] 
+[122] if [ $done = NO ]; then
+[123] 
+[124]     cat << END                                                >> $NGX_MAKEFILE
+[125] 
+[126] $ZLIB/libz.a:	$NGX_MAKEFILE
+[127] 	cd $ZLIB \\
+[128] 	&& \$(MAKE) distclean \\
+[129] 	&& CFLAGS="$ZLIB_OPT" CC="\$(CC)" \\
+[130] 		./configure \\
+[131] 	&& \$(MAKE) libz.a
+[132] 
+[133] END
+[134] 
+[135] fi
