@@ -787,6 +787,7 @@ reopen - 重新打开日志文件
 [746] }
 [747] 
 [748] 
+ngx_get_options函数负责解析nginx命令行参数，根据命令行参数设置相应的变量值以控制nginx执行。
 [749] static ngx_int_t
 [750] ngx_get_options(int argc, char *const *argv)
 [751] {
@@ -794,14 +795,19 @@ reopen - 重新打开日志文件
 [753]     ngx_int_t   i;
 [754] 
 [755]     for (i = 1; i < argc; i++) {
+每次循环解析一个命令行参数选项，因为第0个命令行参数是nginx的程序名称，不是选项参数，所以此处i从第1个开始解析。
 [756] 
 [757]         p = (u_char *) argv[i];
 [758] 
 [759]         if (*p++ != '-') {
+参数选项必须以'-'开头，如果不以'-'开头,则认为它是一个无效选项,nginx退出
 [760]             ngx_log_stderr(0, "invalid option: \"%s\"", argv[i]);
 [761]             return NGX_ERROR;
 [762]         }
 [763] 
+此处需要while循环的目的是，支持解析用户使用单个-配合多个选项的输入方式。
+比如：nginx -vhTts reload -e /home/forrest/error.log 其中-vhTts reload作为一组选项输入。
+while的单次循环处理以'-'开头的一组选项。
 [764]         while (*p) {
 [765] 
 [766]             switch (*p++) {
@@ -836,30 +842,37 @@ reopen - 重新打开日志文件
 [795] 
 [796]             case 'p':
 [797]                 if (*p) {
+如果-p后立即输入目录，比如：-p/home/forrest/testpath,那么通过p直接获得目录路径。
 [798]                     ngx_prefix = p;
 [799]                     goto next;
 [800]                 }
 [801] 
 [802]                 if (argv[++i]) {
+如果-p和输入目录之间存在空格，比如：-p /home/forrest/testpath，那么通过命令行选项数组argv[i]来获得目录路径。
 [803]                     ngx_prefix = (u_char *) argv[i];
 [804]                     goto next;
 [805]                 }
 [806] 
+如果-p 后没有输入目录参数信息，则报错，nginx程序退出。
 [807]                 ngx_log_stderr(0, "option \"-p\" requires directory name");
 [808]                 return NGX_ERROR;
 [809] 
 [810]             case 'e':
 [811]                 if (*p) {
+如果-e后立即输入日志路径，比如：-e/home/forrest/error.log,那么通过p直接获得日志路径。  
 [812]                     ngx_error_log = p;
 [813] 
 [814]                 } else if (argv[++i]) {
+如果-e和输入日志路径之间存在空格，比如：-e /home/forrest/error.log，那么通过命令行选项数组argv[i]来获得日志路径。  
 [815]                     ngx_error_log = (u_char *) argv[i];
 [816] 
 [817]                 } else {
+如果-e后没有输入日志路径参数信息，则报错，nginx程序退出。
 [818]                     ngx_log_stderr(0, "option \"-e\" requires file name");
 [819]                     return NGX_ERROR;
 [820]                 }
 [821] 
+如果-e日志路径名为stderr，则日志输出到系统标准错误。
 [822]                 if (ngx_strcmp(ngx_error_log, "stderr") == 0) {
 [823]                     ngx_error_log = (u_char *) "";
 [824]                 }
@@ -868,40 +881,49 @@ reopen - 重新打开日志文件
 [827] 
 [828]             case 'c':
 [829]                 if (*p) {
+如果-c后立即输入配置文件路径，比如：-c/home/forrest/nginx.conf,那么通过p直接获得配置文件。
 [830]                     ngx_conf_file = p;
 [831]                     goto next;
 [832]                 }
 [833] 
 [834]                 if (argv[++i]) {
+如果-c和配置文件路径之间存在空格，比如：-c /home/forrest/nginx.conf，那么通过命令行选项数组argv[i]来获得配置文件路径。
 [835]                     ngx_conf_file = (u_char *) argv[i];
 [836]                     goto next;
 [837]                 }
 [838] 
+如果-c后没有输入配置文件，则报错，nginx程序退出。
 [839]                 ngx_log_stderr(0, "option \"-c\" requires file name");
 [840]                 return NGX_ERROR;
 [841] 
 [842]             case 'g':
 [843]                 if (*p) {
+如果-g后立即输入全局配置指令，比如：-g"worker_processes 4;",那么通过p直接获得配置文件。
 [844]                     ngx_conf_params = p;
 [845]                     goto next;
 [846]                 }
 [847] 
 [848]                 if (argv[++i]) {
+如果-g和全局配置指令之间存在空格，比如：-g "worker_processes 4;"，那么通过命令行选项数组argv[i]来获得全局配置指令。
 [849]                     ngx_conf_params = (u_char *) argv[i];
 [850]                     goto next;
 [851]                 }
 [852] 
+如果-g后没有输入全局配置指令，则报错，nginx程序退出。    
 [853]                 ngx_log_stderr(0, "option \"-g\" requires parameter");
 [854]                 return NGX_ERROR;
 [855] 
 [856]             case 's':
 [857]                 if (*p) {
+如果-s后立即输入信号名称，比如：-sreload,那么通过p直接获得信号名称。
 [858]                     ngx_signal = (char *) p;
 [859] 
 [860]                 } else if (argv[++i]) {
+如果-s和信号名称之间存在空格，比如：-s reload，那么通过命令行选项数组argv[i]来获得信号名称。
 [861]                     ngx_signal = argv[i];
 [862] 
 [863]                 } else {
+如果-s后没有输入信号名称，则报错，nginx程序退出。
 [864]                     ngx_log_stderr(0, "option \"-s\" requires parameter");
 [865]                     return NGX_ERROR;
 [866]                 }
@@ -911,10 +933,13 @@ reopen - 重新打开日志文件
 [870]                     || ngx_strcmp(ngx_signal, "reopen") == 0
 [871]                     || ngx_strcmp(ngx_signal, "reload") == 0)
 [872]                 {
+如果-s后指定stop,quit,reopen,reload信号，则配置ngx_process为信号器进程，
+nginx启动后仅执行信号发送功能,并不提供http等其他服务，信号发送完毕后，nginx程序退出。
 [873]                     ngx_process = NGX_PROCESS_SIGNALLER;
 [874]                     goto next;
 [875]                 }
-[876] 
+[876]
+如果-s后输入非stop,quit,reopen,reload信号名称，则报错，nginx程序退出。
 [877]                 ngx_log_stderr(0, "invalid option: \"-s %s\"", ngx_signal);
 [878]                 return NGX_ERROR;
 [879] 
