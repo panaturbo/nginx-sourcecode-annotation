@@ -192,6 +192,10 @@
 [192] static char **ngx_os_environ;
 [193] 
 [194] 
+
+第195-387行为nginx程序main入口函数，无论是通过手动还是系统服务方式启动nginx，皆是从此main函数开始执行。
+main函数有两个参数变量，int argc和char *const * argv。argc保存nginx启动时使用的命令行参数数量；
+argv变量指向命令行参数数组,系统启动nginx时所有启动参数的地址均保存在此数组中，通过argv可以访问nginx所有启动参数；
 [195] int ngx_cdecl
 [196] main(int argc, char *const *argv)
 [197] {
