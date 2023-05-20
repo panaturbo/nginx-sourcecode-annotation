@@ -391,6 +391,43 @@ argv变量指向命令行参数数组,系统启动nginx时所有启动参数的�
 [387] }
 [388] 
 [389] 
+
+ngx_show_version_info函数显示nginx相关版本、help信息。
+例如在命令行执行 $nginx  -h 或 $nginx  -?命令，将输出如下具体版本、帮助信息：
+nginx version: nginx/1.24.0
+程序版本信息
+Usage: nginx [-?hvVtTq] [-s signal] [-p prefix]
+             [-e filename] [-c filename] [-g directives]
+Options:
+  -?,-h         : this help
+打印命令行参数的帮助
+  -v            : show version and exit
+打印nginx版本信息
+  -V            : show version and configure options then exit
+打印nginx版本，编译器版本和构建配置参数
+  -t            : test configuration and exit
+测试配置文件：nginx检查配置的正确语法，然后尝试打开配置中引用的文件
+  -T            : test configuration, dump it and exit
+与-t相同功能外，另外将配置文件转储到标准输出
+  -q            : suppress non-error messages during configuration testing
+在配置测试期间抑制非错误消息
+  -s signal     : send signal to a master process: stop, quit, reopen, reload
+向master进程发送一个信号，信号可以是以下之一：
+stop - 快速关闭
+quit - 优雅地关闭
+reload - 重新加载配置，使用新配置启动新的worker进程，优雅地关闭旧的worker进程
+reopen - 重新打开日志文件
+  -p prefix     : set prefix path (default: /var/www/html/)
+设置nginx路径前缀，即保留服务器文件的目录。默认值是编译程序时候通过./configure --prefix
+配置选项指定的目录，如果编译时没有指定--prefix参数，那么默认路径是/usr/local/nginx目录
+  -e filename   : set error log file (default: /var/log/nginx/error.log)
+设置错误日志存储文件，不使用缺省文件，可以通过编译时配置选项--error-log-path设定缺省错误文件
+  -c filename   : set configuration file (default: /etc/nginx/nginx.conf)
+设置使用的配置文件，不使用缺省配置文件，可以通过编译时配置选项--conf-path设定缺省配置文件
+  -g directives : set global directives out of configuration file
+通过命令行指定nginx使用的全局配置指令，例如：$nginx -g "worker_processes 4;"
+如果配置文件中和命令行-g参数同时指定了相同的配置命令，nginx会报告重复定义的错误，并启动失败
+
 [390] static void
 [391] ngx_show_version_info(void)
 [392] {
