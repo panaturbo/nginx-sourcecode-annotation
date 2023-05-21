@@ -160,6 +160,11 @@
 [160] 
 [161]         ngx_log_debug0(NGX_LOG_DEBUG_EVENT, cycle->log, 0, "sigsuspend");
 [162] 
+master进程启动完毕后，在[163]行，执行sigsuspend函数调用挂起等待
+master进程挂起等待时，进程调用堆栈如下：
+#0  0x00007f764b6427dc in __GI___sigsuspend (set=set@entry=0x7ffd17d368d0) at ../sysdeps/unix/sysv/linux/sigsuspend.c:26
+#1  0x0000559e16cb3e94 in ngx_master_process_cycle (cycle=cycle@entry=0x559e18a9a4f0) at src/os/unix/ngx_process_cycle.c:163
+#2  0x0000559e16c87694 in main (argc=<optimized out>, argv=<optimized out>) at src/core/nginx.c:383
 [163]         sigsuspend(&set);
 [164] 
 [165]         ngx_time_update();
