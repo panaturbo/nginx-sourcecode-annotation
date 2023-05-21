@@ -384,6 +384,7 @@ argv变量指向命令行参数数组,系统启动nginx时所有启动参数的�
 [380]         ngx_single_process_cycle(cycle);
 [381] 
 [382]     } else {
+ngx_master_process_cycle函数为master进程执行函数
 [383]         ngx_master_process_cycle(cycle);
 [384]     }
 [385] 
