@@ -796,7 +796,19 @@
 [796] 
 [797]     ngx_log_debug1(NGX_LOG_DEBUG_EVENT, cycle->log, 0,
 [798]                    "epoll timer: %M", timer);
-[799] 
+[799]
+  
+worker进程启动后，挂起在[800]行epoll_wait函数调用处，等待事件发生。挂起时进程调用堆栈如下：
+#0  0x00007f764b725f9a in epoll_wait (epfd=9, events=0x559e18aa74e0, maxevents=512, timeout=timeout@entry=-1) at ../sysdeps/unix/sysv/linux/epoll_wait.c:30
+#1  0x0000559e16cb4faa in ngx_epoll_process_events (cycle=0x559e18a9a4f0, timer=18446744073709551615, flags=1) at src/event/modules/ngx_epoll_module.c:800
+#2  0x0000559e16ca9806 in ngx_process_events_and_timers (cycle=cycle@entry=0x559e18a9a4f0) at src/event/ngx_event.c:248
+#3  0x0000559e16cb2e0e in ngx_worker_process_cycle (cycle=0x559e18a9a4f0, data=<optimized out>) at src/os/unix/ngx_process_cycle.c:721
+#4  0x0000559e16cb127b in ngx_spawn_process (cycle=cycle@entry=0x559e18a9a4f0, proc=proc@entry=0x559e16cb2cf2 <ngx_worker_process_cycle>, data=data@entry=0x0, 
+    name=name@entry=0x559e16d4144a "worker process", respawn=respawn@entry=-3) at src/os/unix/ngx_process.c:199
+#5  0x0000559e16cb2557 in ngx_start_worker_processes (cycle=cycle@entry=0x559e18a9a4f0, n=2, type=type@entry=-3) at src/os/unix/ngx_process_cycle.c:344
+#6  0x0000559e16cb3746 in ngx_master_process_cycle (cycle=cycle@entry=0x559e18a9a4f0) at src/os/unix/ngx_process_cycle.c:130
+#7  0x0000559e16c87694 in main (argc=<optimized out>, argv=<optimized out>) at src/core/nginx.c:383
+
 [800]     events = epoll_wait(ep, event_list, (int) nevents, timer);
 [801] 
 [802]     err = (events == -1) ? ngx_errno : 0;
